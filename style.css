@@ -1,0 +1,82 @@
+body {
+
+background: rgb(195, 20, 50);  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, rgb(36, 11, 54), rgb(195, 20, 50)), url(foto/fondo2.PNG);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, rgb(36, 11, 54), rgba(195, 20, 49, 0.871)), url(foto/fondo2.PNG); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+color: rgb(234, 214, 214);
+font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif, sans-serif;
+	
+
+}
+
+
+
+
+.container {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 20px;
+	text-align: center;
+    -webkit-box-shadow: -15px 10px 29px -3px rgba(0,0,0,0.7);
+-moz-box-shadow: -15px 10px 29px -3px rgba(0,0,0,0.7);
+box-shadow: -15px 10px 29px -3px rgba(0,0,0,0.7);
+
+}
+
+h1 {
+	font-family: 'Shadows Into Light', cursive;
+	font-size: 500 px;
+	color: rgb(234, 214, 214);
+	
+	margin-bottom: 0px;
+}
+
+input[type="text"] {
+	
+        margin: 10px;
+        background: none;
+        border: none;
+        outline: none;
+        max-width: 400px;
+        padding: 8px;
+        font-size: 25px;
+        border-radius: 5px;
+        box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
+        color: rgba(234, 214, 214, 0.727);
+      
+    
+    /*padding: 10px;
+	width: 100%;
+	max-width: 400px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-bottom: 20px;
+    background: transparent;
+    color: #ccc;*/
+}
+
+::placeholder {
+	color: rgba(234, 214, 214, 0.071);
+	font-family: Arial, sans-serif;
+	
+	font-size: 2 px;
+  }
+  
+
+ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+li {
+	padding: 10px;
+	border: 1px solid #ccc;
+	margin-bottom: 10px;
+	text-align: left;
+}
+
+li span {
+	font-weight: bold;
+}
