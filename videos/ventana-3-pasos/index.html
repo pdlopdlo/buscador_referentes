@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Ventana 3 pasos</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-Regular.otf") format("opentype"); font-weight: 400; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-Medium.otf") format("opentype"); font-weight: 500; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-SemiBold.otf") format("opentype"); font-weight: 600; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-Bold.otf") format("opentype"); font-weight: 700; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-ExtraBold.otf") format("opentype"); font-weight: 800; }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #fafcfc; }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #fafcfc;
+        color: #1d1d1f;
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .clip { position: absolute; inset: 0; }
+      .cam { position: absolute; inset: 0; }
+      .caret { display: inline-block; width: 3px; border-radius: 2px; background: #fff; vertical-align: middle; margin-left: 3px; }
+
+      .tag { position: absolute; width: 1px; height: 1px; }
+      .tag svg { position: absolute; left: 0; top: 0; display: block; }
+      .tag .pill { position: absolute; border-radius: 999px; color: #fff; font-weight: 600; white-space: nowrap; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); }
+
+      .win { position: absolute; background: #fff; border-radius: 22px; box-shadow: 0 30px 80px rgba(20, 30, 40, 0.14), 0 2px 6px rgba(20, 30, 40, 0.06); }
+      .bar { position: absolute; left: 0; top: 0; right: 0; height: 56px; }
+      .lights { position: absolute; left: 24px; top: 22px; display: flex; gap: 10px; }
+      .lights b { display: block; width: 14px; height: 14px; border-radius: 50%; }
+      .ttl { position: absolute; left: 0; right: 0; top: 16px; text-align: center; font-size: 21px; font-weight: 500; color: #73767b; }
+      .canvas { position: absolute; border-radius: 16px; overflow: hidden; }
+      .cv { position: absolute; inset: 0; }
+      .cv-light { background: #edeef1; }
+      .cv-dark { background: #0a0a0b; opacity: 0; }
+      .l-title { position: absolute; font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; white-space: nowrap; }
+      .l-circle { position: absolute; border-radius: 50%; background: #c9cbd0; }
+      .l-line { position: absolute; height: 11px; border-radius: 6px; background: #1d1d1f; transform-origin: 0 50%; }
+      .d-title { position: absolute; font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; color: #fff; white-space: nowrap; }
+      .d-title span { display: block; color: #2f7bff; }
+      .d-circle { position: absolute; border-radius: 50%; background: linear-gradient(135deg, #2f7bff 0%, #8b5cf6 70%, #c46cf0 100%); }
+      .d-line { position: absolute; height: 11px; border-radius: 6px; transform-origin: 0 50%; }
+      .scrub { position: absolute; height: 3px; background: #eceef1; }
+      .head { position: absolute; left: 0; top: -10px; width: 3px; height: 22px; background: #1d1d1f; }
+      .time { position: absolute; font-size: 16px; color: #73767b; font-weight: 500; }
+      .input { position: absolute; border-radius: 14px; background: #1d1d1f; color: #fff; font-weight: 600; display: flex; align-items: center; white-space: pre; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2); }
+      .swatch { position: absolute; border-radius: 999px; background: #fff; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 22px rgba(20, 30, 40, 0.1); }
+      .swatch b { display: block; border-radius: 7px; }
+      .ring { position: absolute; left: -6px; top: -6px; right: -6px; bottom: -6px; border-radius: 999px; border: 3px solid #0a84ff; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1920" data-height="1080">
+      <section id="p0" class="clip" data-start="0" data-duration="5" data-track-index="0"></section>
+      <section id="p1" class="clip" data-start="5" data-duration="5" data-track-index="1"></section>
+      <section id="p2" class="clip" data-start="10" data-duration="5" data-track-index="0"></section>
+    </div>
+
+    <script>
+      (function () {
+        const CFG = {"L": {"W": 1920, "H": 1080, "title": "Ventana 3 pasos", "win": [470, 200, 1180, 720], "canvas": [22, 60, 1136, 560], "scrub": [30, 660, 1120], "time": [1080, 646], "lightTitle": [90, 150, 740], "circle": [860, 70, 180], "lines": [96, 280], "darkTitle": [70, 110, 720], "darkCircle": [860, 60, 200], "darkLines": [780, 400], "swatchTop": 100, "swatchLefts": [600, 880, 1160], "swatchSize": [54, 24, 16], "input": [60, 560, 24, 60], "tagFont": 22, "esc": [1390, 290], "inf": [520, 900], "res": [1420, 880], "crs": [300, 650], "crsTarget": [1010, 122], "winFrom": [0.45, 260]}, "steps": [{"title": "PROCESO ATENCIÓN", "lead": "PROCESO", "accent": "ATENCIÓN", "typed": "Saludar y presentarse"}, {"title": "INFRAESTRUCTURA Y COMODIDAD", "lead": "INFRAESTRUCTURA Y", "accent": "COMODIDAD", "typed": "Espacios limpios y ordenados"}, {"title": "RESULTADO Y TIEMPO", "lead": "RESULTADO Y", "accent": "TIEMPO", "typed": "Espacios limpios y ordenados"}], "seg": 5.0};
+        const L = CFG.L;
+        const C = { ink: "#1d1d1f", orange: "#ff9500", violet: "#af52de", blue: "#0a84ff" };
+        const px = (n) => n + "px";
+        const el = (tag, cls, parent, css) => {
+          const e = document.createElement(tag);
+          if (cls) e.className = cls;
+          if (css) Object.assign(e.style, css);
+          if (parent) parent.appendChild(e);
+          return e;
+        };
+        const ctx = document.createElement("canvas").getContext("2d");
+        const measure = (text, weight, size) => {
+          ctx.font = weight + " " + size + "px Inter";
+          ctx.letterSpacing = -0.03 * size + "px";
+          return ctx.measureText(text).width;
+        };
+        // Tamaño de letra que hace caber todas las líneas en maxW (tope maxSize).
+        const fit = (lines, maxW, maxSize) => Math.min(maxSize, ...lines.map((t) => Math.floor((maxSize * maxW) / measure(t, 800, maxSize))));
+
+        function tag(parent, label, color, x, y) {
+          const f = L.tagFont;
+          const t = el("div", "tag", parent, { left: px(x), top: px(y) });
+          const a = Math.round(f * 0.95);
+          t.innerHTML =
+            '<svg viewBox="0 0 22 22" width="' + a + '" height="' + a + '"><path d="M2 2 L19 9.5 L11.2 11.4 L8.6 19.5 Z" fill="' + color +
+            '" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+          el("div", "pill", t, { background: color, fontSize: px(f), left: px(Math.round(f * 0.72)), top: px(Math.round(f * 0.9)), padding: Math.round(f * 0.4) + "px " + Math.round(f * 0.8) + "px" }).textContent = label;
+          return t;
+        }
+
+        function buildStep(i, step, tl) {
+          const t0 = i * CFG.seg;
+          const sec = document.getElementById("p" + i);
+          const cam = el("div", "cam", sec);
+          const [wx, wy, ww, wh] = L.win;
+          const win = el("div", "win", cam, { left: px(wx), top: px(wy), width: px(ww), height: px(wh) });
+          const bar = el("div", "bar", win);
+          const lights = el("div", "lights", bar);
+          ["#ff5f57", "#febc2e", "#28c840"].forEach((c) => el("b", "", lights, { background: c }));
+          el("div", "ttl", bar).textContent = "CRS SAG — live preview";
+          const [cx, cy, cw, ch] = L.canvas;
+          const canvas = el("div", "canvas", win, { left: px(cx), top: px(cy), width: px(cw), height: px(ch) });
+
+          // Wireframe claro
+          const light = el("div", "cv cv-light", canvas);
+          const [ccx, ccy, cs] = L.circle;
+          const circle = el("div", "l-circle", light, { left: px(ccx), top: px(ccy), width: px(cs), height: px(cs) });
+          const [ltx, lty, ltw] = L.lightTitle;
+          const one = fit([step.title], ltw, 92);
+          const lTitleLines = one >= 70 ? [step.title] : [step.lead, step.accent];
+          const lSize = one >= 70 ? one : fit(lTitleLines, ltw, 92);
+          const lTitle = el("div", "l-title", light, { left: px(ltx), top: px(lty), fontSize: px(lSize) });
+          lTitle.innerHTML = lTitleLines.map((t) => "<div>" + t + "</div>").join("");
+          const lineTop = lty + lTitleLines.length * lSize * 1.05 + 30;
+          const lLines = [150, 112, 140].map((w, k) => el("div", "l-line", light, { left: px(L.lines[0]), top: px(lineTop + k * 26), width: px(w) }));
+
+          // Diseño oscuro (paleta elegida)
+          const dark = el("div", "cv cv-dark", canvas);
+          const [dcx, dcy, dcs] = L.darkCircle;
+          const dCircle = el("div", "d-circle", dark, { left: px(dcx), top: px(dcy), width: px(dcs), height: px(dcs) });
+          const [dtx, dty, dtw] = L.darkTitle;
+          const dSize = fit([step.lead, step.accent], dtw, 104);
+          const dTitle = el("div", "d-title", dark, { left: px(dtx), top: px(dty), fontSize: px(dSize) });
+          dTitle.innerHTML = step.lead + "<span>" + step.accent + "</span>";
+          const dLines = [
+            [160, "#2f7bff"],
+            [128, "#8b5cf6"],
+            [150, "#ffffff"],
+          ].map(([w, c], k) => el("div", "d-line", dark, { left: px(L.darkLines[0]), top: px(L.darkLines[1] + k * 26), width: px(w), background: c }));
+
+          const [sx, sy, sw] = L.scrub;
+          const scrub = el("div", "scrub", win, { left: px(sx), top: px(sy), width: px(sw) });
+          const head = el("div", "head", scrub);
+          el("div", "time", win, { left: px(L.time[0]), top: px(L.time[1]) }).textContent = "00:" + String((i + 1) * 5).padStart(2, "0");
+
+          // Paletas
+          const [sh, sb, sp] = L.swatchSize;
+          const pals = [
+            ["#eeeff1", "#bfc2c7", "#dfe1e4", "#1d1d1f"],
+            ["#0a0a0b", "#2f7bff", "#8b5cf6", "#f1f1f3"],
+            ["#e6efe9", "#b9d6c6", "#7fae95", "#5d7d6c"],
+          ];
+          let ring;
+          const sws = pals.map((p, k) => {
+            const s = el("div", "swatch", cam, { left: px(L.swatchLefts[k]), top: px(L.swatchTop), height: px(sh), padding: "0 " + px(sp) });
+            p.forEach((c) => el("b", "", s, { background: c, width: px(sb), height: px(sb) }));
+            if (k === 1) ring = el("div", "ring", s);
+            return s;
+          });
+
+          // Campo de texto oscuro
+          const [ix, iy, ifs, ih] = L.input;
+          const input = el("div", "input", cam, { left: px(ix), top: px(iy), height: px(ih), padding: "0 " + px(Math.round(ifs * 0.9)), fontSize: px(ifs) });
+          const typed = el("span", "", input);
+          const caret = el("span", "caret", input, { height: px(Math.round(ifs * 1.15)) });
+
+          // Cursores
+          const esc = tag(cam, "Escuchar", C.orange, ...L.esc);
+          const inf = tag(cam, "Informar", C.blue, ...L.inf);
+          const res = tag(cam, "Respetar", C.violet, ...L.res);
+          const crs = tag(cam, "CRS", C.ink, ...L.crs);
+
+          // ---------- Animación (tiempos relativos al bloque) ----------
+          const T = (r) => t0 + r;
+          const pop = (e, r, from) =>
+            tl.fromTo(e, { scale: from || 0.4, opacity: 0, filter: "blur(6px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.8)" }, T(r));
+
+          // Zoom out con la ventana
+          tl.fromTo(win, { scale: L.winFrom[0], x: L.winFrom[1], opacity: 0 }, { scale: 1, x: 0, opacity: 1, duration: 0.9, ease: "expo.out" }, T(0));
+          tl.fromTo(head, { x: 0 }, { x: sw - 10, duration: 4.8, ease: "none" }, T(0.1));
+          // Se construye el wireframe
+          tl.fromTo(circle, { scale: 0 }, { scale: 1, duration: 0.5, ease: "back.out(1.6)" }, T(0.5));
+          tl.fromTo(lTitle, { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power2.out" }, T(0.75));
+          lLines.forEach((l, k) => tl.fromTo(l, { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, T(1.0 + k * 0.08)));
+          // Colaboración en vivo
+          [esc, inf, res].forEach((e, k) => {
+            pop(e, 1.2 + k * 0.12);
+            tl.to(e, { x: [-30, 24, -18][k], y: [16, -14, 20][k], duration: 0.9, yoyo: true, repeat: 3, ease: "sine.inOut" }, T(1.5 + k * 0.1));
+          });
+          // Alguien escribe
+          tl.fromTo(input, { scale: 0.7, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(1.8)" }, T(1.65));
+          pop(crs, 1.7);
+          const o = { n: 0 };
+          const typeDur = 0.045 * step.typed.length;
+          tl.fromTo(o, { n: 0 }, { n: step.typed.length, duration: typeDur, ease: "none", onUpdate() { typed.textContent = step.typed.slice(0, Math.floor(o.n + 0.001)); } }, T(1.85));
+          tl.fromTo(caret, { opacity: 1 }, { opacity: 0, duration: 0.26, ease: "steps(1)", repeat: 5, yoyo: true }, T(1.85 + typeDur));
+          // 3 muestras de paleta
+          sws.forEach((s, k) => pop(s, 2.9 + k * 0.1, 0.5));
+          tl.to(crs, { x: L.crsTarget[0] - L.crs[0], y: L.crsTarget[1] - L.crs[1], duration: 0.55, ease: "power3.inOut" }, T(3.05));
+          tl.fromTo(ring, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power2.out" }, T(3.55));
+          tl.to(sws[1], { scale: 0.94, duration: 0.07, yoyo: true, repeat: 1 }, T(3.55));
+          // Cambio de paleta instantáneo
+          tl.fromTo(dark, { opacity: 0 }, { opacity: 1, duration: 0.04, ease: "none" }, T(3.7));
+          tl.fromTo(dCircle, { scale: 0.8 }, { scale: 1, duration: 0.5, ease: "back.out(2)" }, T(3.7));
+          dLines.forEach((l, k) => tl.fromTo(l, { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, T(3.8 + k * 0.07)));
+          tl.to([sws[0], sws[2]], { opacity: 0.35, duration: 0.3 }, T(4.0));
+          // Salida hacia el siguiente bloque
+          tl.to(cam, { scale: 1.12, opacity: 0, filter: "blur(16px)", duration: 0.32, ease: "power2.in" }, T(4.68));
+        }
+
+        function build() {
+          const tl = gsap.timeline({ paused: true });
+          CFG.steps.forEach((s, i) => buildStep(i, s, tl));
+          window.__timelines["main"] = tl;
+          if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+        }
+
+        Promise.all([500, 600, 800].map((w) => document.fonts.load(w + " 40px Inter"))).then(() => document.fonts.ready).then(build);
+      })();
+    </script>
+  </body>
+</html>
