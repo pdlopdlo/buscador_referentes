@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Trato Usuario 2026 · Vertical</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-Regular.otf") format("opentype"); font-weight: 400; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-Medium.otf") format("opentype"); font-weight: 500; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-SemiBold.otf") format("opentype"); font-weight: 600; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-Bold.otf") format("opentype"); font-weight: 700; }
+      @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-ExtraBold.otf") format("opentype"); font-weight: 800; }
+
+      :root {
+        --bg: #fafcfc;
+        --ink: #1d1d1f;
+        --gray: #8a8f98;
+        --soft: #a1a5ad;
+        --orange: #ff9500;
+        --violet: #af52de;
+        --blue: #0a84ff;
+        --green: #34c759;
+        --red: #ff3b5c;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .clip { position: absolute; inset: 0; }
+      .layer { position: absolute; inset: 0; }
+      .center { display: flex; align-items: center; justify-content: center; }
+      .caret {
+        display: inline-block;
+        width: 4px;
+        background: var(--ink);
+        border-radius: 2px;
+        vertical-align: middle;
+      }
+
+      /* Cursor-tag (cursor multijugador) */
+      .tag { position: absolute; width: 1px; height: 1px; }
+      .tag svg { position: absolute; left: 0; top: 0; width: 28px; height: 28px; display: block; }
+      .tag .pill {
+        position: absolute;
+        left: 20px;
+        top: 26px;
+        padding: 11px 22px;
+        border-radius: 999px;
+        color: #fff;
+        font-size: 30px;
+        font-weight: 600;
+        white-space: nowrap;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      }
+      .tag .pill .mark { font-weight: 800; margin-right: 6px; }
+
+      /* S1 */
+      #s1-line { font-size: 52px; font-weight: 500; letter-spacing: -0.01em; white-space: pre; }
+      #s1-caret { height: 58px; width: 3px; margin-left: 4px; }
+
+      /* S2 */
+      #s2-dot { position: absolute; left: 230px; top: 880px; width: 160px; height: 160px; border-radius: 50%; background: var(--ink); }
+      #s2-t { position: absolute; left: 470px; top: 780px; width: 260px; height: 360px; font-size: 330px; line-height: 360px; font-weight: 800; text-align: center; }
+
+      /* S3 */
+      #s3-track { position: absolute; left: 0; top: 0; width: 6000px; height: 1080px; }
+      #s3-row { position: absolute; left: 80px; top: 780px; height: 360px; display: flex; align-items: center; white-space: pre; }
+      #s3-text { font-size: 340px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+      #s3-caret { height: 300px; width: 16px; margin-left: 22px; }
+
+      /* S4 */
+      #s4-title { font-size: 128px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; text-align: center; white-space: pre; }
+      #s4-l2 { display: flex; align-items: center; justify-content: center; font-size: 250px; }
+      .grad {
+        background: linear-gradient(90deg, #1e6bff 0%, #8b5cf6 55%, #ec4899 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      #s4-caret { height: 210px; width: 9px; margin-left: 22px; }
+
+      /* S5 */
+      #s5-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+      #s5-box {
+        position: absolute;
+        left: 40px;
+        top: 850px;
+        width: 1000px;
+        height: 210px;
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: 0 24px 60px rgba(20, 30, 40, 0.1), 0 2px 6px rgba(20, 30, 40, 0.06);
+      }
+      #s5-text { position: absolute; left: 44px; top: 40px; font-size: 44px; font-weight: 500; white-space: pre; display: flex; align-items: center; height: 50px; }
+      #s5-caret { height: 48px; width: 3px; margin-left: 3px; }
+      #s5-icons { position: absolute; left: 44px; bottom: 34px; display: flex; gap: 22px; }
+      #s5-icons span { display: block; width: 16px; height: 16px; border: 2.5px solid #b4b8bf; border-radius: 4px; }
+      #s5-icons span:first-child { border-radius: 50%; }
+      #s5-btn {
+        position: absolute;
+        left: 906px;
+        top: 116px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #s5-btn svg { width: 30px; height: 30px; display: block; }
+
+      /* S6 */
+      #s6-list { position: absolute; left: 150px; top: 640px; width: 880px; }
+      .step { position: relative; height: 190px; }
+      .step .dot { position: absolute; left: -54px; top: 24px; width: 22px; height: 22px; border-radius: 50%; }
+      .step h3 { font-size: 58px; font-weight: 700; letter-spacing: -0.02em; line-height: 70px; }
+      .step p { font-size: 36px; font-weight: 500; color: var(--gray); line-height: 50px; margin-top: 4px; }
+      .step .bar { position: relative; width: 320px; height: 6px; margin-top: 8px; border-radius: 3px; background: #eceef1; overflow: hidden; }
+      .step .fill { position: absolute; left: 0; top: 0; width: 320px; height: 6px; border-radius: 3px; transform-origin: 0 50%; }
+      #s6-foot { position: absolute; left: 150px; top: 1250px; font-size: 32px; font-weight: 500; color: var(--soft); white-space: nowrap; }
+
+      /* S7 */
+      #s7-title { position: absolute; left: 0; top: 780px; width: 1080px; text-align: center; font-size: 90px; font-weight: 700; letter-spacing: -0.025em; line-height: 108px; }
+      #s7-l2, #s7-l3 { color: #9aa0a6; }
+
+      /* Píldora "Paso a paso" (compartida S7 → S8) */
+      #status-pill {
+        position: absolute;
+        left: 0;
+        top: 1160px;
+        height: 76px;
+        padding: 0 34px;
+        border-radius: 999px;
+        background: #fff;
+        box-shadow: 0 10px 30px rgba(20, 30, 40, 0.1), 0 1px 3px rgba(20, 30, 40, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 32px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      #status-pill i { display: block; width: 12px; height: 12px; border-radius: 50%; background: var(--blue); }
+
+      /* S8 */
+      #s8-win {
+        position: absolute;
+        left: 50px;
+        top: 700px;
+        width: 980px;
+        height: 640px;
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 30px 80px rgba(20, 30, 40, 0.14), 0 2px 6px rgba(20, 30, 40, 0.06);
+      }
+      #s8-bar { position: absolute; left: 0; top: 0; width: 980px; height: 56px; }
+      #s8-bar .lights { position: absolute; left: 24px; top: 22px; display: flex; gap: 10px; }
+      #s8-bar .lights b { display: block; width: 14px; height: 14px; border-radius: 50%; }
+      #s8-bar .ttl { position: absolute; left: 0; top: 16px; width: 980px; text-align: center; font-size: 21px; font-weight: 500; color: #73767b; }
+      #s8-canvas { position: absolute; left: 22px; top: 60px; width: 936px; height: 490px; border-radius: 16px; overflow: hidden; }
+      .cv { position: absolute; inset: 0; }
+      #cv-light { background: #edeef1; }
+      #cv-dark { background: #0a0a0b; opacity: 0; }
+      #cvl-title { position: absolute; left: 60px; top: 220px; font-size: 88px; font-weight: 800; letter-spacing: -0.03em; white-space: nowrap; }
+      #cvl-circle { position: absolute; left: 720px; top: 40px; width: 160px; height: 160px; border-radius: 50%; background: #c9cbd0; }
+      .cvl-line { position: absolute; left: 66px; height: 11px; border-radius: 6px; background: var(--ink); transform-origin: 0 50%; }
+      #cvd-title { position: absolute; left: 60px; top: 170px; font-size: 104px; font-weight: 800; letter-spacing: -0.03em; line-height: 112px; color: #fff; }
+      #cvd-title span { display: block; color: #2f7bff; }
+      #cvd-circle { position: absolute; left: 700px; top: 40px; width: 190px; height: 190px; border-radius: 50%; background: linear-gradient(135deg, #2f7bff 0%, #8b5cf6 70%, #c46cf0 100%); }
+      .cvd-line { position: absolute; height: 11px; border-radius: 6px; }
+      #s8-scrub { position: absolute; left: 30px; top: 590px; width: 920px; height: 3px; background: #eceef1; }
+      #s8-head { position: absolute; left: 0; top: -10px; width: 3px; height: 22px; background: var(--ink); }
+      #s8-time { position: absolute; left: 885px; top: 562px; font-size: 16px; color: #73767b; font-weight: 500; }
+      #s8-input {
+        position: absolute;
+        left: 50px;
+        top: 1470px;
+        height: 72px;
+        padding: 0 26px;
+        border-radius: 14px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 32px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        white-space: pre;
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
+      }
+      #s8-caret { height: 36px; width: 3px; margin-left: 3px; background: #fff; }
+      .swatch {
+        position: absolute;
+        top: 590px;
+        height: 64px;
+        padding: 0 18px;
+        border-radius: 999px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 22px rgba(20, 30, 40, 0.1);
+      }
+      .swatch b { display: block; width: 30px; height: 30px; border-radius: 7px; }
+      #sw-ring { position: absolute; left: -6px; top: -6px; right: -6px; bottom: -6px; border-radius: 999px; border: 3px solid var(--blue); opacity: 0; }
+
+      /* S9 */
+      #s9-msg {
+        height: 92px;
+        padding: 0 40px;
+        border-radius: 999px;
+        background: #fff;
+        box-shadow: 0 14px 40px rgba(20, 30, 40, 0.1), 0 1px 3px rgba(20, 30, 40, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 42px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      #s9-msg .ok { color: var(--green); font-weight: 800; }
+
+      /* S10 */
+      #s10-title { font-size: 150px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.02; text-align: center; white-space: nowrap; }
+      #s10-foot { position: absolute; left: 0; top: 1700px; width: 1080px; text-align: center; font-size: 34px; font-weight: 600; color: var(--soft); letter-spacing: 0.04em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="23" data-width="1080" data-height="1920">
+      <!-- S1 · Presentamos -->
+      <section id="s1" class="clip" data-start="0" data-duration="1.75" data-track-index="0">
+        <div id="s1-wrap" class="layer center">
+          <div style="display: flex; align-items: center"><span id="s1-line"></span><span id="s1-caret" class="caret"></span></div>
+        </div>
+      </section>
+
+      <!-- S2 · Cursor CRS, punto → círculo, entra la T -->
+      <section id="s2" class="clip" data-start="1.7" data-duration="1.15" data-track-index="1">
+        <div id="s2-dot"></div>
+        <div id="s2-t">T</div>
+        <div id="s2-tags"></div>
+      </section>
+
+      <!-- S3 · Trato Usuario 2026 gigante -->
+      <section id="s3" class="clip" data-start="2.8" data-duration="2.3" data-track-index="0">
+        <div id="s3-track">
+          <div id="s3-row"><span id="s3-text"></span><span id="s3-caret" class="caret"></span></div>
+        </div>
+      </section>
+
+      <!-- S4 · Zoom out + equipo -->
+      <section id="s4" class="clip" data-start="5" data-duration="1.4" data-track-index="1">
+        <div id="s4-wrap" class="layer center">
+          <div id="s4-title"><div>Trato Usuario</div><div id="s4-l2"><span class="grad">2026</span><span id="s4-caret" class="caret"></span></div></div>
+        </div>
+        <div id="s4-tags"></div>
+      </section>
+
+      <!-- S5 · Prompt -->
+      <section id="s5" class="clip" data-start="6.3" data-duration="3.75" data-track-index="0">
+        <div id="s5-cam">
+          <div id="s5-box">
+            <div id="s5-text"><span id="s5-typed"></span><span id="s5-caret" class="caret"></span></div>
+            <div id="s5-icons"><span></span><span></span><span></span></div>
+            <div id="s5-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" /></svg>
+            </div>
+          </div>
+          <div id="s5-tags"></div>
+        </div>
+      </section>
+
+      <!-- S6 · Lista de 3 pasos -->
+      <section id="s6" class="clip" data-start="10" data-duration="3.65" data-track-index="1">
+        <div id="s6-wrap" class="layer">
+          <div id="s6-list">
+            <div class="step" id="st1">
+              <i class="dot" style="background: var(--orange)"></i>
+              <h3>Proceso de Atención…</h3>
+              <p>Trato humano, empatía y respeto</p>
+              <div class="bar"><div class="fill" style="background: var(--orange)"></div></div>
+            </div>
+            <div class="step" id="st2">
+              <i class="dot" style="background: var(--blue)"></i>
+              <h3>Infraestructura…</h3>
+              <p>Espacios limpios y ordenados</p>
+              <div class="bar"><div class="fill" style="background: var(--blue)"></div></div>
+            </div>
+            <div class="step" id="st3">
+              <i class="dot" style="background: var(--red)"></i>
+              <h3>Resultado y tiempo…</h3>
+              <p>Resolutividad, espera y puntualidad</p>
+              <div class="bar"><div class="fill" style="background: var(--red)"></div></div>
+            </div>
+          </div>
+          <div id="s6-foot">Todo comienza cuando llega el paciente</div>
+        </div>
+      </section>
+
+      <!-- S7 · Todo comienza / cuando llega el paciente -->
+      <section id="s7" class="clip" data-start="13.5" data-duration="2.3" data-track-index="0">
+        <div id="s7-title"><div id="s7-l1">Todo comienza</div><div id="s7-l2">cuando llega</div><div id="s7-l3">el paciente</div></div>
+      </section>
+
+      <!-- S8 · Ventana live preview -->
+      <section id="s8" class="clip" data-start="15.5" data-duration="5.15" data-track-index="1">
+        <div id="s8-cam" class="layer">
+          <div id="s8-win">
+            <div id="s8-bar">
+              <div class="lights"><b style="background: #ff5f57"></b><b style="background: #febc2e"></b><b style="background: #28c840"></b></div>
+              <div class="ttl">CRS SAG — live preview</div>
+            </div>
+            <div id="s8-canvas">
+              <div id="cv-light" class="cv">
+                <div id="cvl-circle"></div>
+                <div id="cvl-title">TRATO HUMANO</div>
+                <div class="cvl-line" style="top: 340px; width: 150px"></div>
+                <div class="cvl-line" style="top: 366px; width: 112px"></div>
+                <div class="cvl-line" style="top: 392px; width: 140px"></div>
+              </div>
+              <div id="cv-dark" class="cv">
+                <div id="cvd-circle"></div>
+                <div id="cvd-title">TRATO<span>HUMANO</span></div>
+                <div class="cvd-line" style="left: 680px; top: 380px; width: 160px; background: #2f7bff"></div>
+                <div class="cvd-line" style="left: 680px; top: 406px; width: 128px; background: #8b5cf6"></div>
+                <div class="cvd-line" style="left: 680px; top: 432px; width: 150px; background: #fff"></div>
+              </div>
+            </div>
+            <div id="s8-scrub"><div id="s8-head"></div></div>
+            <div id="s8-time">00:15</div>
+          </div>
+          <div class="swatch" id="sw1" style="left: 80px"><b style="background: #eeeff1"></b><b style="background: #bfc2c7"></b><b style="background: #dfe1e4"></b><b style="background: #1d1d1f"></b></div>
+          <div class="swatch" id="sw2" style="left: 445px"><b style="background: #0a0a0b"></b><b style="background: #2f7bff"></b><b style="background: #8b5cf6"></b><b style="background: #f1f1f3"></b><div id="sw-ring"></div></div>
+          <div class="swatch" id="sw3" style="left: 810px"><b style="background: #e6efe9"></b><b style="background: #b9d6c6"></b><b style="background: #7fae95"></b><b style="background: #5d7d6c"></b></div>
+          <div id="s8-input"><span id="s8-typed"></span><span id="s8-caret" class="caret"></span></div>
+          <div id="s8-tags"></div>
+        </div>
+      </section>
+
+      <!-- Píldora "● Paso a paso" (S7 → S8) -->
+      <section id="pill-clip" class="clip" data-start="14.6" data-duration="6" data-track-index="2">
+        <div id="status-pill"><i></i>Paso a paso</div>
+      </section>
+
+      <!-- S9 · Cada interacción cuenta -->
+      <section id="s9" class="clip" data-start="20.5" data-duration="1.15" data-track-index="0">
+        <div id="s9-wrap" class="layer">
+          <div class="layer center"><div id="s9-msg"><span class="ok">✓</span>Cada interacción cuenta</div></div>
+          <div id="s9-tags"></div>
+        </div>
+      </section>
+
+      <!-- S10 · Cierre -->
+      <section id="s10" class="clip" data-start="21.6" data-duration="1.4" data-track-index="1">
+        <div id="s10-wrap" class="layer center">
+          <div id="s10-title"><div>Logremos</div><div>el tramo I</div></div>
+        </div>
+        <div id="s10-tags"></div>
+        <div id="s10-foot">CRS — SAG</div>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        const C = {
+          ink: "#1d1d1f",
+          orange: "#ff9500",
+          violet: "#af52de",
+          blue: "#0a84ff",
+          green: "#34c759",
+          red: "#ff3b5c",
+        };
+        const $ = (s) => document.querySelector(s);
+
+        // ---------- Cursor multijugador (flecha + píldora) ----------
+        function tag(parent, id, label, color, x, y, mark) {
+          const el = document.createElement("div");
+          el.className = "tag";
+          el.id = id;
+          el.style.left = x + "px";
+          el.style.top = y + "px";
+          el.innerHTML =
+            '<svg viewBox="0 0 22 22"><path d="M2 2 L19 9.5 L11.2 11.4 L8.6 19.5 Z" fill="' +
+            color +
+            '" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>' +
+            '<div class="pill" style="background:' +
+            color +
+            '">' +
+            (mark ? '<span class="mark">' + mark + "</span>" : "") +
+            label +
+            "</div>";
+          $(parent).appendChild(el);
+          return el;
+        }
+
+        function build() {
+          const tl = gsap.timeline({ paused: true });
+          const ctx = document.createElement("canvas").getContext("2d");
+          const widths = (text, font, spacing) => {
+            ctx.font = font;
+            ctx.letterSpacing = spacing || "0px";
+            const out = [];
+            for (let i = 0; i <= text.length; i++) out.push(ctx.measureText(text.slice(0, i)).width);
+            return out;
+          };
+          // Escritura determinista: el texto depende solo del tiempo.
+          const type = (el, text, start, dur) => {
+            const o = { n: 0 };
+            tl.fromTo(
+              o,
+              { n: 0 },
+              {
+                n: text.length,
+                duration: dur,
+                ease: "none",
+                onUpdate() {
+                  el.textContent = text.slice(0, Math.floor(o.n + 0.001));
+                },
+              },
+              start
+            );
+          };
+          const blink = (el, start, count) =>
+            tl.fromTo(el, { opacity: 1 }, { opacity: 0, duration: 0.26, ease: "steps(1)", repeat: count * 2 - 1, yoyo: true }, start);
+          const pop = (el, t, from) =>
+            tl.fromTo(el, { scale: from || 0.4, opacity: 0, filter: "blur(6px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.8)" }, t);
+          const blurOut = (el, t, d, extra) =>
+            tl.to(el, Object.assign({ opacity: 0, filter: "blur(16px)", duration: d || 0.3, ease: "power2.in" }, extra || {}), t);
+
+          // ===== S1 · 0–1.7 · "Presentamos" =====
+          type($("#s1-line"), "Presentamos", 0.15, 1.0);
+          blink($("#s1-caret"), 1.15, 1);
+          blurOut($("#s1-wrap"), 1.45, 0.25, { scale: 1.08 });
+
+          // ===== S2 · 1.7–2.8 · cursor CRS, punto → círculo, "T" =====
+          const crs2 = tag("#s2-tags", "s2-crs", "CRS", C.ink, 120, 1080);
+          tl.fromTo(crs2, { x: -160, y: 120, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 1.72);
+          tl.to(crs2, { x: 60, y: -40, duration: 0.5, ease: "power2.inOut" }, 2.15);
+          tl.fromTo($("#s2-dot"), { scale: 0.09, opacity: 0 }, { scale: 0.09, opacity: 1, duration: 0.15 }, 1.78);
+          tl.to($("#s2-dot"), { scale: 1, duration: 0.42, ease: "expo.out" }, 2.12);
+          tl.fromTo($("#s2-dot"), { filter: "blur(0px)" }, { filter: "blur(10px)", duration: 0.12, yoyo: true, repeat: 1, ease: "power1.inOut" }, 2.12);
+          tl.fromTo($("#s2-t"), { y: 180, opacity: 0, filter: "blur(14px)", scaleY: 1.25 }, { y: 0, opacity: 1, filter: "blur(0px)", scaleY: 1, duration: 0.3, ease: "power3.out" }, 2.45);
+          tl.to(["#s2-dot", "#s2-t", "#s2-tags"], { scale: 1.6, opacity: 0, filter: "blur(14px)", duration: 0.12, ease: "power2.in" }, 2.72);
+
+          // ===== S3 · 2.8–5.0 · "Trato Usuario 2026" gigante, cámara sigue el cursor =====
+          const T3 = "Trato Usuario 2026";
+          const w3 = widths(T3, "700 340px Inter", "-10.2px");
+          const o3 = { n: 0 };
+          tl.fromTo(
+            o3,
+            { n: 2 },
+            {
+              n: T3.length,
+              duration: 1.75,
+              ease: "none",
+              onUpdate() {
+                const k = Math.floor(o3.n + 0.001);
+                $("#s3-text").textContent = T3.slice(0, k);
+                const f = Math.min(o3.n, T3.length);
+                const i = Math.min(Math.floor(f), T3.length - 1);
+                const w = w3[i] + (w3[i + 1] - w3[i]) * (f - i);
+                gsap.set("#s3-track", { x: Math.min(0, 780 - (80 + w)) });
+              },
+            },
+            2.8
+          );
+          blink($("#s3-caret"), 4.55, 1);
+          tl.to("#s3-row", { filter: "blur(18px)", opacity: 0.5, duration: 0.3, ease: "power2.in" }, 4.75);
+
+          // ===== S4 · 5.0–6.3 · zoom out + equipo =====
+          tl.fromTo("#s4-wrap", { scale: 2.2, filter: "blur(16px)", opacity: 0.4 }, { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.55, ease: "expo.out" }, 5.0);
+          blink($("#s4-caret"), 5.2, 2);
+          const team = [
+            ["s4-esc", "Escuchar", C.orange, 110, 560],
+            ["s4-res", "Respetar", C.violet, 700, 500],
+            ["s4-crs", "CRS", C.ink, 120, 1320],
+            ["s4-inf", "Informar", C.blue, 170, 1560],
+            ["s4-aco", "Acoger", C.green, 560, 1700],
+            ["s4-cui", "Cuidar", C.red, 760, 1400],
+          ];
+          team.forEach((t, i) => {
+            const el = tag("#s4-tags", t[0], t[1], t[2], t[3], t[4]);
+            pop(el, 5.15 + i * 0.08);
+            tl.to(el, { x: (i % 2 ? -1 : 1) * 26, y: (i % 3 ? 1 : -1) * 18, duration: 1.0, ease: "sine.inOut" }, 5.3);
+          });
+          blurOut($("#s4"), 6.1, 0.28);
+
+          // ===== S5 · 6.3–9.9 · prompt, cámara que sigue el texto =====
+          const box = { x: 40, y: 850 };
+          tl.fromTo("#s5-box", { scale: 0.94, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "power3.out" }, 6.32);
+          const T5 = "¿Cómo lograr un buen trato al usuario?";
+          const w5 = widths(T5, "500 44px Inter");
+          const typeStart = 6.85, typeEnd = 8.9;
+          const crs5 = tag("#s5-tags", "s5-crs", "CRS", C.ink, 980, 1010);
+          crs5.querySelector(".pill").style.left = "-96px"; // vertical: píldora a la izquierda para no salirse del cuadro
+          const btn = { x: box.x + 906 + 32, y: box.y + 116 + 32 };
+          const zoomIn = gsap.parseEase("power2.inOut");
+          const cam = { t: 0 };
+          const scaleAt = (t) => {
+            if (t < 7.2) return 1;
+            if (t < 7.85) return 1 + 0.07 * zoomIn((t - 7.2) / 0.65);
+            if (t < 9.0) return 1.07;
+            if (t < 9.45) return 1.07 - 0.02 * zoomIn((t - 9.0) / 0.45);
+            return 1.05;
+          };
+          tl.fromTo(
+            cam,
+            { t: 6.3 },
+            {
+              t: 10.05,
+              duration: 3.75,
+              ease: "none",
+              onUpdate() {
+                const t = cam.t;
+                const p = Math.max(0, Math.min(1, (t - typeStart) / (typeEnd - typeStart)));
+                const n = p * T5.length;
+                const k = Math.floor(n + 0.001);
+                $("#s5-typed").textContent = T5.slice(0, k);
+                const caretX = box.x + 44 + w5[k];
+                const caretY = box.y + 65;
+                // Punto que sigue la cámara: el cursor de texto, y al final el botón.
+                const toBtn = t < 9.0 ? 0 : zoomIn(Math.min(1, (t - 9.0) / 0.45));
+                const fx = 540; // vertical: acercamiento centrado en la caja (sin paneo)
+                const fy = box.y + 105;
+                const s = scaleAt(t);
+                const z = Math.max(0, Math.min(1, (s - 1) / 0.07));
+                const screenX = 540;
+                let x = 540 - 540 * s, y = 960 - 960 * s;
+                if (s > 1) {
+                  x = x + (screenX - (x + s * fx)) * z;
+                  y = y + (960 - (y + s * fy)) * z;
+                }
+                const v = Math.abs(scaleAt(t + 0.02) - scaleAt(t - 0.02)) / 0.04;
+                gsap.set("#s5-cam", { x: x, y: y, scale: s, filter: "blur(" + Math.min(2, v * 8).toFixed(2) + "px)" });
+              },
+            },
+            6.3
+          );
+          blink($("#s5-caret"), 6.4, 1);
+          // CRS entra y pulsa enviar
+          tl.fromTo(crs5, { x: 160, y: 300, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 9.0);
+          tl.to("#s5-btn", { scale: 0.84, duration: 0.08, ease: "power2.in" }, 9.48);
+          tl.to("#s5-btn", { scale: 1, duration: 0.25, ease: "back.out(3)" }, 9.56);
+          tl.to(crs5, { scale: 0.9, duration: 0.08, yoyo: true, repeat: 1 }, 9.48);
+          tl.to("#s5-box", { opacity: 0, filter: "blur(18px)", duration: 0.3, ease: "power2.in" }, 9.72);
+          tl.to("#s5-tags", { opacity: 0, filter: "blur(12px)", duration: 0.3, ease: "power2.in" }, 9.72);
+
+          // ===== S6 · 10.0–13.5 · lista de pasos =====
+          ["#st1", "#st2", "#st3"].forEach((s, i) => {
+            const t = 10.05 + i * 0.45;
+            tl.fromTo(s, { y: 46, opacity: 0, filter: "blur(10px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.55, ease: "power3.out" }, t);
+            tl.fromTo(s + " .fill", { scaleX: 0 }, { scaleX: 1, duration: 1.5, ease: "power2.inOut" }, t + 0.25);
+          });
+          tl.fromTo("#s6-foot", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 11.5);
+          blurOut($("#s6-wrap"), 13.3, 0.32, { scale: 0.98 });
+
+          // ===== S7 · 13.5–15.5 · frase por líneas =====
+          tl.fromTo("#s7-l1", { y: 30, opacity: 0, filter: "blur(14px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 13.55);
+          tl.fromTo("#s7-l2", { y: 30, opacity: 0, filter: "blur(14px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 13.7);
+          tl.fromTo("#s7-l3", { y: 30, opacity: 0, filter: "blur(14px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 13.82);
+          tl.to(["#s7-l2", "#s7-l3"], { color: C.ink, duration: 0.45, ease: "power1.inOut" }, 14.1);
+          tl.to("#s7-title", { opacity: 0, y: -40, filter: "blur(10px)", duration: 0.3, ease: "power2.in" }, 15.3);
+
+          // Píldora "● Paso a paso" (centrada; ancho medido con canvas)
+          ctx.font = "600 32px Inter"; ctx.letterSpacing = "0px";
+          const pillW = ctx.measureText("Paso a paso").width + 68 + 12 + 14;
+          const pillL = Math.round((1080 - pillW) / 2);
+          gsap.set("#status-pill", { left: pillL });
+          tl.fromTo("#status-pill", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2)" }, 14.65);
+          tl.fromTo("#status-pill i", { opacity: 1 }, { opacity: 0.25, duration: 0.4, yoyo: true, repeat: 11, ease: "sine.inOut" }, 14.9);
+          tl.to("#status-pill", { x: 50 - pillL, y: 230, duration: 0.7, ease: "power3.inOut" }, 15.45);
+          tl.to("#status-pill", { opacity: 0, filter: "blur(10px)", duration: 0.3 }, 20.3);
+
+          // ===== S8 · 15.5–20.5 · ventana live preview =====
+          tl.fromTo("#s8-win", { scale: 0.45, x: 260, opacity: 0 }, { scale: 1, x: 0, opacity: 1, duration: 0.9, ease: "expo.out" }, 15.5);
+          tl.fromTo("#s8-head", { x: 0 }, { x: 915, duration: 4.8, ease: "none" }, 15.6);
+          tl.fromTo("#cvl-circle", { scale: 0 }, { scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 16.0);
+          tl.fromTo("#cvl-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power2.out" }, 16.25);
+          gsap.utils.toArray(".cvl-line").forEach((l, i) => tl.fromTo(l, { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 16.5 + i * 0.08));
+          const esc8 = tag("#s8-tags", "s8-esc", "Escuchar", C.orange, 800, 790);
+          const inf8 = tag("#s8-tags", "s8-inf", "Informar", C.blue, 420, 1370);
+          const res8 = tag("#s8-tags", "s8-res", "Respetar", C.violet, 760, 1390);
+          [esc8, inf8, res8].forEach((el, i) => {
+            pop(el, 16.7 + i * 0.12);
+            tl.to(el, { x: [-30, 24, -18][i], y: [16, -14, 20][i], duration: 0.9, yoyo: true, repeat: 3, ease: "sine.inOut" }, 17.0 + i * 0.1);
+          });
+          // "Saludar y presentarse"
+          tl.fromTo("#s8-input", { scale: 0.7, opacity: 0, transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(1.8)" }, 17.15);
+          type($("#s8-typed"), "Saludar y presentarse", 17.35, 0.95);
+          blink($("#s8-caret"), 18.3, 3);
+          const crs8 = tag("#s8-tags", "s8-crs", "CRS", C.ink, 440, 1530);
+          pop(crs8, 17.2);
+          // Paletas
+          ["#sw1", "#sw2", "#sw3"].forEach((s, i) => pop($(s), 18.4 + i * 0.1, 0.5));
+          tl.to(crs8, { x: 140, y: -910, duration: 0.55, ease: "power3.inOut" }, 18.55);
+          tl.fromTo("#sw-ring", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power2.out" }, 19.05);
+          tl.to("#sw2", { scale: 0.94, duration: 0.07, yoyo: true, repeat: 1 }, 19.05);
+          // Cambio de paleta instantáneo
+          tl.fromTo("#cv-dark", { opacity: 0 }, { opacity: 1, duration: 0.04, ease: "none" }, 19.2);
+          tl.fromTo("#cvd-circle", { scale: 0.8 }, { scale: 1, duration: 0.5, ease: "back.out(2)" }, 19.2);
+          gsap.utils.toArray(".cvd-line").forEach((l, i) => tl.fromTo(l, { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.35, ease: "power3.out" }, 19.3 + i * 0.07));
+          tl.to(["#sw1", "#sw3"], { opacity: 0.35, duration: 0.3 }, 19.5);
+          tl.to("#s8-cam", { scale: 1.12, opacity: 0, filter: "blur(16px)", duration: 0.35, ease: "power2.in" }, 20.25);
+
+          // ===== S9 · 20.5–21.5 · ✓ Cada interacción cuenta =====
+          const msg = $("#s9-msg");
+          tl.fromTo(msg, { scale: 0.8, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "back.out(1.8)" }, 20.52);
+          const ring = [
+            ["s9-res", "Respetar", C.violet, 140, 640, -60, -90],
+            ["s9-aco", "Acoger", C.green, 700, 680, 60, -90],
+            ["s9-esc", "Escuchar", C.orange, 110, 1200, -60, 90],
+            ["s9-inf", "Informar", C.blue, 720, 1170, 60, 90],
+            ["s9-cui", "Cuidar", C.red, 440, 1380, 0, 100],
+          ];
+          ring.forEach((r, i) => {
+            const el = tag("#s9-tags", r[0], r[1], r[2], r[3], r[4]);
+            pop(el, 20.55 + i * 0.05);
+            tl.to(el, { x: r[5] * 2.4, y: r[6] * 2.4, opacity: 0, duration: 0.55, ease: "power2.in" }, 20.95);
+          });
+          tl.to("#s9-wrap", { filter: "blur(18px)", opacity: 0, duration: 0.3, ease: "power2.in" }, 21.3);
+
+          // ===== S10 · 21.6–23 · cierre =====
+          tl.fromTo("#s10-wrap", { scale: 1.08, opacity: 0, filter: "blur(18px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 21.6);
+          const crs10 = tag("#s10-tags", "s10-crs", "CRS", C.ink, 760, 1140);
+          tl.fromTo(crs10, { x: 120, y: 80, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 21.85);
+          tl.fromTo("#s10-foot", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 22.0);
+
+          window.__timelines["main"] = tl;
+          if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+        }
+
+        Promise.all([400, 500, 600, 700, 800].map((w) => document.fonts.load(w + " 40px Inter"))).then(() => document.fonts.ready).then(build);
+      })();
+    </script>
+  </body>
+</html>
