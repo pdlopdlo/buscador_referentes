@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="./gsap.min.js"></script>
+    <script src="./data.js"></script>
+    <style>
+      :root {
+        --sky-center: #fdfdfd; --sky-0: #e8f4f9; --sky-1: #c5e6f8; --sky-2: #acdcf3; --sky-3: #9fd6f1; --sky-4: #79c6ee; --sky-edge: #46c6f0;
+        --path: #f5d39d; --text: #004f30;
+        --icon-bg: #dfebea; --icon-ink: #2f6660;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #fdfdfd; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #fdfdfd;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      .layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+      .abs { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      .abs img, .sprite img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+      .sprite { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      svg { overflow: visible; }
+      .icon svg { width: 100%; height: 100%; }
+      /* part A: last frame of the clip */
+      #sky { background: radial-gradient(circle at 948px 530px, var(--sky-center) 0px, var(--sky-center) 440px, var(--sky-0) 520px, var(--sky-1) 620px,
+          var(--sky-2) 760px, var(--sky-3) 880px, var(--sky-4) 1080px, var(--sky-edge) 1450px); }
+      #message { position: absolute; left: 62px; top: 566px; width: 400px; font-weight: 800; font-size: 47px;
+        line-height: 57px; letter-spacing: -0.5px; color: var(--text); }
+      #message span { display: block; }
+      /* part B: inside the hole (halo measured from TU_03) */
+      #halo { background: radial-gradient(circle at 920px 470px, #fdfdfd 0px, #fdfdfd 480px, #fafcfd 500px, #eef7fd 550px, #ddf0fb 600px,
+          #cce9fa 650px, #bce3f8 700px, #afdbf6 750px, #a1d5f4 800px, #91d0f2 850px, #86ccf1 900px, #79c7f0 1000px, #6fc2ef 1100px); }
+      /* part C: hospital */
+      .hosp { width: 1920px; height: 1080px; }
+      #shade { background: radial-gradient(ellipse 780px 420px at 960px 330px, rgba(14, 32, 72, 0.62) 0%, rgba(14, 32, 72, 0.42) 45%, rgba(14, 32, 72, 0) 100%); }
+      #title { position: absolute; left: 0; top: 92px; width: 1920px; height: 170px; color: #fff; font-weight: 900; font-size: 128px; letter-spacing: 4px; }
+      #title span { position: absolute; top: 0; display: block; transform-origin: 50% 100%; text-shadow: 0 4px 18px rgba(10, 25, 60, 0.35); }
+      #body { position: absolute; left: 0; top: 282px; width: 1920px; text-align: center; color: #fff; text-shadow: 0 2px 10px rgba(10, 25, 60, 0.45); }
+      #body .sub { font-weight: 800; font-size: 40px; letter-spacing: 3px; margin-bottom: 26px; }
+      #body .item { font-weight: 600; font-size: 34px; line-height: 50px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="3.9" data-width="1920" data-height="1080">
+      <!-- ===== part C (bottom): hospital ===== -->
+      <div id="hospital" class="layer clip" data-start="0" data-duration="3.9" data-track-index="0">
+        <img id="h0" class="abs hosp" src="assets/pasillo00.jpg" alt="" />
+        <img id="h1" class="abs hosp" src="assets/pasillo01.jpg" alt="" />
+        <img id="h2" class="abs hosp" src="assets/pasillo02.jpg" alt="" />
+        <img id="h3" class="abs hosp" src="assets/pasillo03.jpg" alt="" />
+        <img id="h4" class="abs hosp" src="assets/pasillo04.jpg" alt="" />
+        <img id="ptens" class="abs hosp" src="assets/people_tens.png" alt="" />
+        <img id="pnurse" class="abs hosp" src="assets/people_nurse_elder.png" alt="" />
+        <div id="shade" class="layer"></div>
+        <div id="title"></div>
+        <div id="body"><div class="sub">SOBRE ASPECTOS GENERALES</div>
+          <div class="item">Limpieza</div><div class="item">Organización</div><div class="item">Señalética</div></div>
+      </div>
+
+      <!-- ===== part B: inside the hole ===== -->
+      <div id="partB" class="layer clip" data-start="0" data-duration="3.9" data-track-index="1">
+        <div id="halo" class="layer"></div>
+        <svg class="layer" viewBox="0 0 1920 1080"><defs><filter id="grain" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
+            <feColorMatrix in="n" values="0 0 0 0 0.55  0 0 0 0 0.42  0 0 0 0 0.28  0 0 0 0.10 0" result="g" />
+            <feComposite in="g" in2="SourceGraphic" operator="in" result="gi" />
+            <feMerge><feMergeNode in="SourceGraphic" /><feMergeNode in="gi" /></feMerge></filter></defs>
+          <path id="sand" d="" fill="#eec895" filter="url(#grain)" /></svg>
+        <div id="bubs" class="layer"></div>
+        <div id="iconsB" class="layer"></div>
+      </div>
+
+      <!-- ===== part A: last frame of the clip, camera flies into the O ===== -->
+      <div id="partA" class="layer clip" data-start="0" data-duration="3.9" data-track-index="2">
+        <div id="sky" class="layer"></div>
+        <div id="gRing" class="abs" style="width:1920px;height:1080px">
+          <div id="ring" class="abs" style="width:2192px;height:2110px;">
+            <svg class="abs" width="2192" height="2110" viewBox="0 0 2192 2110">
+              <path d="M 2186 1409 C 2420 1462, 2700 1580, 2970 1700 L 9000 4300 L 9000 9000 L 400 9000 L 1250 2600 L 1366 2096 L 2186 2096 Z" fill="var(--path)" />
+            </svg>
+            <img src="assets/letrao_pal.png" alt="" />
+            <svg id="cloudsvg" class="abs" width="2192" height="2110" viewBox="0 0 2192 2110"></svg>
+          </div>
+          <div id="message"><span>Todo comienza</span><span>cuando llega</span><span>el paciente</span></div>
+        </div>
+        <div id="gNurse" class="abs" style="width:1920px;height:1080px"></div>
+        <div id="gFront" class="abs" style="width:1920px;height:1080px"></div>
+        <div id="iconsA" class="layer"></div>
+      </div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const FPS = 24, D = 3.9, NF = Math.round(D * FPS);
+      const fT = (f) => (f - 1) / FPS;
+      const $ = (s) => document.querySelector(s);
+      const TAU = Math.PI * 2;
+      const lerpKeys = (keys, t) => {
+        if (t <= keys[0][0]) return keys[0].slice(1);
+        for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) {
+          const a = keys[i - 1], b = keys[i], u = (t - a[0]) / (b[0] - a[0]), s = u * u * (3 - 2 * u);
+          return a.slice(1).map((v, j) => v + (b[j + 1] - v) * s);
+        }
+        return keys[keys.length - 1].slice(1);
+      };
+      const ICON = `<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="var(--icon-bg)"/>
+        <rect x="35" y="29" width="30" height="42" rx="5" fill="none" stroke="var(--icon-ink)" stroke-width="4"/>
+        <rect x="42" y="24" width="16" height="10" rx="3" fill="var(--icon-bg)" stroke="var(--icon-ink)" stroke-width="4"/>
+        <circle cx="42.5" cy="44" r="2.6" fill="var(--icon-ink)"/><line x1="48" y1="44" x2="58" y2="44" stroke="var(--icon-ink)" stroke-width="3.6" stroke-linecap="round"/>
+        <circle cx="42.5" cy="53" r="2.6" fill="var(--icon-ink)"/><line x1="48" y1="53" x2="58" y2="53" stroke="var(--icon-ink)" stroke-width="3.6" stroke-linecap="round"/>
+        <circle cx="42.5" cy="62" r="2.6" fill="var(--icon-ink)"/><line x1="48" y1="62" x2="58" y2="62" stroke="var(--icon-ink)" stroke-width="3.6" stroke-linecap="round"/></svg>`;
+      const mkIcon = (parent) => { const el = document.createElement("div"); el.className = "abs icon"; el.style.cssText = "width:100px;height:100px;"; el.innerHTML = ICON; parent.appendChild(el); return el; };
+
+      // ================= PART A =================
+      const OC = { x: 1061, y: 1025, R: 954 }, RING = { cx: 948, cy: 560, R: 487 }, rs = RING.R / OC.R;
+      gsap.set("#ring", { x: RING.cx - OC.x * rs, y: RING.cy - OC.y * rs, scale: rs });
+      const cloud = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})">
+          <path d="M -230 80 Q -250 20 -185 8 Q -185 -80 -95 -80 Q -60 -190 30 -170 Q 115 -160 120 -60 Q 190 -95 215 -10 Q 262 10 240 80 Z" fill="#fff"/>
+          <path d="M -236 80 Q -236 52 -205 46 Q 0 62 210 44 Q 240 52 240 80 Z" fill="#c5e6f8"/></g>`;
+      $("#cloudsvg").innerHTML = cloud(-585, 905, 1.0) + cloud(2700, 860, 1.05);
+      function makeChar(parent, kind) {
+        const d = document.createElement("div"); d.className = "sprite";
+        let legs = "", body = "", size = "", foot = 97;
+        if (kind === "woman") { size = "width:600px;height:560px"; legs = `<img src="assets/woman_static.png" style="clip-path:inset(45% 0 0 0)">`; body = `<img src="assets/woman_static.png">`; }
+        if (kind === "old") { size = "width:280px;height:345px"; legs = `<img src="assets/oldman_static.png" style="clip-path:inset(45% 0 0 0)">`; body = `<img src="assets/oldman_static.png">`; }
+        if (kind === "nurse") { foot = 99; size = "width:301px;height:439px"; legs = `<img src="assets/nurse_body_c.png" style="clip-path:inset(62% 0 0 0)">`; body = `<img src="assets/nurse_body_c.png"><img class="arm" src="assets/nurse_arm_c.png">`; }
+        d.style.cssText = size;
+        d.innerHTML = `<div style="position:absolute;inset:0;transform:scaleX(-1)">
+            <div style="position:absolute;inset:0;transform-origin:50% ${foot}%;transform:scaleY(-0.36);filter:brightness(0) invert(.55) sepia(.55) blur(5px);mix-blend-mode:multiply;opacity:.55">${legs}</div>
+            <div class="bodywrap" style="position:absolute;inset:0">${kind === "nurse" ? legs : ""}${body}</div></div>`;
+        parent.appendChild(d); return d;
+      }
+      const nurse = makeChar($("#gNurse"), "nurse"), fo = makeChar($("#gFront"), "old"), fw = makeChar($("#gFront"), "woman");
+      gsap.set(nurse, { x: 811, y: 495, scale: 0.457 });
+      gsap.set(fo, { x: 1137 - 20 * 0.852, y: 589, scale: 0.852 });
+      gsap.set(fw, { x: 1250 + 49 * 0.736, y: 615, scale: 0.736 });
+      // the TENS keeps waving while the camera flies past her
+      tl.fromTo(nurse.querySelector(".arm"), { rotation: -12, transformOrigin: "22% 23%" },
+        { rotation: 12, transformOrigin: "22% 23%", duration: 0.2, ease: "sine.inOut", repeat: 5, yoyo: true }, 0);
+
+      // camera: push into the hole of the O (timing from TU_03); the TENS and the walkers sit closer to camera (parallax)
+      const H0 = { x: 966.7, y: 479.2 };
+      const KR = [[0, 1], [0.25, 1.02], [0.5, 1.08], [0.583, 1.15], [0.667, 1.42], [0.708, 1.95], [0.75, 2.7], [0.792, 3.6], [0.833, 4.6], [0.875, 6.0], [0.917, 7.8], [0.958, 10]];
+      const CK = [[0, 966.7, 479.2], [0.5, 975, 485], [0.75, 1080, 520], [0.958, 960, 520]];
+      const camSet = (el, k, c, t) => tl.set(el, { x: c[0] - k * H0.x, y: c[1] - k * H0.y, scale: k }, t);
+      for (let f = 1; f <= 25; f++) {
+        const t = fT(f), k = lerpKeys(KR, t)[0], c = lerpKeys(CK, t);
+        camSet("#gRing", k, c, t);
+        camSet("#gNurse", k * (1 + Math.max(0, t - 0.72) * 14), c, t);
+        camSet("#gFront", k * (1 + Math.max(0, t - 0.3) * 3.5), c, t);
+      }
+      tl.fromTo("#message", { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "none" }, 0.6);
+      // icons left over from the clip keep falling, then pass the camera
+      START_ICONS.forEach((l, i) => {
+        const el = mkIcon($("#iconsA")), side = Math.max(26, 1.55 * l[2]);
+        tl.set(el, { x: l[0] - 50, y: l[1] - 50, scale: side / 100, rotation: l[3], opacity: Math.min(1, l[4] * 1.3), transformOrigin: "50% 50%" }, 0);
+        tl.to(el, { y: "+=" + (260 + i * 40), x: "+=" + (i % 2 ? -40 : 30), rotation: "+=" + (i % 2 ? 160 : -140), duration: 0.95, ease: "none" }, 0);
+      });
+      // a few more icons drift through the hole as the camera enters (like the leaves in TU_03)
+      [[1180, -60, 70], [760, -80, 46], [1400, 120, 54], [600, 200, 38], [1250, 300, 34]].forEach(([x, y, s], i) => {
+        const el = mkIcon($("#iconsA"));
+        tl.set(el, { x, y, scale: s / 100, rotation: i * 37, opacity: 0, transformOrigin: "50% 50%" }, 0);
+        tl.to(el, { opacity: 1, duration: 0.1 }, 0.35 + i * 0.07);
+        tl.to(el, { y: y + 520, x: x + (x > 960 ? 160 : -160), scale: (s / 100) * 2.6, rotation: "+=220", duration: 0.65, ease: "power1.in" }, 0.35 + i * 0.07);
+      });
+      // hand over to the inside of the hole
+      tl.to("#partA", { opacity: 0, duration: fT(25) - fT(23), ease: "none" }, fT(23));
+
+      // ================= PART B =================
+      gsap.set("#partB", { opacity: 1 });
+      const sand = $("#sand");
+      tl.set(sand, { opacity: 0 }, 0);
+      for (let f = 24; f <= 37; f++) {
+        const p = PATHS[f]; if (!p) continue;
+        tl.set(sand, { attr: { d: p.d, fill: p.c }, opacity: 1 }, fT(f));
+      }
+      // the path washes out under the growing bubble (as in TU_03)
+      tl.to(sand, { opacity: 0, duration: fT(42) - fT(38), ease: "power1.in" }, fT(38));
+      // bubble: one pre-rendered frame per original frame (rings, then the hospital through a fish-eye lens)
+      Object.keys(BUB).map(Number).sort((a, b) => a - b).forEach((f) => {
+        const [x, y, w, h] = BUB[f];
+        const im = document.createElement("img");
+        im.src = `assets/bub/b${String(f).padStart(3, "0")}.png`; im.className = "abs";
+        im.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h}px;opacity:0`;
+        $("#bubs").appendChild(im);
+        tl.set(im, { opacity: 1 }, fT(f));
+        tl.set(im, { opacity: 0 }, fT(f + 1));
+      });
+      // ICONO01 where TU_03 has leaves
+      let maxN = 0; for (const k in LEAVES) maxN = Math.max(maxN, LEAVES[k].length);
+      const pool = []; for (let i = 0; i < maxN; i++) { const el = mkIcon($("#iconsB")); pool.push(el); tl.set(el, { opacity: 0 }, 0); }
+      for (let f = 24; f <= 49; f++) {
+        const L = (LEAVES[f] || []).slice().sort((a, b) => a[0] - b[0]);
+        pool.forEach((el, i) => {
+          const l = L[i];
+          if (!l) { tl.set(el, { opacity: 0 }, fT(f)); return; }
+          const side = Math.max(26, 1.55 * l[2]);
+          tl.set(el, { x: l[0] - 50, y: l[1] - 50, scale: side / 100, rotation: l[3], opacity: 1, transformOrigin: "50% 50%", filter: side > 260 ? "blur(3px)" : "none" }, fT(f));
+        });
+      }
+      tl.set("#partB", { opacity: 0 }, fT(49));
+
+      // ================= PART C: hospital =================
+      ["#h1", "#h2", "#h3", "#h4", "#ptens", "#pnurse", "#shade", "#title", "#body"].forEach((s) => tl.set(s, { opacity: 0 }, 0));
+      // 2.25 nurse + elder appear, very faint at first
+      tl.to("#h1", { opacity: 0.3, duration: 0.15, ease: "none" }, 2.2);
+      tl.to("#h1", { opacity: 1, duration: 0.25, ease: "power1.in" }, 2.35);
+      // 2.5 plants, then the children's table at the back
+      tl.to("#h2", { opacity: 1, duration: 0.2, ease: "power1.out" }, 2.45);
+      tl.to("#h3", { opacity: 1, duration: 0.2, ease: "power1.out" }, 2.57);
+      // 2.75 TENS in light blue comes in from the left side
+      tl.fromTo("#ptens", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" }, 2.75);
+      tl.set("#h4", { opacity: 1 }, 2.97);
+      // darken the top so the title reads
+      tl.to("#shade", { opacity: 1, duration: 0.35, ease: "power1.out" }, 2.7);
+      // title PREGUNTAS on a gentle arc
+      const T = "PREGUNTAS", title = $("#title"), sp = [];
+      const W = [94, 92, 86, 92, 98, 88, 86, 92, 84], gap = 8, total = W.reduce((a, b) => a + b, 0) + gap * (W.length - 1);
+      let x0 = 960 - total / 2;
+      for (let i = 0; i < T.length; i++) {
+        const s = document.createElement("span"); s.textContent = T[i];
+        const cx = x0 + W[i] / 2, u = (cx - 960) / (total / 2);
+        s.style.left = x0 + "px"; s.style.width = W[i] + "px"; s.style.textAlign = "center";
+        gsap.set(s, { y: 34 * u * u, rotation: 13 * u });
+        title.appendChild(s); x0 += W[i] + gap;
+      }
+      tl.fromTo("#title", { opacity: 0, filter: "blur(16px)", scale: 1.06, transformOrigin: "50% 50%" }, { opacity: 0.3, duration: 0.2, ease: "none" }, 2.75);
+      tl.to("#title", { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.25, ease: "power2.out" }, 2.95);
+      tl.fromTo("#body", { opacity: 0, filter: "blur(10px)" }, { opacity: 0.7, duration: 0.15, ease: "none" }, 3.0);
+      tl.to("#body", { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "power2.out" }, 3.12);
+      // 3.3 - 3.9 slight life in the people
+      tl.set("#pnurse", { opacity: 1 }, 2.97);
+      tl.fromTo("#pnurse", { scale: 1, transformOrigin: "1600px 980px" }, { scale: 1.012, duration: 0.3, ease: "sine.inOut", repeat: 3, yoyo: true }, 3.0);
+      tl.fromTo("#ptens", { rotation: 0, transformOrigin: "380px 1000px" }, { rotation: -0.8, duration: 0.35, ease: "sine.inOut", repeat: 2, yoyo: true }, 3.0);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
