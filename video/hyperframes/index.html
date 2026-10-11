@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="./gsap.min.js"></script>
+    <script src="./data.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #fdfdfd; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #fdfdfd;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      .layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+      .abs { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      .abs img, .sprite img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+      svg { overflow: visible; }
+
+      #sky { --cx: 1260px; --cy: 516px;
+        background: radial-gradient(circle at var(--cx) var(--cy), #fdfdfd 0px, #fdfdfd 470px, #d3edf9 600px,
+          #a2d9f6 760px, #86cbf2 930px, #6dbbe7 1150px, #5eb1e0 1450px); }
+      .dune { mix-blend-mode: multiply; }
+
+      /* intro page */
+      #logo-rs { position: absolute; left: 0; top: 0; font-weight: 900; font-size: 372px; line-height: 1;
+        color: #005432; letter-spacing: -10px; white-space: nowrap; }
+      #logo-rs span { display: inline-block; }
+      #lema { position: absolute; left: 0; width: 1920px; top: 532px; text-align: center; font-weight: 700;
+        font-size: 82px; letter-spacing: 6px; color: #005432; }
+      #subtitle { position: absolute; left: 0; width: 1920px; top: 652px; text-align: center; font-weight: 700;
+        font-size: 30px; line-height: 34px; color: #005432; }
+      #subtitle span { color: #19a07c; }
+      #btn { position: absolute; left: 866px; top: 995px; width: 187px; height: 44px; border-radius: 22px;
+        background: #005432; color: #fff; font-weight: 700; font-size: 20px; display: flex; align-items: center;
+        gap: 34px; padding-left: 7px; letter-spacing: .5px; }
+      #btn i { width: 30px; height: 30px; border-radius: 50%; background: #fff; position: relative; display: block; }
+      #btn i::before { content: ""; position: absolute; left: 14px; top: 7px; width: 2.6px; height: 13px; background: #005432; border-radius: 2px; }
+      #btn i::after { content: ""; position: absolute; left: 10.5px; top: 13px; width: 7px; height: 7px;
+        border-right: 2.6px solid #005432; border-bottom: 2.6px solid #005432; transform: rotate(45deg); }
+
+      #message { position: absolute; left: 172px; top: 704px; width: 340px; font-weight: 700; font-size: 25px;
+        line-height: 40px; color: #004428; }
+      .sprite { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      .sprite img { will-change: transform; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="4.75" data-width="1920" data-height="1080">
+      <div id="sky" class="layer clip" data-start="0" data-duration="4.75" data-track-index="0"></div>
+
+      <!-- dune: original sand, cleaned (no UI, no leaves) -->
+      <div id="dunes" class="layer clip" data-start="0" data-duration="4.75" data-track-index="1"></div>
+
+      <!-- sand path traced frame-by-frame from the original -->
+      <svg id="pathsvg" class="layer clip" data-start="0" data-duration="4.75" data-track-index="2" viewBox="0 0 1920 1080">
+        <defs>
+          <filter id="grain" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
+            <feColorMatrix in="n" values="0 0 0 0 0.55  0 0 0 0 0.42  0 0 0 0 0.28  0 0 0 0.09 0" result="g" />
+            <feComposite in="g" in2="SourceGraphic" operator="in" result="gi" />
+            <feMerge><feMergeNode in="SourceGraphic" /><feMergeNode in="gi" /></feMerge>
+          </filter>
+        </defs>
+        <path id="sand" d="" fill="#edd4ad" filter="url(#grain)" />
+      </svg>
+
+      <!-- LETRA O (hospital) + extra clouds, in LETRAO image coordinates -->
+      <div id="ring" class="abs clip" data-start="0" data-duration="4.75" data-track-index="3" style="width:2192px;height:2110px;">
+        <svg id="ringclouds" class="abs" width="2192" height="2110" viewBox="0 0 2192 2110">
+          <path id="ext" d="M 2186 1409 C 2420 1462, 2700 1580, 2970 1700 L 9000 4300 L 9000 9000 L 400 9000 L 1250 2600 L 1366 2096 L 2186 2096 Z" fill="#ead7b2"/>
+        </svg>
+        <img src="assets/letrao.png" alt="" />
+      </div>
+
+      <div id="message" class="clip" data-start="0" data-duration="4.75" data-track-index="4">Todo comienza cuando llega el paciente</div>
+      <div id="bird" class="abs clip" data-start="0" data-duration="4.75" data-track-index="5" style="width:120px;height:90px;"><img src="assets/bird.png" alt="" /></div>
+
+      <div id="chars" class="layer clip" data-start="0" data-duration="4.75" data-track-index="6"></div>
+
+      <!-- intro page (logo, lema, subtitle, staff row, button) -->
+      <div id="page" class="abs clip" data-start="0" data-duration="4.75" data-track-index="7" style="width:1920px;height:1080px;">
+        <div id="row" class="abs" style="width:1920px;height:1080px;"></div>
+        <div id="lema">SAG</div>
+        <div id="subtitle">Encuesta trato <span>usuario</span></div>
+        <div id="btn"><i></i>2026</div>
+        <div id="logo-rs"><span id="lr">R</span><span id="ls">S</span></div>
+        <svg id="cmark" class="abs" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+      </div>
+
+      <div id="ghost" class="sprite clip" data-start="0" data-duration="4.75" data-track-index="8" style="width:280px;height:345px;"><img src="assets/oldman_full.png" alt="" /></div>
+      <div id="icons" class="layer clip" data-start="0" data-duration="4.75" data-track-index="9"></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const END = 4.75, FPS = 24;
+      const $ = (s) => document.querySelector(s);
+      const rad = (d) => (d * Math.PI) / 180;
+      const fT = (f) => (f - 1) / FPS;               // original frame number -> time
+
+      // keyframe helper: rows of [t, props], linear between samples (they are measured per frame)
+      function track(el, rows, map) {
+        const first = map(rows[0]);
+        tl.set(el, first, 0);
+        for (let i = 1; i < rows.length; i++) {
+          tl.to(el, Object.assign({ duration: rows[i][0] - rows[i - 1][0], ease: "none" }, map(rows[i])), rows[i - 1][0]);
+        }
+      }
+
+      // ---------------- ICONO01 ----------------
+      const ICON = `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <rect x="0" y="0" width="100" height="100" rx="24" fill="#dfebea"/>
+        <rect x="35" y="29" width="30" height="42" rx="5" fill="none" stroke="#2f6660" stroke-width="4"/>
+        <rect x="42" y="24" width="16" height="10" rx="3" fill="#dfebea" stroke="#2f6660" stroke-width="4"/>
+        <circle cx="42.5" cy="44" r="2.6" fill="#2f6660"/><line x1="48" y1="44" x2="58" y2="44" stroke="#2f6660" stroke-width="3.6" stroke-linecap="round"/>
+        <circle cx="42.5" cy="53" r="2.6" fill="#2f6660"/><line x1="48" y1="53" x2="58" y2="53" stroke="#2f6660" stroke-width="3.6" stroke-linecap="round"/>
+        <circle cx="42.5" cy="62" r="2.6" fill="#2f6660"/><line x1="48" y1="62" x2="58" y2="62" stroke="#2f6660" stroke-width="3.6" stroke-linecap="round"/>
+      </svg>`;
+
+      // ---------------- intro page ----------------
+      const C0 = { x: 712, y: 353 };                  // centre of the C in page coords
+      const CR = 139, Cr = 61;
+      const cPath = (R, r, a) => {
+        const p = (rr, g) => `${(rr * Math.cos(rad(g))).toFixed(2)} ${(rr * Math.sin(rad(g))).toFixed(2)}`;
+        return `M ${p(R, a)} A ${R} ${R} 0 1 1 ${p(R, -a)} L ${p(r, -a)} A ${r} ${r} 0 1 0 ${p(r, a)} Z`;
+      };
+      $("#cmark").innerHTML = `<defs><clipPath id="cc"><path d="${cPath(CR, Cr, 42)}"/></clipPath></defs>
+        <g id="cg" transform="translate(${C0.x} ${C0.y})"><g clip-path="url(#cc)">
+          <rect x="-150" y="-150" width="300" height="300" fill="#33b2ea"/>
+          <path d="M -150 -100 C -60 -99, 50 -80, 150 -27 V 150 H -150 Z" fill="#34a22c"/>
+          <path d="M -150 68 L 150 -38 V 150 H -150 Z" fill="#005432"/>
+        </g></g>`;
+      $("#logo-rs").style.left = C0.x + CR + 14 + "px";
+      $("#logo-rs").style.top = C0.y - 186 + "px";
+
+      // staff row (FUNCIONARIOS01), feet on y=930, drifting right ~34px/s like the original
+      const STAFF = [[326, 469], [277, 427], [301, 439], [221, 442], [215, 427]];
+      const row = $("#row");
+      for (let i = 0; i < 22; i++) {
+        const k = i % 5, [w, h] = STAFF[k], s = 182 / 455;
+        const d = document.createElement("div");
+        d.className = "abs";
+        d.style.cssText = `left:${-520 + i * 150 - (w * s) / 2}px; top:${930 - h * s}px; width:${w * s}px; height:${h * s}px;`;
+        d.innerHTML = `<img src="assets/staff${k}.png" alt="">`;
+        row.appendChild(d);
+      }
+      tl.fromTo(row, { x: 0 }, { x: 34 * 1.3, duration: 1.3, ease: "none" }, 0);
+
+      // page camera: measured O centre / radius per frame of the original
+      const PAGE = [[0, 139, 826, 353], [0.625, 140, 826, 353], [0.667, 141, 826, 354], [0.708, 147, 830, 359], [0.75, 153, 835, 365],
+        [0.792, 160, 842, 375], [0.833, 169, 852, 388], [0.875, 187, 869, 411], [0.917, 204, 886, 434], [0.958, 239, 923, 484],
+        [1.0, 291, 953, 524], [1.042, 314, 957, 529], [1.083, 365, 960, 533], [1.125, 459, 963, 535], [1.167, 534, 964, 535],
+        [1.208, 625, 965, 535], [1.25, 786, 966, 535], [1.292, 848, 967, 534], [1.333, 997, 968, 534], [1.375, 1250, 970, 534],
+        [1.417, 1570, 972, 534], [1.458, 2300, 972, 534]];
+      // the C starts where the original O was, so the page origin is offset by (826-C0.x, 0)
+      track($("#page"), PAGE, ([t, R, cx, cy]) => {
+        const s = R / CR;
+        const u = Math.min(1, Math.max(0, (t - 0.625) / (1.083 - 0.625)));
+        const ox = (826 - C0.x) * (1 - u * u * (3 - 2 * u)); // our C sits left of the original O; blend into the measured path
+        return { x: cx - ox - s * C0.x, y: cy - s * C0.y, scale: s };
+      });
+      tl.set("#page", { opacity: 0 }, 1.47);
+      // S fades first, then R (like I then J in the original)
+      track($("#ls"), [[0, 1], [0.66, 1], [0.708, 0.7], [0.792, 0.45], [0.875, 0.3], [0.958, 0.15], [1.0, 0.08], [1.083, 0]], ([t, o]) => ({ opacity: o }));
+      track($("#lr"), [[0, 1], [0.7, 1], [0.792, 0.8], [0.875, 0.45], [0.958, 0.25], [1.0, 0.12], [1.083, 0]], ([t, o]) => ({ opacity: o }));
+      track($("#lema"), [[0, 1], [0.875, 1], [0.958, 0.85], [1.0, 0.6], [1.083, 0.3], [1.167, 0]], ([t, o]) => ({ opacity: o }));
+      track($("#subtitle"), [[0, 1], [0.833, 1], [0.917, 0.8], [1.0, 0.45], [1.083, 0.15], [1.125, 0]], ([t, o]) => ({ opacity: o }));
+      track($("#btn"), [[0, 1], [0.625, 1], [0.708, 0.35], [0.76, 0]], ([t, o]) => ({ opacity: o }));
+      track($("#cmark"), [[0, 1], [1.29, 1], [1.375, 0.85], [1.417, 0.72], [1.458, 0.4]], ([t, o]) => ({ opacity: o }));
+
+      // ---------------- silhouette in the hole (old man), passes the camera ----------------
+      track($("#ghost"), [[0, 740, 400, 0.85, 0, 1], [1.17, 740, 400, 0.85, 0, 1], [1.25, 710, 365, 1.0, 0.18, 1], [1.333, 675, 329, 1.48, 0.38, 1.5],
+        [1.417, 284, 98, 3.1, 0.55, 2], [1.5, -1000, -280, 6, 0.8, 6], [1.542, -2600, -650, 9, 0, 8]],
+        ([t, x, y, s, o, b]) => ({ x, y, scale: s, opacity: o, filter: `blur(${b}px)` }));
+
+      // ---------------- dune ----------------
+      const dunes = $("#dunes");
+      const mk = (src) => { const i = document.createElement("img"); i.src = src; i.className = "layer dune"; i.style.opacity = 0; dunes.appendChild(i); return i; };
+      const still = mk("assets/dune/f043.jpg");
+      track(still, [[0, 0], [1.19, 0], [1.25, 0.35], [1.333, 0.8], [1.417, 1]], ([t, o]) => ({ opacity: o }));
+      tl.set(still, { opacity: 0 }, fT(46));
+      for (let f = 46; f <= 58; f++) {
+        const im = mk(`assets/dune/f${String(f).padStart(3, "0")}.jpg`);
+        tl.set(im, { opacity: 1 }, fT(f));
+        tl.set(im, { opacity: 0 }, f === 58 ? fT(59) + 0.04 : fT(f + 1));
+      }
+
+      // ---------------- sky ----------------
+      track($("#sky"), [[0, 0], [2.79, 0], [2.958, 0.1], [3.042, 0.22], [3.125, 0.4], [3.208, 0.68], [3.292, 0.88], [3.375, 1]], ([t, o]) => ({ opacity: o }));
+
+      // ---------------- sand path (per frame, from the original) ----------------
+      const sand = $("#sand");
+      tl.set(sand, { opacity: 0 }, 0);
+      for (let f = 62; f <= 87; f++) {
+        const p = PATHS[f], k = p.op;   // the original washes the path toward white, it doesn't go transparent
+        const mix = (a, b) => Math.round(255 + (b - 255) * k);
+        tl.set(sand, { attr: { d: p.d, fill: `rgb(${mix(255, 237)},${mix(255, 212)},${mix(255, 173)})` }, opacity: k > 0 ? 1 : 0 }, fT(f));
+      }
+      // once the LETRA O (with its own path) is fully in, the traced path hands over to it
+      tl.to(sand, { opacity: 0, duration: 0.1, ease: "none" }, 3.56);
+      track($("#ext"), [[0, 0], [3.5, 0], [3.58, 1]], ([t, o]) => ({ opacity: o }));
+
+      // ---------------- LETRA O ----------------
+      const RING = [[3.13, 1262, 515, 165, 0], [3.208, 1260, 516, 180, 0.25], [3.292, 1230, 516, 210, 0.45], [3.375, 1170, 519, 240, 0.7],
+        [3.458, 1140, 528, 255, 0.9], [3.542, 1080, 525, 285, 1], [3.625, 1035, 543, 315, 1], [3.708, 1005, 545, 340, 1],
+        [3.792, 990, 548, 365, 1], [3.875, 970, 550, 392, 1], [4.0, 958, 553, 432, 1], [4.167, 950, 556, 462, 1],
+        [4.333, 948, 558, 477, 1], [4.5, 948, 560, 484, 1], [4.625, 948, 560, 486, 1], [4.75, 948, 560, 487, 1]];
+      const OC = { x: 1061, y: 1025, R: 954 };
+      track($("#ring"), [[0, 1262, 515, 165, 0]].concat(RING), ([t, cx, cy, R, o]) => {
+        const s = R / OC.R;
+        return { x: cx - OC.x * s, y: cy - OC.y * s, scale: s, opacity: o };
+      });
+      track($("#sky"), [[0, 1262, 515]].concat(RING.map((r) => [r[0], r[1], r[2]])), ([t, cx, cy]) => ({ "--cx": cx + "px", "--cy": cy - 30 + "px" }));
+      // extra clouds outside the ring (LETRAO coords)
+      const cloud = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})">
+          <path d="M -230 80 Q -250 20 -185 8 Q -185 -80 -95 -80 Q -60 -190 30 -170 Q 115 -160 120 -60 Q 190 -95 215 -10 Q 262 10 240 80 Z" fill="#ffffff"/>
+          <path d="M -236 80 Q -236 52 -205 46 Q 0 62 210 44 Q 240 52 240 80 Z" fill="#d6ebf7"/></g>`;
+      $("#ringclouds").innerHTML += cloud(-585, 905, 1.0) + cloud(2700, 860, 1.05);
+
+      // ---------------- message ----------------
+      track($("#message"), [[0, 0], [3.542, 0], [3.625, 0.35], [3.708, 0.75], [3.792, 1]], ([t, o]) => ({ opacity: o }));
+
+      // ---------------- bird ----------------
+      track($("#bird"), [[0, 1810, 518, 0], [4.42, 1810, 518, 0], [4.5, 1787, 510, 1], [4.542, 1781, 507, 1], [4.583, 1764, 500, 1], [4.625, 1747, 493, 1], [4.75, 1720, 482, 1]],
+        ([t, x, y, o]) => ({ x: x - 60, y: y - 45, opacity: o }));
+
+      // ---------------- characters ----------------
+      const chars = $("#chars");
+      function makeChar(id, kind) {
+        const d = document.createElement("div");
+        d.className = "sprite"; d.id = id;
+        if (kind === "woman") { d.style.cssText = "width:600px;height:560px"; d.innerHTML = `<img class="back" src="assets/woman_back.png"><img class="front" src="assets/woman_front.png"><img src="assets/woman_body.png">`; }
+        if (kind === "old") { d.style.cssText = "width:280px;height:345px"; d.innerHTML = `<img class="back" src="assets/oldman_back.png"><img class="front" src="assets/oldman_front.png"><img src="assets/oldman_body.png">`; }
+        if (kind === "nurse") { d.style.cssText = "width:301px;height:439px"; d.innerHTML = `<img src="assets/nurse_body.png"><img class="arm" src="assets/nurse_arm.png">`; }
+        chars.appendChild(d);
+        return d;
+      }
+      // walk cycle: legs swing about the hip, body bobs
+      function walk(el, o) {
+        const n = Math.ceil(END / o.p) + 2;
+        tl.fromTo(el.querySelector(".back"), { rotation: -o.a, transformOrigin: o.hb }, { rotation: o.a, transformOrigin: o.hb, duration: o.p, ease: "sine.inOut", repeat: n, yoyo: true }, 0);
+        tl.fromTo(el.querySelector(".front"), { rotation: o.a, transformOrigin: o.hf }, { rotation: -o.a, transformOrigin: o.hf, duration: o.p, ease: "sine.inOut", repeat: n, yoyo: true }, 0);
+      }
+      const WOMAN_W = { p: 0.26, a: 5, hb: "40% 44%", hf: "50% 44%" };
+      const OLD_W = { p: 0.32, a: 4, hb: "37% 46%", hf: "55% 46%" };
+      const charRow = ([t, x, y, s, o]) => ({ x, y, scale: s, opacity: o });
+
+      // first pass: woman and old man walk the path and pass the camera
+      const ew = makeChar("ew", "woman"), eo = makeChar("eo", "old");
+      chars.insertBefore(eo, ew); // the woman is closer to camera
+      walk(ew, WOMAN_W); walk(eo, OLD_W);
+      track(ew, [[0, 800, 466, 0.4, 0], [2.7, 800, 466, 0.4, 0], [2.79, 790, 466, 0.42, 0.12], [2.875, 773, 464, 0.44, 0.25], [2.958, 728, 463, 0.47, 0.4],
+        [3.042, 637, 462, 0.56, 0.6], [3.125, 545, 465, 0.64, 0.8], [3.208, 271, 456, 0.9, 1], [3.292, -123, 450, 1.29, 1], [3.375, -1250, 420, 2.1, 1], [3.4, -1500, 410, 2.3, 0]], charRow);
+      track(eo, [[0, 1050, 477, 0.52, 0], [2.7, 1050, 477, 0.52, 0], [2.79, 1048, 477, 0.53, 0.12], [2.875, 1045, 476, 0.55, 0.25], [2.958, 1029, 475, 0.6, 0.4],
+        [3.042, 983, 475, 0.65, 0.6], [3.125, 953, 476, 0.74, 0.8], [3.208, 865, 460, 1.07, 1], [3.292, 770, 455, 1.32, 1], [3.375, 398, 433, 2.48, 1],
+        [3.458, -156, 228, 4.1, 0.9], [3.542, -900, 0, 6.5, 0]], charRow);
+
+      // second pass: they come out of the O toward the camera; the nurse waves near the hole
+      const nurse = makeChar("nurse", "nurse"), fo = makeChar("fo", "old"), fw = makeChar("fw", "woman");
+      walk(fo, OLD_W); walk(fw, WOMAN_W);
+      tl.fromTo(nurse.querySelector(".arm"), { rotation: -9, transformOrigin: "22% 23%" },
+        { rotation: 10, transformOrigin: "22% 23%", duration: 0.2, ease: "sine.inOut", repeat: Math.ceil(END / 0.2), yoyo: true }, 0);
+      track(nurse, [[0, 852, 510, 0.32, 0], [3.79, 852, 510, 0.32, 0], [3.875, 850, 508, 0.33, 0.55], [3.958, 845, 506, 0.35, 0.9], [4.042, 840, 504, 0.37, 1],
+        [4.167, 832, 501, 0.4, 1], [4.333, 822, 498, 0.43, 1], [4.5, 815, 496, 0.45, 1], [4.625, 812, 495, 0.455, 1], [4.75, 811, 495, 0.457, 1]], charRow);
+      track(fo, [[0, 1060, 575, 0.4, 0], [3.72, 1060, 575, 0.4, 0], [3.792, 1050, 575, 0.45, 1], [3.875, 1015, 573, 0.54, 1], [4.0, 1020, 578, 0.62, 1],
+        [4.167, 1035, 583, 0.72, 1], [4.333, 1048, 587, 0.8, 1], [4.5, 1054, 589, 0.84, 1], [4.625, 1056, 589, 0.85, 1], [4.75, 1057, 589, 0.852, 1]], charRow);
+      track(fw, [[0, 1150, 560, 0.3, 0], [3.65, 1150, 560, 0.3, 0], [3.708, 1140, 566, 0.33, 0.6], [3.792, 1140, 570, 0.37, 1], [3.875, 1141, 573, 0.413, 1],
+        [3.958, 1156, 582, 0.47, 1], [4.042, 1165, 586, 0.497, 1], [4.125, 1206, 600, 0.612, 1], [4.208, 1216, 603, 0.639, 1], [4.292, 1232, 609, 0.682, 1],
+        [4.375, 1239, 611, 0.704, 1], [4.458, 1245, 613, 0.72, 1], [4.542, 1247, 615, 0.731, 1], [4.625, 1249, 615, 0.734, 1], [4.75, 1250, 615, 0.736, 1]], charRow);
+
+      // ---------------- ICONO01 where the original has leaves (per frame) ----------------
+      const icons = $("#icons");
+      let maxN = 0;
+      for (let f = 46; f <= 112; f++) maxN = Math.max(maxN, (LEAVES[f] || []).length);
+      const pool = [];
+      for (let i = 0; i < maxN; i++) {
+        const d = document.createElement("div");
+        d.className = "abs"; d.style.cssText = "width:100px;height:100px;"; d.innerHTML = ICON;
+        icons.appendChild(d); pool.push(d);
+        tl.set(d, { opacity: 0, transformOrigin: "50% 50%" }, 0);
+      }
+      for (let f = 46; f <= 112; f++) {
+        const L = (LEAVES[f] || []).slice().sort((a, b) => a[0] - b[0]);
+        pool.forEach((d, i) => {
+          const l = L[i];
+          if (!l) { tl.set(d, { opacity: 0 }, fT(f)); return; }
+          const side = Math.max(24, 1.55 * l[2]), blur = side > 300 ? 3 : 0;
+          const op = Math.min(1, Math.max(0.35, l[4] * 1.6));
+          tl.set(d, { x: l[0] - 50, y: l[1] - 50, scale: side / 100, rotation: l[3], opacity: op, filter: `blur(${blur}px)` }, fT(f));
+        });
+      }
+
+      tl.set("#root", { opacity: 1 }, END);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
