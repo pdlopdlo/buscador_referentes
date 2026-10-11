@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="./gsap.min.js"></script>
+    <script src="./data.js"></script>
+    <style>
+      /* scene palette — swap these for the reference palette */
+      :root {
+        --sky-center: #fdfdfd; --sky-0: #e8f4f9; --sky-1: #c5e6f8; --sky-2: #acdcf3; --sky-3: #9fd6f1; --sky-4: #79c6ee; --sky-edge: #46c6f0;
+        --path: #f5d39d;
+        --text: #004f30;
+        --shadow: #978979;
+        --cloud: #ffffff; --cloud-shade: #c5e6f8;
+        --icon-bg: #dfebea; --icon-ink: #2f6660;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--sky-center); }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--sky-center);
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      .layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+      .abs { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      .abs img, .sprite img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+      .sprite { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      svg { overflow: visible; }
+      #sky { background: radial-gradient(circle at 948px 530px, var(--sky-center) 0px, var(--sky-center) 440px, var(--sky-0) 520px, var(--sky-1) 620px,
+          var(--sky-2) 760px, var(--sky-3) 880px, var(--sky-4) 1080px, var(--sky-edge) 1450px); }
+      #message { position: absolute; left: 62px; top: 566px; width: 400px; font-weight: 800; font-size: 47px;
+        line-height: 57px; letter-spacing: -0.5px; color: var(--text); }
+      #message span { display: block; }
+      .icon svg { width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="5.583" data-width="1920" data-height="1080">
+      <div id="sky" class="layer clip" data-start="0" data-duration="5.583" data-track-index="0"></div>
+      <div id="far" class="layer clip" data-start="0" data-duration="5.583" data-track-index="1"></div>
+      <!-- camera: the whole scene breathes very slightly -->
+      <div id="cam" class="layer clip" data-start="0" data-duration="5.583" data-track-index="2">
+        <div id="ring" class="abs" style="width:2192px;height:2110px;">
+          <svg id="ringsvg" class="abs" width="2192" height="2110" viewBox="0 0 2192 2110">
+            <path d="M 2186 1409 C 2420 1462, 2700 1580, 2970 1700 L 9000 4300 L 9000 9000 L 400 9000 L 1250 2600 L 1366 2096 L 2186 2096 Z" fill="var(--path)" />
+          </svg>
+          <img src="assets/letrao_pal.png" alt="" />
+          <svg id="cloudsvg" class="abs" width="2192" height="2110" viewBox="0 0 2192 2110"></svg>
+        </div>
+        <div id="chars" class="layer"></div>
+      </div>
+      <div id="bird" class="abs clip" data-start="0" data-duration="5.583" data-track-index="3" style="width:200px;height:150px;"><img src="assets/bird_clean.png" alt="" /></div>
+      <div id="message" class="clip" data-start="0" data-duration="5.583" data-track-index="4"><span>Todo comienza</span><span>cuando llega</span><span>el paciente</span></div>
+      <div id="near" class="layer clip" data-start="0" data-duration="5.583" data-track-index="5"></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const FPS = 24, NF = 134, D = NF / FPS;
+      const $ = (s) => document.querySelector(s);
+      let seed = 11;
+      const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+      const TAU = Math.PI * 2;
+
+      // ---------- scene at the last frame of the main video ----------
+      const OC = { x: 1061, y: 1025, R: 954 }, RING = { cx: 948, cy: 560, R: 487 };
+      const rs = RING.R / OC.R;
+      gsap.set("#ring", { x: RING.cx - OC.x * rs, y: RING.cy - OC.y * rs, scale: rs });
+
+      // clouds in ring coordinates (they drift and come back over the loop)
+      const cloud = (id, x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})"><g id="${id}">
+          <path d="M -230 80 Q -250 20 -185 8 Q -185 -80 -95 -80 Q -60 -190 30 -170 Q 115 -160 120 -60 Q 190 -95 215 -10 Q 262 10 240 80 Z" fill="var(--cloud)"/>
+          <path d="M -236 80 Q -236 52 -205 46 Q 0 62 210 44 Q 240 52 240 80 Z" fill="var(--cloud-shade)"/></g></g>`;
+      $("#cloudsvg").innerHTML = cloud("c1", -585, 905, 1.0) + cloud("c2", 2700, 860, 1.05);
+
+      // ---------- characters ----------
+      const chars = $("#chars");
+      function makeChar(id, kind, opt = {}) {
+        const d = document.createElement("div");
+        d.className = "sprite"; d.id = id;
+        let legs = "", body = "", size = "";
+        if (kind === "woman") { size = "width:600px;height:560px"; legs = `<img class="back" src="assets/woman_back_c.png"><img class="front" src="assets/woman_front_c.png">`; body = `<img src="assets/woman_body_back_c.png">`; }
+        if (kind === "old") { size = "width:280px;height:345px"; legs = `<img class="back" src="assets/oldman_back_c.png"><img class="front" src="assets/oldman_front_c.png">`; body = `<img src="assets/oldman_body_c.png">`; }
+        if (kind === "nurse") { size = "width:301px;height:439px"; legs = `<img src="assets/nurse_body_c.png" style="clip-path:inset(62% 0 0 0)">`; body = `<img src="assets/nurse_body_c.png"><img class="arm" src="assets/nurse_arm_c.png">`; }
+        d.style.cssText = size;
+        d.innerHTML = `<div class="fl" style="position:absolute;inset:0;transform:scaleX(-1)">
+            <div class="shadow" style="position:absolute;inset:0;transform-origin:50% ${opt.foot || 97}%;transform:scaleY(-0.36);filter:brightness(0) invert(.55) sepia(.55) blur(5px);mix-blend-mode:multiply;opacity:.55">${legs}</div>
+            <div class="bodywrap" style="position:absolute;inset:0">${legs}${body}</div></div>`;
+        chars.appendChild(d);
+        return d;
+      }
+      // periods divide the loop length so everything closes seamlessly
+      function walk(el, p, a, hb, hf) {
+        const n = Math.round(D / p) - 1;
+        tl.fromTo(el.querySelectorAll(".back"), { rotation: -a, transformOrigin: hb }, { rotation: a, transformOrigin: hb, duration: p, ease: "sine.inOut", repeat: n, yoyo: true }, 0);
+        tl.fromTo(el.querySelectorAll(".front"), { rotation: a, transformOrigin: hf }, { rotation: -a, transformOrigin: hf, duration: p, ease: "sine.inOut", repeat: n, yoyo: true }, 0);
+        // body bob: up on every step (half the swing period)
+        tl.fromTo(el.querySelector(".bodywrap"), { y: 0 }, { y: -4, duration: p / 2, ease: "sine.inOut", repeat: Math.round(D / (p / 2)) - 1, yoyo: true }, 0);
+      }
+      const nurse = makeChar("nurse", "nurse", { foot: 99 }), fo = makeChar("fo", "old"), fw = makeChar("fw", "woman");
+      gsap.set(nurse, { x: 811, y: 495, scale: 0.457 });
+      gsap.set(fo, { x: 1137 - 20 * 0.852, y: 589, scale: 0.852 });
+      gsap.set(fw, { x: 1250 + 49 * 0.736, y: 615, scale: 0.736 });
+      walk(fw, 0.25, 5, "40% 44%", "50% 44%");
+      walk(fo, 1 / 3, 4, "37% 46%", "55% 46%");
+      // the TENS waves: quick wrist-like swings with a small settle every second
+      tl.fromTo(nurse.querySelector(".arm"), { rotation: -12, transformOrigin: "22% 23%" },
+        { rotation: 12, transformOrigin: "22% 23%", duration: 0.2, ease: "sine.inOut", repeat: Math.round(D / 0.2) - 1, yoyo: true }, 0);
+      tl.fromTo(nurse.querySelector(".bodywrap"), { rotation: -1, transformOrigin: "50% 100%" },
+        { rotation: 1, transformOrigin: "50% 100%", duration: 0.8, ease: "sine.inOut", repeat: Math.round(D / 0.8) - 1, yoyo: true }, 0);
+
+      // ---------- bird: path and timing measured from TU_02, gentle wing beats ----------
+      const bird = $("#bird"), BF = Object.keys(BIRD).map(Number).sort((x, y) => x - y);
+      for (let f = 1; f <= NF; f++) {
+        const t = (f - 1) / FPS;
+        let p = BIRD[f];
+        if (!p) {                                     // past the last sample: keep flying up-left off screen
+          const a = BIRD[BF[BF.length - 1]], b0 = BIRD[BF[BF.length - 7]], k = f - BF[BF.length - 1];
+          p = [a[0] + (a[0] - b0[0]) / 6 * k, a[1] + (a[1] - b0[1]) / 6 * k];
+        }
+        const flap = 0.86 + 0.14 * Math.cos((TAU * t) / 0.34);
+        tl.set(bird, { x: p[0] - 100, y: p[1] - 75, scaleY: flap, rotation: -3 * Math.sin((TAU * t) / 0.68), transformOrigin: "50% 50%",
+          opacity: p[1] < -80 ? 0 : 1 }, t);
+      }
+
+      // ---------- ICONO01 wherever TU_02 has a falling leaf (per frame) ----------
+      const ICON = `<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="var(--icon-bg)"/>
+        <rect x="35" y="29" width="30" height="42" rx="5" fill="none" stroke="var(--icon-ink)" stroke-width="4"/>
+        <rect x="42" y="24" width="16" height="10" rx="3" fill="var(--icon-bg)" stroke="var(--icon-ink)" stroke-width="4"/>
+        <circle cx="42.5" cy="44" r="2.6" fill="var(--icon-ink)"/><line x1="48" y1="44" x2="58" y2="44" stroke="var(--icon-ink)" stroke-width="3.6" stroke-linecap="round"/>
+        <circle cx="42.5" cy="53" r="2.6" fill="var(--icon-ink)"/><line x1="48" y1="53" x2="58" y2="53" stroke="var(--icon-ink)" stroke-width="3.6" stroke-linecap="round"/>
+        <circle cx="42.5" cy="62" r="2.6" fill="var(--icon-ink)"/><line x1="48" y1="62" x2="58" y2="62" stroke="var(--icon-ink)" stroke-width="3.6" stroke-linecap="round"/></svg>`;
+      let maxN = 0;
+      for (let f = 1; f <= NF; f++) maxN = Math.max(maxN, (LEAVES[f] || []).length);
+      const pool = [];
+      for (let i = 0; i < maxN; i++) {
+        const el = document.createElement("div");
+        el.className = "abs icon"; el.style.cssText = "width:100px;height:100px;"; el.innerHTML = ICON;
+        $("#near").appendChild(el); pool.push(el);
+      }
+      for (let f = 1; f <= NF; f++) {
+        const L = (LEAVES[f] || []).slice().sort((a, b) => a[0] - b[0]);
+        pool.forEach((el, i) => {
+          const l = L[i];
+          if (!l) { tl.set(el, { opacity: 0 }, (f - 1) / FPS); return; }
+          const side = Math.max(26, 1.55 * l[2]), blur = side > 260 ? 3 : 0;
+          tl.set(el, { x: l[0] - 50, y: l[1] - 50, scale: side / 100, rotation: l[3], opacity: Math.min(1, l[4] * 1.3),
+            filter: `blur(${blur}px)`, transformOrigin: "50% 50%" }, (f - 1) / FPS);
+        });
+      }
+
+      // ---------- the line grows from its size in the last frame of the main video ----------
+      tl.fromTo("#message", { scale: 0.53, x: 110, y: 138, transformOrigin: "0 0" },
+        { scale: 1, x: 0, y: 0, duration: 0.7, ease: "power3.inOut" }, 0.1);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
