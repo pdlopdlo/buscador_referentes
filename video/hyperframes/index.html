@@ -225,24 +225,35 @@
 
       // ---------------- characters ----------------
       const chars = $("#chars");
-      function makeChar(id, kind) {
+      function makeChar(id, kind, opt = {}) {
         const d = document.createElement("div");
         d.className = "sprite"; d.id = id;
-        if (kind === "woman") { d.style.cssText = "width:600px;height:560px"; d.innerHTML = `<img class="back" src="assets/woman_back.png"><img class="front" src="assets/woman_front.png"><img src="assets/woman_body.png">`; }
-        if (kind === "old") { d.style.cssText = "width:280px;height:345px"; d.innerHTML = `<img class="back" src="assets/oldman_back.png"><img class="front" src="assets/oldman_front.png"><img src="assets/oldman_body.png">`; }
-        if (kind === "nurse") { d.style.cssText = "width:301px;height:439px"; d.innerHTML = `<img src="assets/nurse_body.png"><img class="arm" src="assets/nurse_arm.png">`; }
+        const flip = opt.flip ? "transform:scaleX(-1);" : "";
+        let legs = "", body = "", size = "";
+        if (kind === "woman") { size = "width:600px;height:560px"; legs = `<img class="back" src="assets/woman_back_c.png"><img class="front" src="assets/woman_front_c.png">`;
+          body = `<img src="assets/${opt.backView ? "woman_body_back_c" : "woman_body_c"}.png">`; }
+        if (kind === "old") { size = "width:280px;height:345px"; legs = `<img class="back" src="assets/oldman_back_c.png"><img class="front" src="assets/oldman_front_c.png">`;
+          body = `<img src="assets/oldman_body_c.png">`; }
+        if (kind === "nurse") { size = "width:301px;height:439px"; legs = `<img src="assets/nurse_body_c.png" style="clip-path:inset(62% 0 0 0)">`;
+          body = `<img src="assets/nurse_body_c.png"><img class="arm" src="assets/nurse_arm_c.png">`; }
+        d.style.cssText = size;
+        // soft contact shadow: the legs reflected down onto the sand, blurred and faint (as in the original)
+        d.innerHTML = `<div class="fl" style="position:absolute;inset:0;${flip}">
+            <div class="shadow" style="position:absolute;inset:0;transform-origin:50% ${opt.foot || 97}%;transform:scaleY(-0.36);filter:brightness(0) blur(${opt.blur || 5}px);opacity:.16">${legs}</div>
+            ${legs}${body}</div>`;
         chars.appendChild(d);
         return d;
       }
       // walk cycle: legs swing about the hip, body bobs
       function walk(el, o) {
         const n = Math.ceil(END / o.p) + 2;
-        tl.fromTo(el.querySelector(".back"), { rotation: -o.a, transformOrigin: o.hb }, { rotation: o.a, transformOrigin: o.hb, duration: o.p, ease: "sine.inOut", repeat: n, yoyo: true }, 0);
-        tl.fromTo(el.querySelector(".front"), { rotation: o.a, transformOrigin: o.hf }, { rotation: -o.a, transformOrigin: o.hf, duration: o.p, ease: "sine.inOut", repeat: n, yoyo: true }, 0);
+        tl.fromTo(el.querySelectorAll(".back"), { rotation: -o.a, transformOrigin: o.hb }, { rotation: o.a, transformOrigin: o.hb, duration: o.p, ease: "sine.inOut", repeat: n, yoyo: true }, 0);
+        tl.fromTo(el.querySelectorAll(".front"), { rotation: o.a, transformOrigin: o.hf }, { rotation: -o.a, transformOrigin: o.hf, duration: o.p, ease: "sine.inOut", repeat: n, yoyo: true }, 0);
       }
       const WOMAN_W = { p: 0.26, a: 5, hb: "40% 44%", hf: "50% 44%" };
       const OLD_W = { p: 0.32, a: 4, hb: "37% 46%", hf: "55% 46%" };
       const charRow = ([t, x, y, s, o]) => ({ x, y, scale: s, opacity: o });
+      const charRowF = (dx) => ([t, x, y, s, o]) => ({ x: x + dx * s, y, scale: s, opacity: o });
 
       // first pass: woman and old man walk the path and pass the camera
       const ew = makeChar("ew", "woman"), eo = makeChar("eo", "old");
@@ -255,17 +266,18 @@
         [3.458, -156, 228, 4.1, 0.9], [3.542, -900, 0, 6.5, 0]], charRow);
 
       // second pass: they come out of the O toward the camera; the nurse waves near the hole
-      const nurse = makeChar("nurse", "nurse"), fo = makeChar("fo", "old"), fw = makeChar("fw", "woman");
+      const nurse = makeChar("nurse", "nurse", { flip: 1, foot: 99 }), fo = makeChar("fo", "old", { flip: 1 }), fw = makeChar("fw", "woman", { flip: 1, backView: 1 });
       walk(fo, OLD_W); walk(fw, WOMAN_W);
       tl.fromTo(nurse.querySelector(".arm"), { rotation: -9, transformOrigin: "22% 23%" },
         { rotation: 10, transformOrigin: "22% 23%", duration: 0.2, ease: "sine.inOut", repeat: Math.ceil(END / 0.2), yoyo: true }, 0);
       track(nurse, [[0, 852, 510, 0.32, 0], [3.79, 852, 510, 0.32, 0], [3.875, 850, 508, 0.33, 0.55], [3.958, 845, 506, 0.35, 0.9], [4.042, 840, 504, 0.37, 1],
-        [4.167, 832, 501, 0.4, 1], [4.333, 822, 498, 0.43, 1], [4.5, 815, 496, 0.45, 1], [4.625, 812, 495, 0.455, 1], [4.75, 811, 495, 0.457, 1]], charRow);
-      track(fo, [[0, 1060, 575, 0.4, 0], [3.72, 1060, 575, 0.4, 0], [3.792, 1050, 575, 0.45, 1], [3.875, 1015, 573, 0.54, 1], [4.0, 1020, 578, 0.62, 1],
-        [4.167, 1035, 583, 0.72, 1], [4.333, 1048, 587, 0.8, 1], [4.5, 1054, 589, 0.84, 1], [4.625, 1056, 589, 0.85, 1], [4.75, 1057, 589, 0.852, 1]], charRow);
+        [4.167, 832, 501, 0.4, 1], [4.333, 822, 498, 0.43, 1], [4.5, 815, 496, 0.45, 1], [4.625, 812, 495, 0.455, 1], [4.75, 811, 495, 0.457, 1]], charRowF(0));
+      // shifted onto the LETRA O path (its path runs further right than the original O's)
+      track(fo, [[0, 1100, 575, 0.4, 0], [3.72, 1100, 575, 0.4, 0], [3.792, 1095, 575, 0.45, 1], [3.875, 1070, 573, 0.54, 1], [4.0, 1085, 578, 0.62, 1],
+        [4.167, 1108, 583, 0.72, 1], [4.333, 1125, 587, 0.8, 1], [4.5, 1133, 589, 0.84, 1], [4.625, 1136, 589, 0.85, 1], [4.75, 1137, 589, 0.852, 1]], charRowF(-20));
       track(fw, [[0, 1150, 560, 0.3, 0], [3.65, 1150, 560, 0.3, 0], [3.708, 1140, 566, 0.33, 0.6], [3.792, 1140, 570, 0.37, 1], [3.875, 1141, 573, 0.413, 1],
         [3.958, 1156, 582, 0.47, 1], [4.042, 1165, 586, 0.497, 1], [4.125, 1206, 600, 0.612, 1], [4.208, 1216, 603, 0.639, 1], [4.292, 1232, 609, 0.682, 1],
-        [4.375, 1239, 611, 0.704, 1], [4.458, 1245, 613, 0.72, 1], [4.542, 1247, 615, 0.731, 1], [4.625, 1249, 615, 0.734, 1], [4.75, 1250, 615, 0.736, 1]], charRow);
+        [4.375, 1239, 611, 0.704, 1], [4.458, 1245, 613, 0.72, 1], [4.542, 1247, 615, 0.731, 1], [4.625, 1249, 615, 0.734, 1], [4.75, 1250, 615, 0.736, 1]], charRowF(49));
 
       // ---------------- ICONO01 where the original has leaves (per frame) ----------------
       const icons = $("#icons");
