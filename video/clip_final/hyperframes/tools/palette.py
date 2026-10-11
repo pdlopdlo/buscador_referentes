@@ -14,7 +14,8 @@ def apply(mask,cols,lo,hi,mix=1.0):
     Ln=(lum-lo)/max(hi-lo,1e-3); tgt=ramp(Ln,cols)
     w=cv2.GaussianBlur(mask.astype(np.float32),(5,5),0)[...,None]*mix
     global out; out=out*(1-w)+tgt*w
-green=(H>=30)&(H<=90)&(S>45)&(V>40)
+green=(H>=30)&(H<=90)&(S>45)&(V>40)&(a>250)
+green=cv2.morphologyEx(green.astype(np.uint8),cv2.MORPH_OPEN,np.ones((5,5),np.uint8))>0   # solid areas only, no 1-2 px rims
 apply(green,["#003e22","#004f30","#00633a","#00712b","#037a2c","#04a316","#2fb900"],0.18,0.72)
 sky=(H>=92)&(H<=112)&(S>55)&(V>150)
 apply(sky,["#3ab6e8","#3ab8e8","#46c6f0","#79c6ee","#9fd6f1"],0.55,0.9)
