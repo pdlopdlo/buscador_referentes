@@ -1,11 +1,11 @@
-# Sound design for presentacion_final (65.5 s): places SFX pieces (sfx/Sx_yy.wav,
+# Sound design for presentacion_final (63.8 s): places SFX pieces (sfx/Sx_yy.wav,
 # cut from the user's SFX01-04 packs) on the animation's event times, mixes them
 # under the dance music and muxes the result.
 # usage: python3 sonido.py presentacion_final_sin_audio.mp4 baile_musica.mp3 salida.mp4
 import subprocess, sys
 VIDEO, MUSIC, OUT = sys.argv[1:4]
-D = 65.5
-OP, MAIN, CL = 0.0, 22.0, 56.5   # section starts in the final cut
+D = 63.8
+OP, MAIN, CL = 0.0, 22.0, 54.8   # section starts in the final cut
 PEAK = {'S1_00':-5.1,'S1_01':-4.2,'S1_02':-4.9,'S1_03':-3.2,'S1_04':-4.8,'S1_05':-5.5,'S1_06':-5.4,
         'S2_00':-0.2,'S2_01':-4.5,'S2_02':-0.1,'S2_03':-0.2,'S2_04':-0.9,'S3_00':-2.9,'S3_01':-13.3,
         'S3_04':0.0,'S3_06':-1.6,'S3_07':-3.7,'S4_00':0.0,'S4_01':-18.6,'S4_02':0.0,'S4_03':-3.9}
@@ -28,7 +28,7 @@ for i in range(4): add(OP+14.9+i*0.35, 'S2_01', -18)  # 4 sections cascade
 add(OP+20.45,'S4_01', -16)           # outro air whoosh
 # ---- Main: 4 scenes ----
 add(MAIN+0.05,'S1_03', -15)          # title band builds in
-for t, chime in [(7.09,'S3_00'),(12.24,'S3_07'),(18.46,'S1_00')]:
+for t, chime in [(9.0,'S3_00'),(14.0,'S3_07'),(20.0,'S1_00')]:   # section changes (31/36/42 s)
     add(MAIN+t-0.6, 'S1_05', -15)    # whoosh into the new section
     add(MAIN+t+0.15,chime, -14)      # title "press" chime
 add(MAIN+26.65,'S1_02', -11)         # curtain slides over the man
@@ -38,6 +38,7 @@ add(CL+0.25, 'S2_00', -8)            # bass thump as the dancer appears
 add(CL+1.85, 'S3_06', -12)           # "I" badge lands
 add(CL+2.0,  'S4_03', -12)           # confetti burst 1
 for i in range(3): add(CL+2.3+i*0.15, 'S2_03', -22)   # tiles pop
+add(CL+2.5,  'S3_00', -17)           # logos appear under "Tramo"
 add(CL+5.6,  'S3_04', -16)           # confetti burst 2
 E.sort()
 

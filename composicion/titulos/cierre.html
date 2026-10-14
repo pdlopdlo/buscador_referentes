@@ -6,7 +6,8 @@
 <!-- Closing (1920x1080) for the Encuesta Trato Usuario 2026 presentation.
      Background layer: board, "Logremos el Tramo I", confetti and tiles.
      The dancing man is composited on top afterwards in the left area
-     (x 100..820). Pure function of t (seek) for render.js. -->
+     (x 0..520, same size/place as the walking man); the two logo intros
+     are composited under "Tramo" (x 860..1400, y 760..940). Pure function of t (seek) for render.js. -->
 <style>
 @font-face{font-family:Geist;src:url(Geist-Variable.woff2) format('woff2');font-weight:100 900}
 :root{--ink:#1c2233;--blue:#2f7cf6;--hi:rgba(255,255,255,.95);--lo:rgba(140,150,185,.38)}
@@ -14,7 +15,7 @@ html,body{margin:0;background:#fff;overflow:hidden}
 #stage{position:relative;width:1920px;height:1080px;font-family:Geist,Inter,sans-serif;color:var(--ink);overflow:hidden}
 .a{position:absolute;will-change:transform,opacity,filter}
 #board{left:0;top:0;width:1920px;height:1080px;background:radial-gradient(1200px 800px at 65% 35%,#f6f7fc,#e6e9f5 70%,#dfe3f2)}
-#floor{left:140px;top:968px;width:640px;height:70px;border-radius:50%;background:radial-gradient(closest-side,rgba(120,132,175,.28),rgba(120,132,175,0))}
+#floor{left:30px;top:1008px;width:460px;height:56px;border-radius:50%;background:radial-gradient(closest-side,rgba(120,132,175,.28),rgba(120,132,175,0))}
 .neo{background:linear-gradient(145deg,#f8f9fd,#eceef6);border-radius:34px;
   box-shadow:-14px -14px 30px var(--hi),16px 18px 36px var(--lo),0 1px 0 rgba(255,255,255,.9) inset}
 .w{display:inline-block;will-change:transform,opacity,filter}
@@ -22,7 +23,7 @@ html,body{margin:0;background:#fff;overflow:hidden}
 #lbl{font-size:24px;font-weight:600;letter-spacing:.18em;color:var(--blue);text-transform:uppercase;white-space:nowrap}
 #l1{margin-top:26px;font-size:136px;font-weight:660;letter-spacing:-.035em;line-height:1;white-space:nowrap}
 #l2{margin-top:6px;font-size:270px;font-weight:800;letter-spacing:-.04em;line-height:.95;color:#f4f6fc;white-space:nowrap;
-  text-shadow:-6px -6px 14px rgba(255,255,255,.95),12px 14px 28px rgba(120,132,175,.5)}
+  text-shadow:-6px -6px 14px rgba(255,255,255,.95),3px 4px 0 rgba(150,160,200,.6),14px 18px 32px rgba(70,82,130,.55),0 0 2px rgba(70,82,130,.4)}
 #l2 .roman{color:#fff;text-shadow:none;background:linear-gradient(145deg,#4a8ff8,#2f7cf6);border-radius:46px;font-size:190px;line-height:1;padding:22px 52px 26px;vertical-align:28px;margin-left:30px;font-family:Georgia,'Times New Roman',serif;font-weight:700;box-shadow:-10px -10px 24px rgba(255,255,255,.9),14px 18px 34px rgba(47,124,246,.42),inset 0 2px 0 rgba(255,255,255,.35)}
 #bar{left:854px;top:220px;height:8px;border-radius:4px;background:var(--blue)}
 .tile{width:120px;height:120px;border-radius:30px}
@@ -61,7 +62,7 @@ const IC=[
  `<svg viewBox="0 0 64 64" ${S}><path d="M32 54S8 40 8 23a12 12 0 0 1 24-4 12 12 0 0 1 24 4c0 17-24 31-24 31z"/></svg>`,
  `<svg viewBox="0 0 64 64" ${S}><circle cx="32" cy="32" r="25"/><path d="M20 33l8 8 16-17"/></svg>`,
 ];
-const TP=[[1700,110],[1720,800],[880,800]];
+const TP=[[1700,110],[1720,800],[1520,120]];
 const tiles=IC.map((s,i)=>{const d=document.createElement('div');d.className='a neo tile';d.style.left=TP[i][0]+'px';d.style.top=TP[i][1]+'px';d.innerHTML=s;$('tiles').appendChild(d);return d;});
 
 // confetti: deterministic particles, two bursts from behind the title

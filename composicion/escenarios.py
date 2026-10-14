@@ -26,12 +26,11 @@ items = [
   # Escenario 3: TENS + insumos
   vid('tens_a.mov', 'crop=400:600:0:20,scale=288:432', 288, 432),
   img('recursos/r3_c.png', 1.3, 906, 330, SCENE_GAP),
-  # Escenario 4: enfermera, doctora, insumos, cortina (delante), frasco
+  # Escenario 4: enfermera, doctora, insumos, cortina (delante)
   vid('enf_a.mov', 'crop=220:490:80:80,scale=166:368', 166, 368, 10),
   vid('dra_a.mov', 'crop=220:545:110:62,scale=166:410', 166, 410),
   img('recursos/r4b_c.png', 1.4, 255, 262, 120),
-  ('curtain', 'recursos/curtain_a.png', 'scale=533:520:flags=lanczos', 533, 520, 120),
-  img('recursos/r4c_c.png', 1.4, 250, 244),
+  ('curtain', 'recursos/curtain_a.png', 'scale=533:520:flags=lanczos', 533, 520, 0),
 ]
 x = LEAD; pos = []
 for it in items:

@@ -25,7 +25,7 @@ html,body{margin:0;background:#fff;overflow:hidden}
 #h1,#h2{font-size:124px;font-weight:660;letter-spacing:-.035em;line-height:1;white-space:nowrap}
 #h2{margin-top:10px}
 #h3{margin-top:14px;font-size:300px;font-weight:800;letter-spacing:-.04em;line-height:.9;color:#f4f6fc;
-  text-shadow:-6px -6px 14px rgba(255,255,255,.95),12px 14px 28px rgba(120,132,175,.5)}
+  text-shadow:-6px -6px 14px rgba(255,255,255,.95),3px 4px 0 rgba(150,160,200,.6),14px 18px 32px rgba(70,82,130,.55),0 0 2px rgba(70,82,130,.4)}
 #h3 .w{margin-right:.01em}
 #bar{left:604px;top:260px;height:8px;border-radius:4px;background:var(--blue)}
 #chip{left:1300px;top:110px;height:64px;padding:0 28px;border-radius:22px;display:flex;align-items:center;gap:14px;font-size:24px;font-weight:550;color:#4b5268;white-space:nowrap}
@@ -42,21 +42,24 @@ html,body{margin:0;background:#fff;overflow:hidden}
 .est{top:0;height:62px;padding:0 20px 0 12px;border-radius:20px;display:flex;align-items:center;gap:10px;font-size:21px;font-weight:560;color:#2f3650;white-space:nowrap}
 .est i{width:38px;height:38px;border-radius:13px;background:var(--blue);display:flex;align-items:center;justify-content:center}
 .est i svg{width:24px;height:24px}
-#n33{left:52px;top:80px;font-size:200px;font-weight:720;letter-spacing:-.05em;line-height:1}
+#n33{left:52px;top:60px;font-size:200px;font-weight:720;letter-spacing:-.05em;line-height:1}
 #n33s{left:56px;top:290px;font-size:34px;font-weight:560;line-height:1.2}
 #dots{left:56px;top:390px;width:360px;height:90px}
 #dots span{position:absolute;width:18px;height:18px;border-radius:6px;background:#d6dbea}
 .sec{top:96px;width:284px;height:112px;border-radius:26px;display:flex;align-items:center;gap:14px;padding:0 16px;box-sizing:border-box}
 .sec .num{flex:none;width:52px;height:52px;border-radius:18px;background:var(--blue);color:#fff;font-size:24px;font-weight:650;display:flex;align-items:center;justify-content:center}
 .sec .nm{white-space:nowrap;font-size:19px;font-weight:580;line-height:1.18;color:#2a3043}
+#zzz .z{position:absolute;left:0;top:0;font-weight:800;color:#2f7cf6;line-height:1;will-change:transform,opacity;
+  text-shadow:0 6px 14px rgba(47,124,246,.28)}
 </style>
 </head>
 <body>
 <div id="stage">
   <div class="a" id="board"></div>
+  <div id="zzz"></div>
   <!-- cuadro 1 -->
   <div class="a" id="bar"></div>
-  <div class="a neo" id="chip"><span>Instrumento de <b>33</b> preguntas</span><span style="color:#c3c9da">•</span><span><b>4</b> secciones</span></div>
+  <div class="a neo" id="chip"><span><b>33</b> preguntas</span><span style="color:#c3c9da">•</span><span><b>4</b> secciones</span></div>
   <div id="tiles"></div>
   <div class="a" id="hero">
     <div id="h1"></div><div id="h2"></div><div id="h3"></div>
@@ -68,7 +71,6 @@ html,body{margin:0;background:#fff;overflow:hidden}
     <div class="pad" id="estRow" style="top:404px;height:64px"></div>
   </div>
   <div class="a neo" id="cB">
-    <div class="pad lbl" style="top:48px">El instrumento</div>
     <div class="a" id="n33">0</div>
     <div class="a" id="n33s">preguntas<br>cerradas</div>
     <div class="a" id="dots"></div>
@@ -124,6 +126,9 @@ document.fonts.ready.then(layout); function layout(){
 }
 layout();
 
+// ---------- zzz: the man sleeps (frozen frame) while three Z's float up from his head ----------
+const HEAD=[372,650];  // head of the frozen man in final-frame coords
+const Z=[0,1,2].map(()=>{const d=document.createElement('div');d.className='z';d.textContent='Z';$('zzz').appendChild(d);return d;});
 // ---------- timeline ----------
 const T1=0.4, TX=6.2, T2=6.9, TEND=20.9;   // hero in, hero->header, cuadro 2 in, outro
 window.seek=function(t){
@@ -131,6 +136,13 @@ window.seek=function(t){
   const bin=eo(t/0.8), bout=eio((t-TEND-0.5)/0.6);
   $('board').style.opacity=bin*(1-bout);
 
+  // zzz loop: each Z rises up-right, grows, sways and fades; staggered by 0.8 s
+  const zout=1-eio((t-TEND-0.2)/.5), P=2.4;
+  Z.forEach((el,k)=>{const t0=0.5+k*0.8; if(t<t0){el.style.opacity=0;return;}
+    const u=((t-t0)%P)/P, x=HEAD[0]+u*120+Math.sin(u*Math.PI*2+k)*14, y=HEAD[1]-u*260;
+    el.style.fontSize=lerp(30,92,eo(u))+'px';
+    el.style.opacity=clamp(u/.12)*(1-clamp((u-.65)/.35))*zout;
+    el.style.transform=`translate3d(${x}px,${y}px,0) rotate(${lerp(-18,12,u)}deg)`;});
   // hero characters
   const line=(arr,t0,st,dy,bl)=>arr.forEach((el,i)=>{const ti=t0+i*st,a=spring(t-ti,14,.62);
     el.style.opacity=clamp((t-ti)/.25); el.style.filter=`blur(${(1-clamp(a))*bl}px)`; el.style.transform=`translate3d(0,${(1-a)*dy}px,0)`;});

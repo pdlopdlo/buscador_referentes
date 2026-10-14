@@ -73,16 +73,16 @@ html,body{margin:0;background:transparent;overflow:hidden}
 </div>
 <script>
 // ---------- content & timing ----------
-// Change times = moment each scene's first element enters from the right
-// (from escenarios.py: pos/V). Scene 1 shows from the intro.
+// Change times requested by the user: 31 / 36 / 42 s in the final cut
+// (opening is 22 s, so 9 / 14 / 20 s here). Scene 1 shows from the intro.
 const SCENES = [
   {t:0.35, sec:'Sección 01', title:'Aspectos Generales', step:'Aspectos generales', tag:'General'},
-  {t:7.09, sec:'Sección 02', title:'Evaluación del trato usuario en el Estamento Administrativo', step:'Administrativo', tag:'Administrativo'},
-  {t:12.24, sec:'Sección 03', title:'Evaluación del trato en el Estamento Técnico-Paramédico', step:'Técnico-Paramédico', tag:'Técnico-Paramédico'},
-  {t:18.46, sec:'Sección 04', title:'Evaluación del trato en el Estamento Profesional', step:'Profesional', tag:'Profesional'},
+  {t:9.0, sec:'Sección 02', title:'Evaluación del trato usuario en el Estamento Administrativo', step:'Administrativo', tag:'Administrativo'},
+  {t:14.0, sec:'Sección 03', title:'Evaluación del trato en el Estamento Técnico-Paramédico', step:'Técnico-Paramédico', tag:'Técnico-Paramédico'},
+  {t:20.0, sec:'Sección 04', title:'Evaluación del trato en el Estamento Profesional', step:'Profesional', tag:'Profesional'},
 ];
-window.DURATION = 34.5;
-const OUT = 34.5 + 1;   // no outro: the band stays until the last frame
+window.DURATION = 32.8;
+const OUT = 32.8 + 1;   // no outro: the band stays until the last frame
 
 // ---------- math ----------
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=(a,b,u)=>a+(b-a)*u;
