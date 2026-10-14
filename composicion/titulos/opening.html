@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Opening Encuesta</title>
+<!-- Opening (18 s, 1920x1080) for the Encuesta Trato Usuario 2026 presentation.
+     Cuadro 1: hero title. Cuadro 2: who is surveyed, 33 questions, 4 sections.
+     The walking man is composited on top afterwards (x 127..473, y 615..1047),
+     so nothing here is placed in that area. 18 s = 3 walk cycles, so the man
+     continues seamlessly into anciano_4_escenarios. Pure function of t (seek). -->
+<style>
+@font-face{font-family:Geist;src:url(Geist-Variable.woff2) format('woff2');font-weight:100 900}
+:root{--ink:#1c2233;--muted:#6f7690;--blue:#2f7cf6;--blue2:#8fbcf5;
+  --hi:rgba(255,255,255,.95);--lo:rgba(140,150,185,.38)}
+html,body{margin:0;background:#fff;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;font-family:Geist,Inter,sans-serif;color:var(--ink);overflow:hidden}
+.a{position:absolute;will-change:transform,opacity,filter}
+#board{left:0;top:0;width:1920px;height:1080px;background:radial-gradient(1200px 800px at 70% 30%,#f6f7fc,#e6e9f5 70%,#dfe3f2)}
+.neo{background:linear-gradient(145deg,#f8f9fd,#eceef6);border-radius:34px;
+  box-shadow:-14px -14px 30px var(--hi),16px 18px 36px var(--lo),0 1px 0 rgba(255,255,255,.9) inset}
+.lbl{font-size:20px;font-weight:600;letter-spacing:.16em;color:var(--blue);text-transform:uppercase;white-space:nowrap}
+.w{display:inline-block;will-change:transform,opacity,filter}
+/* cuadro 1 */
+#hero{left:600px;top:290px;transform-origin:0 0}
+#h1,#h2{font-size:124px;font-weight:660;letter-spacing:-.035em;line-height:1;white-space:nowrap}
+#h2{margin-top:10px}
+#h3{margin-top:14px;font-size:300px;font-weight:800;letter-spacing:-.04em;line-height:.9;color:#f4f6fc;
+  text-shadow:-6px -6px 14px rgba(255,255,255,.95),12px 14px 28px rgba(120,132,175,.5)}
+#h3 .w{margin-right:.01em}
+#bar{left:604px;top:260px;height:8px;border-radius:4px;background:var(--blue)}
+#chip{left:1300px;top:110px;height:64px;padding:0 28px;border-radius:22px;display:flex;align-items:center;gap:14px;font-size:24px;font-weight:550;color:#4b5268;white-space:nowrap}
+#chip b{color:var(--blue)}
+.tile{width:132px;height:132px;border-radius:32px}
+.tile svg{position:absolute;left:30px;top:30px;width:72px;height:72px}
+/* cuadro 2 */
+#cA{left:560px;top:200px;width:800px;height:520px}
+#cB{left:1400px;top:200px;width:460px;height:520px}
+#cC{left:560px;top:770px;width:1300px;height:240px}
+.pad{position:absolute;left:52px;right:52px}
+#bodyA{top:96px;font-size:36px;line-height:1.38;font-weight:430;color:#2a3043}
+#bodyA .w{border-radius:8px;background:linear-gradient(rgba(47,124,246,.17),rgba(47,124,246,.17)) no-repeat 0 0/0% 100%;padding:0 7px;margin:0 -7px}
+.est{top:0;height:62px;padding:0 20px 0 12px;border-radius:20px;display:flex;align-items:center;gap:10px;font-size:21px;font-weight:560;color:#2f3650;white-space:nowrap}
+.est i{width:38px;height:38px;border-radius:13px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.est i svg{width:24px;height:24px}
+#n33{left:52px;top:80px;font-size:200px;font-weight:720;letter-spacing:-.05em;line-height:1}
+#n33s{left:56px;top:290px;font-size:34px;font-weight:560;line-height:1.2}
+#dots{left:56px;top:390px;width:360px;height:90px}
+#dots span{position:absolute;width:18px;height:18px;border-radius:6px;background:#d6dbea}
+.sec{top:96px;width:284px;height:112px;border-radius:26px;display:flex;align-items:center;gap:14px;padding:0 16px;box-sizing:border-box}
+.sec .num{flex:none;width:52px;height:52px;border-radius:18px;background:var(--blue);color:#fff;font-size:24px;font-weight:650;display:flex;align-items:center;justify-content:center}
+.sec .nm{white-space:nowrap;font-size:19px;font-weight:580;line-height:1.18;color:#2a3043}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="a" id="board"></div>
+  <!-- cuadro 1 -->
+  <div class="a" id="bar"></div>
+  <div class="a neo" id="chip"><span>Instrumento de <b>33</b> preguntas</span><span style="color:#c3c9da">•</span><span><b>4</b> secciones</span></div>
+  <div id="tiles"></div>
+  <div class="a" id="hero">
+    <div id="h1"></div><div id="h2"></div><div id="h3"></div>
+  </div>
+  <!-- cuadro 2 -->
+  <div class="a neo" id="cA">
+    <div class="pad lbl" style="top:48px">¿A quiénes se entrevista?</div>
+    <div class="pad" id="bodyA"></div>
+    <div class="pad" id="estRow" style="top:404px;height:64px"></div>
+  </div>
+  <div class="a neo" id="cB">
+    <div class="pad lbl" style="top:48px">El instrumento</div>
+    <div class="a" id="n33">0</div>
+    <div class="a" id="n33s">preguntas<br>cerradas</div>
+    <div class="a" id="dots"></div>
+  </div>
+  <div class="a neo" id="cC">
+    <div class="pad lbl" style="top:40px">Para los efectos, se divide en:</div>
+    <div id="secRow"></div>
+  </div>
+</div>
+<script>
+window.DURATION = 18;
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=(a,b,u)=>a+(b-a)*u;
+const eo=x=>1-Math.pow(1-clamp(x),3), eio=x=>{x=clamp(x);return x*x*x*(x*(6*x-15)+10)};
+const spring=(tau,w=16,z=.62)=>{if(tau<=0)return 0;const wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*tau)*(Math.cos(wd*tau)+z*w/wd*Math.sin(wd*tau));};
+const $=id=>document.getElementById(id);
+// enter (spring blur/scale/rise) and exit (blur-fade) in one call
+function fx(el,tin,tout,t,{dy=40,s0=.9,blur=18,w=15,z=.66,ody=-30,oblur=18}={}){
+  const a=spring(t-tin,w,z), o=clamp((t-tin)/.35), u=eio((t-tout)/.45);
+  el.style.opacity=o*(1-u);
+  el.style.filter=`blur(${(1-clamp(a))*blur+u*oblur}px)`;
+  el.style.transform=`translate3d(0,${(1-a)*dy+u*ody}px,0) scale(${(s0+(1-s0)*a)*(1-0.04*u)})`;
+}
+const words=(el,txt)=>{el.innerHTML=txt.split(' ').map(w=>`<span class="w">${w}</span>`).join(' ');return [...el.querySelectorAll('.w')];};
+const chars=(el,txt)=>{el.innerHTML=[...txt].map(c=>`<span class="w">${c===' '?'&nbsp;':c}</span>`).join('');return [...el.querySelectorAll('.w')];};
+
+// ---------- icons (same set as the title band) ----------
+const S='fill="none" stroke="#2f7cf6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"';
+const IC={
+ info:`<svg viewBox="0 0 80 80" ${S}><circle cx="40" cy="40" r="30"/><path d="M40 37v20"/><circle cx="40" cy="25" r="2.5" fill="#2f7cf6"/></svg>`,
+ desk:`<svg viewBox="0 0 80 80" ${S}><rect x="10" y="12" width="60" height="38" rx="6"/><circle cx="40" cy="28" r="7"/><path d="M28 50c2-8 22-8 24 0"/><path d="M6 62h68"/><path d="M18 62v8M62 62v8"/></svg>`,
+ steth:`<svg viewBox="0 0 80 80" ${S}><path d="M20 10v18a14 14 0 0 0 28 0V10"/><path d="M34 42v8a16 16 0 0 0 32 0v-6"/><circle cx="66" cy="38" r="6"/></svg>`,
+ doc:`<svg viewBox="0 0 80 80" ${S}><rect x="14" y="10" width="52" height="62" rx="8"/><path d="M40 26v20M30 36h20"/><path d="M26 58h28"/></svg>`,
+};
+const white=s=>s.replace(/#2f7cf6/g,'#fff');
+
+// ---------- cuadro 1 ----------
+const H1=chars($('h1'),'Encuesta'), H2=chars($('h2'),'Trato Usuario'), H3=chars($('h3'),'2026');
+const TILES=[['info',1560,300],['desk',1720,450],['steth',1560,610],['doc',1720,770]];
+const tiles=TILES.map(([k,x,y])=>{const d=document.createElement('div');d.className='a neo tile';d.style.left=x+'px';d.style.top=y+'px';d.innerHTML=IC[k];$('tiles').appendChild(d);return d;});
+
+// ---------- cuadro 2 ----------
+const BODY='Se entrevistará a aquellos usuarios que hayan sido atendidos el día de la aplicación de la encuesta, considerando la atención que han recibido de los diferentes estamentos:';
+const BW=words($('bodyA'),BODY);
+const HL=[9,16]; // "el día de la aplicación de la encuesta,"
+const ESTS=[['desk','Administrativo'],['steth','Técnico-Paramédico'],['doc','Profesional']];
+let ex=0; const ests=ESTS.map(([k,n])=>{const d=document.createElement('div');d.className='a neo est';d.innerHTML=`<i>${white(IC[k])}</i>${n}`;$('estRow').appendChild(d);return d;});
+const dots=[...Array(33)].map((_,i)=>{const s=document.createElement('span');s.style.left=(i%11)*31+'px';s.style.top=Math.floor(i/11)*31+'px';$('dots').appendChild(s);return s;});
+const SECS=[['info','Aspectos<br>Generales'],['desk','Estamento<br>Administrativo'],['steth','Estamento<br>Técnico-Paramédico'],['doc','Estamento<br>Profesional']];
+const secs=SECS.map(([k,n],i)=>{const d=document.createElement('div');d.className='a neo sec';d.style.left=(52+i*(284+20))+'px';
+  d.innerHTML=`<div class="num">${String(i+1).padStart(2,'0')}</div><div class="nm">${n}</div>`;$('secRow').appendChild(d);return d;});
+document.fonts.ready.then(layout); function layout(){
+  let x=0; ests.forEach(e=>{e.style.left=x+'px'; x+=e.offsetWidth+12;});
+}
+layout();
+
+// ---------- timeline ----------
+const T1=0.4, TX=6.2, T2=6.9, TEND=16.9;   // hero in, hero->header, cuadro 2 in, outro
+window.seek=function(t){
+  // board: fades in from white, fades back to white at the end (main video starts on white)
+  const bin=eo(t/0.8), bout=eio((t-TEND-0.5)/0.6);
+  $('board').style.opacity=bin*(1-bout);
+
+  // hero characters
+  const line=(arr,t0,st,dy,bl)=>arr.forEach((el,i)=>{const ti=t0+i*st,a=spring(t-ti,14,.62);
+    el.style.opacity=clamp((t-ti)/.25); el.style.filter=`blur(${(1-clamp(a))*bl}px)`; el.style.transform=`translate3d(0,${(1-a)*dy}px,0)`;});
+  line(H1,T1+0.2,0.045,60,16); line(H2,T1+0.55,0.04,60,16); line(H3,T1+1.15,0.11,140,24);
+  // accent bar draws, chip pops
+  const bw=eio((t-T1-0.1)/0.7)*260*(1-eio((t-TX)/.4)); $('bar').style.width=bw+'px';
+  fx($('chip'),T1+1.9,TX-0.1,t,{dy:20,s0:.8});
+  tiles.forEach((d,i)=>{fx(d,T1+1.5+i*0.12,TX-0.15+i*0.05,t,{dy:50,s0:.6,w:17,z:.5});
+    if(t>T1+2.4&&t<TX) d.style.transform+=` translate3d(0,${Math.sin((t+i*1.3)*1.4)*7}px,0)`;});
+  // hero shrinks into a header above the man (FLIP from 600,236 scale 1 to 70,70 scale .3)
+  const u=eio((t-TX)/0.9), hero=$('hero');
+  const hx=lerp(600,70,u), hy=lerp(290,70,u), hs=lerp(1,.3,u);
+  const hout=eio((t-TEND)/.5);
+  hero.style.transform=`translate3d(${hx-600}px,${hy-290}px,0) scale(${hs})`;
+  hero.style.opacity=1-hout; hero.style.filter=`blur(${hout*16}px)`;
+
+  // cuadro 2 cards
+  fx($('cA'),T2,TEND,t,{dy:50,s0:.94});
+  fx($('cB'),T2+3.0,TEND+0.1,t,{dy:50,s0:.94});
+  fx($('cC'),T2+5.2,TEND+0.2,t,{dy:50,s0:.94});
+  // body words, highlight sweep under the key phrase
+  BW.forEach((el,i)=>{const ti=T2+0.45+i*0.045,a=spring(t-ti,14,.7);
+    el.style.opacity=clamp((t-ti)/.25); el.style.filter=`blur(${(1-clamp(a))*10}px)`; el.style.transform=`translate3d(0,${(1-a)*22}px,0)`;});
+  // highlight sweeps word by word across the key phrase (wraps lines safely)
+  for(let k=HL[0];k<=HL[1];k++){const h=eio((t-T2-2.0-(k-HL[0])*0.07)/.25); BW[k].style.backgroundSize=(h*100)+'% 100%';}
+  ests.forEach((e,i)=>fx(e,T2+2.3+i*0.16,1e9,t,{dy:24,s0:.7,w:18,z:.5}));
+  // 33 count-up with dot grid filling
+  const c=eo((t-T2-3.4)/1.4), n=Math.round(33*c);
+  const n33=$('n33'); if(n33._n!==n){n33.textContent=n;n33._n=n;}
+  dots.forEach((d,i)=>{d.style.background=i<n?'#2f7cf6':'#d6dbea'; d.style.transform=`scale(${i<n?1+0.35*Math.max(0,1-(t-(T2+3.4+1.4*(i+1)/33))*6):1})`;});
+  fx($('n33s'),T2+3.5,1e9,t,{dy:20,s0:1});
+  // 4 sections cascade
+  secs.forEach((d,i)=>fx(d,T2+5.6+i*0.28,1e9,t,{dy:40,s0:.8,w:16,z:.55}));
+};
+seek(0);
+if(!location.search.includes('render')){const st=performance.now();(function loop(){seek(((performance.now()-st)/1000)%window.DURATION);requestAnimationFrame(loop)})();}
+</script>
+</body>
+</html>
