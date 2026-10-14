@@ -79,7 +79,7 @@ html,body{margin:0;background:#fff;overflow:hidden}
   </div>
 </div>
 <script>
-window.DURATION = 18;
+window.DURATION = 22;
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=(a,b,u)=>a+(b-a)*u;
 const eo=x=>1-Math.pow(1-clamp(x),3), eio=x=>{x=clamp(x);return x*x*x*(x*(6*x-15)+10)};
 const spring=(tau,w=16,z=.62)=>{if(tau<=0)return 0;const wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*tau)*(Math.cos(wd*tau)+z*w/wd*Math.sin(wd*tau));};
@@ -125,7 +125,7 @@ document.fonts.ready.then(layout); function layout(){
 layout();
 
 // ---------- timeline ----------
-const T1=0.4, TX=6.2, T2=6.9, TEND=16.9;   // hero in, hero->header, cuadro 2 in, outro
+const T1=0.4, TX=6.2, T2=6.9, TEND=20.9;   // hero in, hero->header, cuadro 2 in, outro
 window.seek=function(t){
   // board: fades in from white, fades back to white at the end (main video starts on white)
   const bin=eo(t/0.8), bout=eio((t-TEND-0.5)/0.6);
@@ -149,21 +149,21 @@ window.seek=function(t){
 
   // cuadro 2 cards
   fx($('cA'),T2,TEND,t,{dy:50,s0:.94});
-  fx($('cB'),T2+3.0,TEND+0.1,t,{dy:50,s0:.94});
-  fx($('cC'),T2+5.2,TEND+0.2,t,{dy:50,s0:.94});
+  fx($('cB'),T2+4.6,TEND+0.1,t,{dy:50,s0:.94});
+  fx($('cC'),T2+7.6,TEND+0.2,t,{dy:50,s0:.94});
   // body words, highlight sweep under the key phrase
-  BW.forEach((el,i)=>{const ti=T2+0.45+i*0.045,a=spring(t-ti,14,.7);
+  BW.forEach((el,i)=>{const ti=T2+0.45+i*0.06,a=spring(t-ti,14,.7);
     el.style.opacity=clamp((t-ti)/.25); el.style.filter=`blur(${(1-clamp(a))*10}px)`; el.style.transform=`translate3d(0,${(1-a)*22}px,0)`;});
   // highlight sweeps word by word across the key phrase (wraps lines safely)
-  for(let k=HL[0];k<=HL[1];k++){const h=eio((t-T2-2.0-(k-HL[0])*0.07)/.25); BW[k].style.backgroundSize=(h*100)+'% 100%';}
-  ests.forEach((e,i)=>fx(e,T2+2.3+i*0.16,1e9,t,{dy:24,s0:.7,w:18,z:.5}));
+  for(let k=HL[0];k<=HL[1];k++){const h=eio((t-T2-2.3-(k-HL[0])*0.07)/.25); BW[k].style.backgroundSize=(h*100)+'% 100%';}
+  ests.forEach((e,i)=>fx(e,T2+2.6+i*0.16,1e9,t,{dy:24,s0:.7,w:18,z:.5}));
   // 33 count-up with dot grid filling
-  const c=eo((t-T2-3.4)/1.4), n=Math.round(33*c);
+  const c=eo((t-T2-5.0)/1.4), n=Math.round(33*c);
   const n33=$('n33'); if(n33._n!==n){n33.textContent=n;n33._n=n;}
-  dots.forEach((d,i)=>{d.style.background=i<n?'#2f7cf6':'#d6dbea'; d.style.transform=`scale(${i<n?1+0.35*Math.max(0,1-(t-(T2+3.4+1.4*(i+1)/33))*6):1})`;});
-  fx($('n33s'),T2+3.5,1e9,t,{dy:20,s0:1});
+  dots.forEach((d,i)=>{d.style.background=i<n?'#2f7cf6':'#d6dbea'; d.style.transform=`scale(${i<n?1+0.35*Math.max(0,1-(t-(T2+5.0+1.4*(i+1)/33))*6):1})`;});
+  fx($('n33s'),T2+5.1,1e9,t,{dy:20,s0:1});
   // 4 sections cascade
-  secs.forEach((d,i)=>fx(d,T2+5.6+i*0.28,1e9,t,{dy:40,s0:.8,w:16,z:.55}));
+  secs.forEach((d,i)=>fx(d,T2+8.0+i*0.35,1e9,t,{dy:40,s0:.8,w:16,z:.55}));
 };
 seek(0);
 if(!location.search.includes('render')){const st=performance.now();(function loop(){seek(((performance.now()-st)/1000)%window.DURATION);requestAnimationFrame(loop)})();}

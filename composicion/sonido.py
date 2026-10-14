@@ -1,11 +1,11 @@
-# Sound design for presentacion_final (61.5 s): places SFX pieces (sfx/Sx_yy.wav,
+# Sound design for presentacion_final (65.5 s): places SFX pieces (sfx/Sx_yy.wav,
 # cut from the user's SFX01-04 packs) on the animation's event times, mixes them
 # under the dance music and muxes the result.
 # usage: python3 sonido.py presentacion_final_sin_audio.mp4 baile_musica.mp3 salida.mp4
 import subprocess, sys
 VIDEO, MUSIC, OUT = sys.argv[1:4]
-D = 61.5
-OP, MAIN, CL = 0.0, 18.0, 52.5   # section starts in the final cut
+D = 65.5
+OP, MAIN, CL = 0.0, 22.0, 56.5   # section starts in the final cut
 PEAK = {'S1_00':-5.1,'S1_01':-4.2,'S1_02':-4.9,'S1_03':-3.2,'S1_04':-4.8,'S1_05':-5.5,'S1_06':-5.4,
         'S2_00':-0.2,'S2_01':-4.5,'S2_02':-0.1,'S2_03':-0.2,'S2_04':-0.9,'S3_00':-2.9,'S3_01':-13.3,
         'S3_04':0.0,'S3_06':-1.6,'S3_07':-3.7,'S4_00':0.0,'S4_01':-18.6,'S4_02':0.0,'S4_03':-3.9}
@@ -18,14 +18,14 @@ for i in range(4): add(OP+1.9+i*0.12, 'S2_03', -20)   # icon tiles pop in
 add(OP+2.3,  'S2_01', -18)           # chip
 add(OP+5.65, 'S1_02', -12)           # hero shrinks into header (whoosh, peak ~6.2)
 add(OP+6.9,  'S2_02', -18)           # card A lands
-add(OP+8.85, 'S3_01', -16)           # highlight sweep sparkle
-for i in range(3): add(OP+9.2+i*0.16, 'S2_03', -21)   # estamento chips
-add(OP+9.9,  'S2_02', -18)           # card B lands
-for i in range(8): add(OP+10.35+i*0.17, 'S1_04', -24) # count-up ticks
-add(OP+11.75,'S1_00', -13)           # 33 reached: chime
-add(OP+12.1, 'S2_02', -18)           # card C lands
-for i in range(4): add(OP+12.5+i*0.28, 'S2_01', -18)  # 4 sections cascade
-add(OP+16.45,'S4_01', -16)           # outro air whoosh
+add(OP+9.15, 'S3_01', -16)           # highlight sweep sparkle
+for i in range(3): add(OP+9.5+i*0.16, 'S2_03', -21)   # estamento chips
+add(OP+11.5, 'S2_02', -18)           # card B lands
+for i in range(8): add(OP+11.95+i*0.17, 'S1_04', -24) # count-up ticks
+add(OP+13.35,'S1_00', -13)           # 33 reached: chime
+add(OP+14.5, 'S2_02', -18)           # card C lands
+for i in range(4): add(OP+14.9+i*0.35, 'S2_01', -18)  # 4 sections cascade
+add(OP+20.45,'S4_01', -16)           # outro air whoosh
 # ---- Main: 4 scenes ----
 add(MAIN+0.05,'S1_03', -15)          # title band builds in
 for t, chime in [(7.09,'S3_00'),(12.24,'S3_07'),(18.46,'S1_00')]:
