@@ -1,0 +1,200 @@
+<!doctype html>
+<html class="alpha">
+<head>
+<meta charset="utf-8">
+<title>Títulos neomórficos</title>
+<!-- Top title band (1920x560, transparent) for anciano_4_escenarios.
+     Every style is a pure function of t inside seek(t) so render.js can
+     take motion-blur subframes. Open in a browser to preview (loops). -->
+<style>
+@font-face{font-family:Geist;src:url(Geist-Variable.woff2) format('woff2');font-weight:100 900}
+:root{
+  --bg1:#f3f4fa; --bg2:#e7eaf5;
+  --ink:#1c2233; --muted:#7a8199; --blue:#2f7cf6; --blue2:#8fbcf5;
+  --hi:rgba(255,255,255,.95); --lo:rgba(140,150,185,.38);
+}
+html,body{margin:0;background:transparent;overflow:hidden}
+#stage{position:relative;width:1920px;height:560px;font-family:Geist,Inter,sans-serif;color:var(--ink)}
+.a{position:absolute;will-change:transform,opacity,filter}
+#board{left:60px;top:26px;width:1800px;height:496px;border-radius:52px;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  box-shadow:0 30px 60px -20px rgba(110,120,170,.28),0 2px 0 rgba(255,255,255,.8) inset}
+.neo{background:linear-gradient(145deg,#f8f9fd,#eceef6);border-radius:30px;
+  box-shadow:-12px -12px 26px var(--hi),14px 16px 32px var(--lo),0 1px 0 rgba(255,255,255,.9) inset}
+.inset{box-shadow:inset 6px 6px 14px var(--lo),inset -6px -6px 14px var(--hi)}
+/* icon tile */
+#tile{left:132px;top:96px;width:150px;height:150px}
+#tile svg{position:absolute;left:35px;top:35px;width:80px;height:80px}
+/* toast under tile */
+#toast{left:132px;top:276px;width:150px;height:96px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#toast .n{font-size:40px;font-weight:650;letter-spacing:-.02em;line-height:1}
+#toast .d{font-size:17px;color:var(--muted);margin-top:6px}
+/* title panel */
+#panel{left:316px;top:96px;width:1060px;height:276px}
+#sec{left:52px;top:0;font-size:20px;font-weight:600;letter-spacing:.16em;color:var(--blue);text-transform:uppercase}
+#ttl{left:52px;top:0;width:960px;font-size:58px;font-weight:620;line-height:1.12;letter-spacing:-.02em}
+#ttl .w{display:inline-block;margin-right:.24em;will-change:transform,opacity,filter}
+#shine{left:0;top:0;width:1060px;height:276px;border-radius:30px;overflow:hidden;pointer-events:none}
+#shine i{position:absolute;top:-40px;width:160px;height:360px;transform:rotate(18deg);
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.75),rgba(255,255,255,0))}
+/* progress card (like the 15:07 widget) */
+#prog{left:1410px;top:60px;width:330px;height:312px}
+#prog .big{position:absolute;left:36px;top:30px;font-size:84px;font-weight:650;letter-spacing:-.04em;line-height:1}
+#prog .of{position:absolute;left:36px;top:122px;font-size:19px;color:var(--muted)}
+#check{position:absolute;left:250px;top:40px;width:46px;height:46px;border-radius:50%;background:var(--blue2);display:flex;align-items:center;justify-content:center}
+#track{position:absolute;left:36px;top:214px;width:258px;height:62px;border-radius:18px;background:#dfe4f1}
+#fill{position:absolute;left:0;top:0;height:62px;border-radius:18px;background:linear-gradient(90deg,#9cc4f7,#7fb1f4)}
+#thumb{position:absolute;top:4px;width:30px;height:54px;border-radius:12px;background:var(--blue);box-shadow:0 6px 14px rgba(47,124,246,.45)}
+#tag{position:absolute;top:-48px;padding:7px 14px;border-radius:12px;background:var(--blue);color:#fff;font-size:17px;font-weight:550;white-space:nowrap}
+#tag:after{content:'';position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:var(--blue)}
+/* step nav */
+.nav{top:404px;height:70px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:520;color:#4b5268;white-space:nowrap;border-radius:24px}
+.arrow{width:70px;font-size:28px;color:#6b7290}
+.step span.dot{width:12px;height:12px;border-radius:50%;background:#c3c9da;margin-right:12px;display:inline-block}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="a" id="board"></div>
+  <div class="a neo" id="tile"></div>
+  <div class="a neo" id="toast"><div class="n" id="tnum">01</div><div class="d">sección</div></div>
+  <div class="a neo" id="panel">
+    <div class="a" id="sec"></div>
+    <div class="a" id="ttl"></div>
+    <div class="a" id="shine"><i id="shinebar"></i></div>
+  </div>
+  <div class="a neo" id="prog">
+    <div class="big" id="pbig">1</div>
+    <div class="of" id="pof">de 4 escenarios</div>
+    <div id="check"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div id="track"><div id="fill"></div><div id="thumb"></div><div id="tag"></div></div>
+  </div>
+  <div id="navs"></div>
+</div>
+<script>
+// ---------- content & timing ----------
+// Change times = moment each scene's first element enters from the right
+// (from escenarios.py: pos/V). Scene 1 shows from the intro.
+const SCENES = [
+  {t:0.35, sec:'Sección 01', title:'Aspectos Generales', step:'Aspectos generales', tag:'General'},
+  {t:7.09, sec:'Sección 02', title:'Evaluación del trato usuario en el Estamento Administrativo', step:'Administrativo', tag:'Administrativo'},
+  {t:12.24, sec:'Sección 03', title:'Evaluación del trato en el Estamento Técnico-Paramédico', step:'Técnico-Paramédico', tag:'Técnico-Paramédico'},
+  {t:18.46, sec:'Sección 04', title:'Evaluación del trato en el Estamento Profesional', step:'Profesional', tag:'Profesional'},
+];
+window.DURATION = 34.5;
+const OUT = 34.5 + 1;   // no outro: the band stays until the last frame
+
+// ---------- math ----------
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=(a,b,u)=>a+(b-a)*u;
+const eo=x=>1-Math.pow(1-clamp(x),3), eio=x=>{x=clamp(x);return x*x*x*(x*(6*x-15)+10)};
+// spring step response 0->1 (underdamped)
+const spring=(tau,w=16,z=.62)=>{if(tau<=0)return 0;const wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*tau)*(Math.cos(wd*tau)+z*w/wd*Math.sin(wd*tau));};
+const $=id=>document.getElementById(id);
+// enter: blur + scale + rise, driven by a spring
+function enter(el,t0,t,{dy=34,s0=.9,blur=18,w=15,z=.66}={}){
+  const a=spring(t-t0,w,z), o=clamp((t-t0)/.35);
+  el.style.opacity=o; el.style.filter=`blur(${(1-clamp(a))*blur}px)`;
+  el.style.transform=`translate3d(0,${(1-a)*dy}px,0) scale(${s0+(1-s0)*a})`;
+}
+const sceneAt=t=>{let k=0;SCENES.forEach((s,i)=>{if(t>=s.t)k=i});return k};
+
+// ---------- icons (one per scene) ----------
+const IC=[
+ '<svg viewBox="0 0 80 80" fill="none" stroke="#2f7cf6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="40" cy="40" r="30"/><path d="M40 37v20"/><circle cx="40" cy="25" r="2.5" fill="#2f7cf6"/></svg>',
+ '<svg viewBox="0 0 80 80" fill="none" stroke="#2f7cf6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="12" width="60" height="38" rx="6"/><circle cx="40" cy="28" r="7"/><path d="M28 50c2-8 22-8 24 0"/><path d="M6 62h68"/><path d="M18 62v8M62 62v8"/></svg>',
+ '<svg viewBox="0 0 80 80" fill="none" stroke="#2f7cf6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10v18a14 14 0 0 0 28 0V10"/><path d="M34 42v8a16 16 0 0 0 32 0v-6"/><circle cx="66" cy="38" r="6"/></svg>',
+ '<svg viewBox="0 0 80 80" fill="none" stroke="#2f7cf6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="10" width="52" height="62" rx="8"/><path d="M40 26v20M30 36h20"/><path d="M26 58h28"/></svg>',
+];
+const tile=$('tile'); const icons=IC.map(s=>{const d=document.createElement('div');d.className='a';d.style.cssText='left:0;top:0;width:150px;height:150px';d.innerHTML=s;tile.appendChild(d);return d;});
+
+// ---------- title words ----------
+const ttl=$('ttl'); const words=SCENES.map(s=>{
+  const box=document.createElement('div');box.className='a';box.style.cssText='left:0;top:0;width:960px';
+  box.innerHTML=s.title.split(' ').map(w=>`<span class="w">${w}</span>`).join('');ttl.appendChild(box);
+  return {box,ws:[...box.querySelectorAll('.w')]};
+});
+const secs=SCENES.map(s=>{const d=document.createElement('div');d.className='a';d.style.cssText='left:0;top:0;white-space:nowrap';d.textContent=s.sec;$('sec').appendChild(d);return d;});
+const tags=SCENES.map(s=>s.tag);
+// centre each scene's label + title block vertically in the 276px panel
+document.fonts.ready.then(()=>layout()); function layout(){ words.forEach((W,i)=>{
+  const h=W.box.offsetHeight, top=Math.round((276-(40+h))/2);
+  secs[i].style.top=top+'px'; W.box.style.top=(top+40)+'px'; }); }
+layout();
+
+// ---------- nav row: < [4 steps] > ----------
+const navs=$('navs'); const NAVW=[260,230,290,220], GAP=18; let x=0;
+const total=70+GAP+NAVW.reduce((a,b)=>a+b+GAP,0)+70; x=60+(1800-total)/2;
+const mk=(cls,html,w)=>{const d=document.createElement('div');d.className='a neo nav '+cls;d.style.left=x+'px';d.style.width=w+'px';d.innerHTML=html;navs.appendChild(d);x+=w+GAP;return d;};
+const navL=mk('arrow','&lt;',70);
+const steps=SCENES.map((s,i)=>mk('step',`<span class="dot"></span>${s.step}`,NAVW[i]));
+const navR=mk('arrow','&gt;',70);
+const navAll=[navL,...steps,navR];
+
+// ---------- frame ----------
+const NEO='-12px -12px 26px rgba(255,255,255,.95),14px 16px 32px rgba(140,150,185,.38),0 1px 0 rgba(255,255,255,.9) inset';
+const PRESS='inset 7px 7px 16px rgba(120,135,180,.42),inset -7px -7px 16px rgba(255,255,255,.95)';
+window.seek=function(t){
+  // board
+  const b=$('board'), ab=eo(t/0.7);
+  b.style.opacity=ab; b.style.transform=`scale(${.975+.025*ab})`; b.style.filter=`blur(${(1-ab)*14}px)`;
+  enter(tile,0.25,t); enter($('toast'),0.40,t); enter($('panel'),0.32,t,{dy:40,s0:.92});
+  enter($('prog'),0.50,t,{dy:40});
+  navAll.forEach((n,i)=>enter(n,0.62+i*0.06,t,{dy:28,s0:.86,blur:12}));
+
+  const k=sceneAt(t);
+  // title words: current scene in, previous scene out
+  words.forEach((W,i)=>{
+    const tin=SCENES[i].t, tout=i+1<SCENES.length?SCENES[i+1].t:OUT;
+    W.ws.forEach((el,j)=>{
+      const ti=tin+0.12+j*0.055, uo=clamp((t-tout)/0.32);
+      const a=spring(t-ti,14,.7), o=clamp((t-ti)/.3)*(1-uo);
+      el.style.opacity=o;
+      el.style.filter=`blur(${(1-clamp(a))*14+uo*16}px)`;
+      el.style.transform=`translate3d(0,${(1-a)*38-eio(uo)*30}px,0)`;
+    });
+    W.box.style.visibility=(t>=tin-0.01&&t<tout+0.4)?'visible':'hidden';
+  });
+  secs.forEach((el,i)=>{
+    const tin=SCENES[i].t, tout=i+1<SCENES.length?SCENES[i+1].t:OUT;
+    const a=eo((t-tin-0.05)/.4), uo=eo((t-tout)/.25);
+    el.style.opacity=a*(1-uo); el.style.transform=`translate3d(${(1-a)*-24+uo*24}px,0,0)`; el.style.filter=`blur(${(1-a)*8+uo*8}px)`;
+  });
+  // panel "press" pulse + shine on every scene change
+  let press=0, shine=-1;
+  SCENES.forEach((s,i)=>{ if(i===0)return; const u=(t-s.t)/0.5; if(u>=0&&u<1) press=Math.sin(Math.PI*u); const v=(t-s.t-0.15)/0.9; if(v>=0&&v<1) shine=v; });
+  const p=$('panel'); if(t>1.4){p.style.transform=`scale(${1-0.018*press})`;}
+  p.style.boxShadow=press>0?`-${12*(1-press)}px -${12*(1-press)}px ${26}px rgba(255,255,255,.95),${14*(1-press)}px ${16*(1-press)}px 32px rgba(140,150,185,${.38*(1-press)}),inset ${6*press}px ${6*press}px 14px rgba(140,150,185,${.35*press}),inset -${6*press}px -${6*press}px 14px rgba(255,255,255,${.9*press})`:'';
+  const sb=$('shinebar'); sb.style.left=(shine<0?-400:lerp(-260,1180,eio(shine)))+'px';
+  // icon swap: pop + rotate
+  icons.forEach((el,i)=>{
+    const tin=SCENES[i].t, tout=i+1<SCENES.length?SCENES[i+1].t:OUT;
+    const a=spring(t-tin-0.05,18,.5), uo=eo((t-tout)/.22);
+    el.style.opacity=clamp((t-tin)/.2)*(1-uo);
+    el.style.transform=`scale(${(0.4+0.6*a)*(1-0.4*uo)}) rotate(${(1-a)*-25}deg)`;
+  });
+  // counters
+  const kk=k+1, toastN=$('tnum');
+  const swap=SCENES[k].t, u=clamp((t-swap)/.35);
+  [toastN,$('pbig')].forEach((el,i)=>{ const s=i?String(kk):String(kk).padStart(2,'0'); if(el._s!==s){el.textContent=s;el._s=s;}
+    el.style.transform=`translate3d(0,${(1-eo(u))*26}px,0)`; el.style.opacity=.25+.75*eo(u); el.style.filter=`blur(${(1-eo(u))*6}px)`; });
+  // progress slider follows scene on a spring
+  let pos=0; SCENES.forEach((s,i)=>{ pos+= (i===0?1:1)*spring(t-s.t-0.1,11,.7)*(1/SCENES.length); });
+  const W=258, thumbX=clamp(pos)*(W-30);
+  $('fill').style.width=(thumbX+30)+'px'; $('thumb').style.left=thumbX+'px';
+  const tag=$('tag'); if(tag._s!==tags[k]){tag.textContent=tags[k];tag._s=tags[k];}
+  const tw=tag.offsetWidth; tag.style.left=(thumbX+15-tw/2)+'px';
+  const ta=spring(t-SCENES[k].t-0.15,20,.55); tag.style.transform=`scale(${0.6+0.4*ta})`; tag.style.transformOrigin='50% 100%'; tag.style.opacity=clamp((t-SCENES[k].t)/.15);
+  // active step: pressed + blue text/dot
+  steps.forEach((el,i)=>{
+    const on=clamp((t-SCENES[i].t-0.1)/.3)*(i+1<SCENES.length?1-clamp((t-SCENES[i+1].t-0.1)/.3):1);
+    if(t>1.3) el.style.boxShadow=on>0.5?PRESS:NEO;
+    el.style.color=on>0.5?'#2f7cf6':'#4b5268';
+    el.querySelector('.dot').style.background=on>0.5?'#2f7cf6':'#c3c9da';
+    el.querySelector('.dot').style.transform=`scale(${1+0.5*Math.sin(Math.PI*clamp((t-SCENES[i].t-0.1)/.4))})`;
+  });
+};
+seek(0);
+if(!location.search.includes('render')){const st=performance.now();(function loop(){seek(((performance.now()-st)/1000)%window.DURATION);requestAnimationFrame(loop)})();}
+</script>
+</body>
+</html>
