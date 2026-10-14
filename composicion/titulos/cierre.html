@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Cierre Tramo I</title>
+<!-- Closing (1920x1080) for the Encuesta Trato Usuario 2026 presentation.
+     Background layer: board, "Logremos el Tramo I", confetti and tiles.
+     The dancing man is composited on top afterwards in the left area
+     (x 100..820). Pure function of t (seek) for render.js. -->
+<style>
+@font-face{font-family:Geist;src:url(Geist-Variable.woff2) format('woff2');font-weight:100 900}
+:root{--ink:#1c2233;--blue:#2f7cf6;--hi:rgba(255,255,255,.95);--lo:rgba(140,150,185,.38)}
+html,body{margin:0;background:#fff;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;font-family:Geist,Inter,sans-serif;color:var(--ink);overflow:hidden}
+.a{position:absolute;will-change:transform,opacity,filter}
+#board{left:0;top:0;width:1920px;height:1080px;background:radial-gradient(1200px 800px at 65% 35%,#f6f7fc,#e6e9f5 70%,#dfe3f2)}
+#floor{left:140px;top:968px;width:640px;height:70px;border-radius:50%;background:radial-gradient(closest-side,rgba(120,132,175,.28),rgba(120,132,175,0))}
+.neo{background:linear-gradient(145deg,#f8f9fd,#eceef6);border-radius:34px;
+  box-shadow:-14px -14px 30px var(--hi),16px 18px 36px var(--lo),0 1px 0 rgba(255,255,255,.9) inset}
+.w{display:inline-block;will-change:transform,opacity,filter}
+#txt{left:850px;top:250px}
+#lbl{font-size:24px;font-weight:600;letter-spacing:.18em;color:var(--blue);text-transform:uppercase;white-space:nowrap}
+#l1{margin-top:26px;font-size:136px;font-weight:660;letter-spacing:-.035em;line-height:1;white-space:nowrap}
+#l2{margin-top:6px;font-size:270px;font-weight:800;letter-spacing:-.04em;line-height:.95;color:#f4f6fc;white-space:nowrap;
+  text-shadow:-6px -6px 14px rgba(255,255,255,.95),12px 14px 28px rgba(120,132,175,.5)}
+#l2 .roman{color:#fff;text-shadow:none;background:linear-gradient(145deg,#4a8ff8,#2f7cf6);border-radius:46px;font-size:190px;line-height:1;padding:22px 52px 26px;vertical-align:28px;margin-left:30px;font-family:Georgia,'Times New Roman',serif;font-weight:700;box-shadow:-10px -10px 24px rgba(255,255,255,.9),14px 18px 34px rgba(47,124,246,.42),inset 0 2px 0 rgba(255,255,255,.35)}
+#bar{left:854px;top:220px;height:8px;border-radius:4px;background:var(--blue)}
+.tile{width:120px;height:120px;border-radius:30px}
+.tile svg{position:absolute;left:28px;top:28px;width:64px;height:64px}
+.cf{position:absolute;border-radius:4px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="a" id="board"></div>
+  <div class="a" id="floor"></div>
+  <div id="conf"></div>
+  <div class="a" id="bar"></div>
+  <div class="a" id="txt">
+    <div id="lbl">Encuesta Trato Usuario 2026</div>
+    <div id="l1"></div>
+    <div id="l2"></div>
+  </div>
+  <div id="tiles"></div>
+</div>
+<script>
+window.DURATION = 9;
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=(a,b,u)=>a+(b-a)*u;
+const eo=x=>1-Math.pow(1-clamp(x),3), eio=x=>{x=clamp(x);return x*x*x*(x*(6*x-15)+10)};
+const spring=(tau,w=16,z=.62)=>{if(tau<=0)return 0;const wd=w*Math.sqrt(1-z*z);return 1-Math.exp(-z*w*tau)*(Math.cos(wd*tau)+z*w/wd*Math.sin(wd*tau));};
+const $=id=>document.getElementById(id);
+const chars=(el,txt)=>{el.innerHTML=[...txt].map(c=>`<span class="w">${c===' '?'&nbsp;':c}</span>`).join('');return [...el.querySelectorAll('.w')];};
+const L1=chars($('l1'),'Logremos el');
+$('l2').innerHTML='<span class="w">T</span><span class="w">r</span><span class="w">a</span><span class="w">m</span><span class="w">o</span><span class="w roman">I</span>';
+const L2=[...$('l2').querySelectorAll('.w')];
+
+// tiles: star, heart, check (celebration, same neumorphic family)
+const S='fill="none" stroke="#2f7cf6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"';
+const IC=[
+ `<svg viewBox="0 0 64 64" ${S}><path d="M32 6l7.6 16.4 17.9 2-13.3 12.2 3.7 17.6L32 45.3 16.1 54.2l3.7-17.6L6.5 24.4l17.9-2z"/></svg>`,
+ `<svg viewBox="0 0 64 64" ${S}><path d="M32 54S8 40 8 23a12 12 0 0 1 24-4 12 12 0 0 1 24 4c0 17-24 31-24 31z"/></svg>`,
+ `<svg viewBox="0 0 64 64" ${S}><circle cx="32" cy="32" r="25"/><path d="M20 33l8 8 16-17"/></svg>`,
+];
+const TP=[[1700,110],[1720,800],[880,800]];
+const tiles=IC.map((s,i)=>{const d=document.createElement('div');d.className='a neo tile';d.style.left=TP[i][0]+'px';d.style.top=TP[i][1]+'px';d.innerHTML=s;$('tiles').appendChild(d);return d;});
+
+// confetti: deterministic particles, two bursts from behind the title
+const COLS=['#2f7cf6','#8fbcf5','#e06a2c','#3f6f58','#f2b632','#ffffff'];
+let seed=7; const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const parts=[]; [[2.0,1330,560],[5.6,1330,560]].forEach(([t0,cx,cy])=>{for(let i=0;i<70;i++){
+  const ang=-Math.PI/2+(rnd()-.5)*Math.PI*1.5, sp=700+rnd()*900, el=document.createElement('div');
+  el.className='cf'; const w=10+rnd()*12; el.style.width=w+'px'; el.style.height=(w*(.4+rnd()*.5))+'px';
+  el.style.background=COLS[i%COLS.length]; if(COLS[i%COLS.length]==='#ffffff') el.style.boxShadow='0 2px 6px rgba(120,132,175,.4)';
+  $('conf').appendChild(el); parts.push({el,t0,cx,cy,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,rot:rnd()*360,vr:(rnd()-.5)*900,sw:rnd()*6});}});
+
+window.seek=function(t){
+  const bin=eo(t/0.6); $('board').style.opacity=bin; $('floor').style.opacity=bin;
+  $('bar').style.width=(eio((t-0.5)/.6)*240)+'px';
+  const lb=$('lbl'), la=eo((t-0.55)/.5); lb.style.opacity=la; lb.style.transform=`translate3d(${(1-la)*-30}px,0,0)`; lb.style.filter=`blur(${(1-la)*8}px)`;
+  const line=(arr,t0,st,dy,bl)=>arr.forEach((el,i)=>{const ti=t0+i*st,a=spring(t-ti,14,.6);
+    el.style.opacity=clamp((t-ti)/.25); el.style.filter=`blur(${(1-clamp(a))*bl}px)`; el.style.transform=`translate3d(0,${(1-a)*dy}px,0)`;});
+  line(L1,0.75,0.045,60,16); line(L2,1.35,0.09,150,24);
+  // roman numeral: extra pop + gentle pulse on each confetti burst
+  const R=L2[L2.length-1]; const pulse=[2.0,5.6].reduce((m,b)=>Math.max(m,Math.sin(Math.PI*clamp((t-b)/.5))),0);
+  R.style.transform+=` scale(${1+0.12*pulse})`;
+  // tiles pop, then float
+  tiles.forEach((d,i)=>{const ti=2.3+i*0.15,a=spring(t-ti,17,.5);
+    d.style.opacity=clamp((t-ti)/.25); d.style.filter=`blur(${(1-clamp(a))*12}px)`;
+    d.style.transform=`translate3d(0,${(1-a)*50+Math.sin((t+i*1.7)*1.6)*8*clamp(t-ti-0.6)}px,0) scale(${0.6+0.4*a}) rotate(${Math.sin((t+i)*1.2)*4}deg)`;});
+  // confetti physics (gravity + drag + sway)
+  parts.forEach(p=>{const u=t-p.t0; if(u<0||u>3.4){p.el.style.opacity=0;return;}
+    const k=2.2, ex=(1-Math.exp(-k*u))/k, g=1500;
+    const x=p.cx+p.vx*ex+Math.sin(u*6+p.sw)*18, y=p.cy+p.vy*ex+g*(u-ex)/k;
+    p.el.style.opacity=clamp(3.4-u)*clamp(u/.05);
+    p.el.style.transform=`translate3d(${x}px,${y}px,0) rotate(${p.rot+p.vr*u}deg) rotateX(${u*540+p.sw*40}deg)`;});
+  // slow camera push on the whole stage
+  $('txt').style.transform=`scale(${1+0.02*clamp(t/9)})`; $('txt').style.transformOrigin='0 50%';
+};
+seek(0);
+if(!location.search.includes('render')){const st=performance.now();(function loop(){seek(((performance.now()-st)/1000)%window.DURATION);requestAnimationFrame(loop)})();}
+</script>
+</body>
+</html>
