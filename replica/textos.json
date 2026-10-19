@@ -1,0 +1,132 @@
+{
+  "_info": "Textos del clip 'One Conversation'. Es lo ÚNICO que se modifica en la réplica: animación, tiempos, colores, tipografías y sonido quedan iguales. Las claves corresponden a la columna ID de GUION.md.",
+
+  "hud": {
+    "clock_start": "2:07 AM",
+    "clock_end": "6:42 AM",
+    "clocks": {
+      "hook": "2:07 AM", "oldway": "2:07 AM", "turn": "2:07 AM",
+      "writer": ["2:20 AM", "2:36 AM"], "art": ["2:54 AM", "3:06 AM"],
+      "animator": "3:28 AM", "composer": "4:02 AM", "sound": "4:36 AM",
+      "editor": ["5:10 AM", "5:23 AM"], "render": ["5:53 AM", "6:31 AM"]
+    },
+    "roles_label": "ROLES",
+    "nav": ["WRITER", "ART", "ANIMATION", "SCORE", "SOUND", "EDIT", "RENDER"],
+    "status": {
+      "new": "new conversation",
+      "thinking": "claude is thinking…",
+      "yes": "yes.",
+      "writer": "writing the script",
+      "art": "building the look",
+      "animator": "animating 214 keyframes",
+      "composer": "scoring · 120 bpm",
+      "sound": "designing the sound",
+      "editor": "cutting 12 shots",
+      "render": "rendering 2,055 frames",
+      "render_done": "render complete ✓"
+    }
+  },
+
+  "hook": {
+    "typed": "I have an idea. I don't have a team."
+  },
+
+  "oldway": {
+    "timeline_title": "edit_final_v7_REAL",
+    "media_offline": "MEDIA OFFLINE",
+    "plugin_error": "Plugin failed to load · error 0x3F",
+    "unread": "unread",
+    "unread_from": 3,
+    "unread_to": 112,
+    "deadline": "DEADLINE · FRI 9:00 AM",
+    "license": "License required — $49",
+    "rendering": "Rendering… 99%",
+    "invoice_label": "INVOICE",
+    "invoices": [
+      "Motion designer — $4,800",
+      "Composer — $2,500",
+      "Editor — $3,000",
+      "Sound mix — $1,200"
+    ],
+    "total": "TOTAL $11,500",
+    "render_failed": "RENDER FAILED"
+  },
+
+  "turn": {
+    "typed": "Can you help me make it?",
+    "claude_label": "CLAUDE",
+    "answer_big": "Yes.",
+    "answer_line": "Let's start with the story."
+  },
+
+  "roles": {
+    "writer":   { "title": "the Writer",          "index": "01 / 07" },
+    "art":      { "title": "the Art Director",    "index": "02 / 07" },
+    "animator": { "title": "the Animator",        "index": "03 / 07" },
+    "composer": { "title": "the Composer",        "index": "04 / 07" },
+    "sound":    { "title": "the Sound Designer",  "index": "05 / 07" },
+    "editor":   { "title": "the Editor",          "index": "06 / 07" },
+    "render":   { "title": "the Render",          "index": "07 / 07" }
+  },
+
+  "writer": {
+    "fade_in": "FADE IN:",
+    "slug": "INT. STUDIO APARTMENT — 2:07 AM",
+    "action": "A cursor blinks. One creator. No team.",
+    "char_1": "CREATOR",
+    "line_1": "Can you help me make it?",
+    "char_2": "CLAUDE",
+    "line_2": "Yes. Let's start with the story.",
+    "cut_to": "CUT TO:"
+  },
+
+  "art": {
+    "font_sample": "Aa",
+    "font_display": "Fraunces · 144",
+    "font_mono": "IBM Plex Mono",
+    "moods": ["NIGHT", "DAWN", "EMBER", "DAY"]
+  },
+
+  "animator": {
+    "ease_a": "linear",
+    "ease_b": "back.out(1.7)"
+  },
+
+  "composer": {
+    "meta": "120 BPM · 4/4 · score.wav"
+  },
+
+  "sound": {
+    "sfx_names": ["impact_low", "whoosh", "key_click", "ui_pop", "glitch_crunch", "snap", "chime"]
+  },
+
+  "editor": {
+    "clips": ["hook", "old way", "turn", "writer", "art", "animator", "composer", "sound", "editor", "render", "climax", "resolve"],
+    "tracks": ["score.wav", "sfx.wav", "room.wav"],
+    "timecode_end": "00:01:08:15",
+    "final_cut": "FINAL CUT · 12 SHOTS · 68.5 S"
+  },
+
+  "render": {
+    "frames_total": 2055,
+    "specs": "1920×1080 · 30 fps · 68.5 s",
+    "frame_label": "FRAME"
+  },
+
+  "climax": {
+    "tag_oldway": "THE OLD WAY",
+    "tag_message": "ONE MESSAGE",
+    "tag_roles": ["WRITER", "ART", "ANIMATION", "SCORE", "SOUND"],
+    "title": "One Conversation"
+  },
+
+  "resolve": {
+    "bubble_1": "I have an idea. I don't have a team.",
+    "bubble_2": "Can you help me make it?",
+    "reply": "Yes. Let's start with the story.",
+    "files": ["script.fdx", "palette.json", "motion.curves", "score.wav", "sfx.wav", "edit.timeline", "render.mp4"],
+    "tagline": ["Every frame you just watched", "was made in one conversation."],
+    "title": "One Conversation",
+    "signature": "Made with Claude Opus 5.5 · Part 3 of 3"
+  }
+}
