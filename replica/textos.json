@@ -54,7 +54,7 @@
   },
 
   "turn": {
-    "typed": "Me puedes ayudar?",
+    "typed": "¿Me puedes ayudar?",
     "claude_label": "CLAUDE",
     "answer_big": "Sí.",
     "answer_line": "Comencemos con la historia"
@@ -71,14 +71,14 @@
   },
 
   "writer": {
-    "fade_in": "FADE IN:",
+    "fade_in": "FUNDIDO DE ENTRADA:",
     "slug": "INT. DEPARTAMENTO STUDIO — 2:07 AM",
-    "action": "A cursor parpadea. Un creador. Sin equipo.",
+    "action": "Un cursor parpadea. Un creador. Sin equipo.",
     "char_1": "CREADOR",
-    "line_1": "Me puedes ayudar?",
+    "line_1": "¿Me puedes ayudar?",
     "char_2": "CLAUDE",
     "line_2": "Sí. Comencemos con la historia",
-    "cut_to": "CUT a:"
+    "cut_to": "CORTE A:"
   },
 
   "art": {
@@ -124,7 +124,7 @@
 
   "resolve": {
     "bubble_1": "Tengo una idea. Pero necesitaría un equipo de personas.",
-    "bubble_2": "Me puedes ayudar?",
+    "bubble_2": "¿Me puedes ayudar?",
     "reply": "Sí. Comencemos con la historia",
     "files": ["guion.fdx", "paleta.json", "curvas.motion", "musica.wav", "efectos.wav", "edicion.timeline", "render.mp4"],
     "tagline": ["Cada fotograma que acabas de ver", "se hizo en una sola conversación."],

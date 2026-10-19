@@ -49,8 +49,8 @@ HUD = interfaz fija: reloj arriba a la izquierda, `ROLES n / 7` arriba a la dere
 
 | N° | Tiempo | Dónde aparece | Texto original | Texto nuevo |
 |---|---|---|---|---|
-| 29 | 12,8–14,3 s | Caja de chat (se tipea) | `Can you help me make it?` | `Me puedes ayudar?` |
-| 30 | 15,0 s | Burbuja enviada (con `• • •` debajo) | `Can you help me make it?` | `Me puedes ayudar?` |
+| 29 | 12,8–14,3 s | Caja de chat (se tipea) | `Can you help me make it?` | `¿Me puedes ayudar?` |
+| 30 | 15,0 s | Burbuja enviada (con `• • •` debajo) | `Can you help me make it?` | `¿Me puedes ayudar?` |
 | 31 | 15,0 s | HUD, estado | `› claude is thinking…` | `› claude está pensando…` |
 | 32 | 16,0 s | Etiqueta pequeña sobre la respuesta | `CLAUDE` | `CLAUDE` |
 | 33 | 16,0 s | Respuesta gigante | `Yes.` | `Sí.` |
@@ -66,14 +66,14 @@ HUD = interfaz fija: reloj arriba a la izquierda, `ROLES n / 7` arriba a la dere
 | 38 | 18,0 s | HUD, estado | `› writing the script` | `› escribiendo el guion` |
 | 39 | 18,0 s | Índice sobre el título | `01 / 07` | `01 / 07` |
 | 40 | 18,0 s | Título del rol | `the Writer` | `el Guionista` |
-| 41 | 18,0 s | Guion, encabezado | `FADE IN:` | `FADE IN:` |
+| 41 | 18,0 s | Guion, encabezado | `FADE IN:` | `FUNDIDO DE ENTRADA:` |
 | 42 | 18,0 s | Guion, escena | `INT. STUDIO APARTMENT — 2:07 AM` | `INT. DEPARTAMENTO STUDIO — 2:07 AM` |
-| 43 | 18,3 s | Guion, acción | `A cursor blinks. One creator. No team.` | `A cursor parpadea. Un creador. Sin equipo.` |
+| 43 | 18,3 s | Guion, acción | `A cursor blinks. One creator. No team.` | `Un cursor parpadea. Un creador. Sin equipo.` |
 | 44 | 19,0 s | Guion, personaje 1 | `CREATOR` | `CREADOR` |
-| 45 | 19,0 s | Guion, diálogo del personaje 1 | `Can you help me make it?` | `Me puedes ayudar?` |
+| 45 | 19,0 s | Guion, diálogo del personaje 1 | `Can you help me make it?` | `¿Me puedes ayudar?` |
 | 46 | 19,5 s | Guion, personaje 2 (resaltado ámbar) | `CLAUDE` | `CLAUDE` |
 | 47 | 19,8 s | Guion, diálogo del personaje 2 | `Yes. Let's start with the story.` | `Sí. Comencemos con la historia` |
-| 48 | 20,5 s | Guion, transición final | `CUT TO:` | `CUT a:` |
+| 48 | 20,5 s | Guion, transición final | `CUT TO:` | `CORTE A:` |
 
 ## Escena 05 · THE ART DIRECTOR (0:22 – 0:26)
 
@@ -202,7 +202,7 @@ HUD = interfaz fija: reloj arriba a la izquierda, `ROLES n / 7` arriba a la dere
 |---|---|---|---|---|
 | 135 | 60,0 s | Hora en la tarjeta de chat | `6:42 AM` | `6:42 AM` |
 | 136 | 60,0 s | Burbuja del usuario 1 | `I have an idea. I don't have a team.` | `Tengo una idea. Pero necesitaría un equipo de personas.` |
-| 137 | 60,0 s | Burbuja del usuario 2 | `Can you help me make it?` | `Me puedes ayudar?` |
+| 137 | 60,0 s | Burbuja del usuario 2 | `Can you help me make it?` | `¿Me puedes ayudar?` |
 | 138 | 60,0 s | Respuesta de Claude (cursiva) | `Yes. Let's start with the story.` | `Sí. Comencemos con la historia` |
 | 139 | 60,5 s | Archivo 1 | `script.fdx` | `guion.fdx` |
 | 140 | 60,5 s | Archivo 2 | `palette.json` | `paleta.json` |
