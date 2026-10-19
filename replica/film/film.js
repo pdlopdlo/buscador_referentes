@@ -336,7 +336,7 @@ function roleIO(e, t, a, b, o = {}) {
 // ---------- 04 Writer ----------
 function buildWriter() {
   const s = el(S, `<div id="sW" class="layer persp"></div>`);
-  el(s, `<div class="abs" style="left:1240px;top:230px;width:120px;height:700px;border-radius:14px;border:1px solid rgba(255,181,71,.18);background:rgba(20,22,36,.6);transform:rotateY(16deg) rotateX(6deg) rotateZ(-7deg)"></div>`);
+  el(s, `<div class="abs" style="left:1250px;top:250px;width:110px;height:630px;border-radius:14px;border:1px solid rgba(255,181,71,.18);background:rgba(20,22,36,.6);transform:rotateY(16deg) rotateX(6deg) rotateZ(-7deg)"></div>`);
   const paper = el(s, `<div id="paper"></div>`);
   st(paper, { transform: 'rotateY(16deg) rotateX(6deg) rotateZ(-7deg)', transformOrigin: '50% 50%' });
   const w = T.writer;
