@@ -53,11 +53,13 @@ if (mode === 'thumbs') {
   const started = Date.now();
   let done = 0;
   await Promise.all(Array.from({ length: workers }, async (_, w) => {
-    const page = await openPage(browser);
+    const b = await chromium.launch({ args: ['--force-color-profile=srgb'] });
+    const page = await openPage(b);
     for (let f = f0 + w; f <= f1; f += workers) {
       await shot(page, f / fps, path.join(dir, String(f).padStart(5, '0') + '.png'));
       if (++done % 100 === 0) console.log(`${done}/${f1 - f0 + 1} frames, ${((Date.now() - started) / 1000).toFixed(0)}s`);
     }
+    await b.close();
   }));
   console.log(`frames done: ${done} in ${((Date.now() - started) / 1000).toFixed(0)}s`);
 }
