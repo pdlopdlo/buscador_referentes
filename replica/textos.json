@@ -1,5 +1,5 @@
 {
-  "_info": "Textos del clip 'One Conversation'. Es lo ÚNICO que se modifica en la réplica: animación, tiempos, colores, tipografías y sonido quedan iguales. Las claves corresponden a la columna ID de GUION.md.",
+  "_info": "Textos de la réplica en español. Es lo ÚNICO que cambia respecto del original (textos_original_en.json); animación, tiempos, colores, tipografías y sonido quedan iguales. Los números de línea corresponden a GUION_COMPLETO.md.",
 
   "hud": {
     "clock_start": "2:07 AM",
@@ -11,122 +11,124 @@
       "editor": ["5:10 AM", "5:23 AM"], "render": ["5:53 AM", "6:31 AM"]
     },
     "roles_label": "ROLES",
-    "nav": ["WRITER", "ART", "ANIMATION", "SCORE", "SOUND", "EDIT", "RENDER"],
+    "nav": ["GUION", "ARTE", "ANIMACIÓN", "MÚSICA", "SONIDO", "EDICIÓN", "RENDER"],
     "status": {
-      "new": "new conversation",
-      "thinking": "claude is thinking…",
-      "yes": "yes.",
-      "writer": "writing the script",
-      "art": "building the look",
-      "animator": "animating 214 keyframes",
-      "composer": "scoring · 120 bpm",
-      "sound": "designing the sound",
-      "editor": "cutting 12 shots",
-      "render": "rendering 2,055 frames",
-      "render_done": "render complete ✓"
+      "new": "nueva conversación",
+      "thinking": "claude está pensando…",
+      "yes": "sí.",
+      "writer": "escribiendo el guion",
+      "art": "definiendo el estilo",
+      "animator": "animando 214 fotogramas clave",
+      "composer": "componiendo · 120 bpm",
+      "sound": "diseñando el sonido",
+      "editor": "cortando 12 tomas",
+      "render": "renderizando 2.055 fotogramas",
+      "render_done": "render completo ✓"
     }
   },
 
   "hook": {
-    "typed": "I have an idea. I don't have a team."
+    "typed": "Tengo una idea. Pero necesitaría un equipo de personas."
   },
 
   "oldway": {
-    "timeline_title": "edit_final_v7_REAL",
-    "media_offline": "MEDIA OFFLINE",
-    "plugin_error": "Plugin failed to load · error 0x3F",
-    "unread": "unread",
+    "timeline_title": "edicion_final_v7_DEFINITIVA",
+    "media_offline": "MEDIOS SIN CONEXIÓN",
+    "plugin_error": "Error al cargar el plugin",
+    "plugin_code": "· error 0x3F",
+    "unread": "sin leer",
     "unread_from": 3,
     "unread_to": 112,
-    "deadline": "DEADLINE · FRI 9:00 AM",
-    "license": "License required — $49",
-    "rendering": "Rendering… 99%",
-    "invoice_label": "INVOICE",
+    "deadline": "ENTREGA · VIE 9:00 AM",
+    "license": "Licencia requerida — $49",
+    "rendering": "Renderizando… 99%",
+    "invoice_label": "FACTURA",
     "invoices": [
-      "Motion designer — $4,800",
-      "Composer — $2,500",
-      "Editor — $3,000",
-      "Sound mix — $1,200"
+      "Diseñador motion — $4.800",
+      "Compositor — $2.500",
+      "Editor — $3.000",
+      "Mezcla de sonido — $1.200"
     ],
-    "total": "TOTAL $11,500",
-    "render_failed": "RENDER FAILED"
+    "total": "TOTAL $11.500",
+    "render_failed": "ERROR DE RENDER"
   },
 
   "turn": {
-    "typed": "Can you help me make it?",
+    "typed": "Me puedes ayudar?",
     "claude_label": "CLAUDE",
-    "answer_big": "Yes.",
-    "answer_line": "Let's start with the story."
+    "answer_big": "Sí.",
+    "answer_line": "Comencemos con la historia"
   },
 
   "roles": {
-    "writer":   { "title": "the Writer",          "index": "01 / 07" },
-    "art":      { "title": "the Art Director",    "index": "02 / 07" },
-    "animator": { "title": "the Animator",        "index": "03 / 07" },
-    "composer": { "title": "the Composer",        "index": "04 / 07" },
-    "sound":    { "title": "the Sound Designer",  "index": "05 / 07" },
-    "editor":   { "title": "the Editor",          "index": "06 / 07" },
-    "render":   { "title": "the Render",          "index": "07 / 07" }
+    "writer":   { "title": "el Guionista",            "index": "01 / 07" },
+    "art":      { "title": "el Director de Arte",     "title_lines": ["el Director", "de Arte"], "index": "02 / 07" },
+    "animator": { "title": "el Animador",             "index": "03 / 07" },
+    "composer": { "title": "el Compositor",           "index": "04 / 07" },
+    "sound":    { "title": "el Diseñador de Sonido",  "index": "05 / 07" },
+    "editor":   { "title": "el Editor",               "index": "06 / 07" },
+    "render":   { "title": "el Render",               "index": "07 / 07" }
   },
 
   "writer": {
     "fade_in": "FADE IN:",
-    "slug": "INT. STUDIO APARTMENT — 2:07 AM",
-    "action": "A cursor blinks. One creator. No team.",
-    "char_1": "CREATOR",
-    "line_1": "Can you help me make it?",
+    "slug": "INT. DEPARTAMENTO STUDIO — 2:07 AM",
+    "action": "A cursor parpadea. Un creador. Sin equipo.",
+    "char_1": "CREADOR",
+    "line_1": "Me puedes ayudar?",
     "char_2": "CLAUDE",
-    "line_2": "Yes. Let's start with the story.",
-    "cut_to": "CUT TO:"
+    "line_2": "Sí. Comencemos con la historia",
+    "cut_to": "CUT a:"
   },
 
   "art": {
     "font_sample": "Aa",
     "font_display": "Fraunces · 144",
     "font_mono": "IBM Plex Mono",
-    "moods": ["NIGHT", "DAWN", "EMBER", "DAY"]
+    "moods": ["NOCHE", "ALBA", "BRASA", "DÍA"]
   },
 
   "animator": {
-    "ease_a": "linear",
+    "ease_a": "lineal",
     "ease_b": "back.out(1.7)"
   },
 
   "composer": {
-    "meta": "120 BPM · 4/4 · score.wav"
+    "meta": "120 BPM · 4/4 · musica.wav"
   },
 
   "sound": {
-    "sfx_names": ["impact_low", "whoosh", "key_click", "ui_pop", "glitch_crunch", "snap", "chime"]
+    "sfx_names": ["impacto_grave", "barrido", "tecla", "pop_interfaz", "glitch_crujido", "chasquido", "campanita"]
   },
 
   "editor": {
-    "clips": ["hook", "old way", "turn", "writer", "art", "animator", "composer", "sound", "editor", "render", "climax", "resolve"],
-    "tracks": ["score.wav", "sfx.wav", "room.wav"],
+    "clips": ["gancho", "a la antigua", "giro", "guion", "arte", "animador", "compositor", "sonido", "editor", "render", "clímax", "cierre"],
+    "durations": ["6,0s", "6,0s", "6,0s", "4,0s", "4,0s", "4,0s", "4,0s", "4,0s", "6,0s", "6,0s", "10,0s", "8,5s"],
+    "tracks": ["musica.wav", "efectos.wav", "ambiente.wav"],
     "timecode_end": "00:01:08:15",
-    "final_cut": "FINAL CUT · 12 SHOTS · 68.5 S"
+    "final_cut": "CORTE FINAL · 12 TOMAS · 68,5 S"
   },
 
   "render": {
     "frames_total": 2055,
-    "specs": "1920×1080 · 30 fps · 68.5 s",
-    "frame_label": "FRAME"
+    "specs": "1920×1080 · 30 fps · 68,5 s",
+    "frame_label": "FOTOGRAMA"
   },
 
   "climax": {
-    "tag_oldway": "THE OLD WAY",
-    "tag_message": "ONE MESSAGE",
-    "tag_roles": ["WRITER", "ART", "ANIMATION", "SCORE", "SOUND"],
-    "title": "One Conversation"
+    "tag_oldway": "A LA ANTIGUA",
+    "tag_message": "UN MENSAJE",
+    "tag_roles": ["GUION", "ARTE", "ANIMACIÓN", "MÚSICA", "SONIDO"],
+    "title": "Una Conversación"
   },
 
   "resolve": {
-    "bubble_1": "I have an idea. I don't have a team.",
-    "bubble_2": "Can you help me make it?",
-    "reply": "Yes. Let's start with the story.",
-    "files": ["script.fdx", "palette.json", "motion.curves", "score.wav", "sfx.wav", "edit.timeline", "render.mp4"],
-    "tagline": ["Every frame you just watched", "was made in one conversation."],
-    "title": "One Conversation",
-    "signature": "Made with Claude Opus 5.5 · Part 3 of 3"
+    "bubble_1": "Tengo una idea. Pero necesitaría un equipo de personas.",
+    "bubble_2": "Me puedes ayudar?",
+    "reply": "Sí. Comencemos con la historia",
+    "files": ["guion.fdx", "paleta.json", "curvas.motion", "musica.wav", "efectos.wav", "edicion.timeline", "render.mp4"],
+    "tagline": ["Cada fotograma que acabas de ver", "se hizo en una sola conversación."],
+    "title": "Una Conversación",
+    "signature": "Hecho con Claude Opus 5.5 · Parte 3 de 3"
   }
 }
