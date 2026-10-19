@@ -71,7 +71,7 @@
   },
 
   "writer": {
-    "fade_in": "FUNDIDO DE ENTRADA:",
+    "fade_in": "FADE IN:",
     "slug": "INT. DEPARTAMENTO STUDIO — 2:07 AM",
     "action": "Un cursor parpadea. Un creador. Sin equipo.",
     "char_1": "CREADOR",
@@ -90,6 +90,7 @@
 
   "animator": {
     "ease_a": "lineal",
+    "ease_mid": "expo.inOut",
     "ease_b": "back.out(1.7)"
   },
 
@@ -98,7 +99,7 @@
   },
 
   "sound": {
-    "sfx_names": ["impacto_grave", "barrido", "tecla", "pop_interfaz", "glitch_crujido", "chasquido", "campanita"]
+    "sfx_names": ["impacto_grave", "barrido", "tecla", "pop_interfaz", "glitch_crujido", "chasquido", "campanita", "caída_sub"]
   },
 
   "editor": {

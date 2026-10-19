@@ -132,8 +132,9 @@ function updateHud(t) {
 // =====================================================================
 // ACT 1: hook / old way / turn  (0 – 18 s)
 // =====================================================================
-const BOX = { y: 492, h: 96, charW: 38 * 0.6 };
-const boxW = s => Math.max(980, s.length * BOX.charW + 190);
+const BOX = { y: 470, h: 124, charW: 40 * 0.6 };
+const boxW = s => Math.max(1000, s.length * BOX.charW + 210);
+let ZO = { x: 1000, y: 640 }; // zoom-through point (last word of the answer)
 
 function buildAct1() {
   const a = el(S, `<div id="a1" class="layer"></div>`);
@@ -142,16 +143,18 @@ function buildAct1() {
   buildWindows(wl);
   // camera world
   const w = el(a, `<div id="w1" class="layer"></div>`);
-  el(w, `<div id="bigclock" class="abs serif" style="font-weight:300;font-size:150px;color:#cfd4e2;white-space:nowrap">${esc(T.hud.clock_start)}</div>`);
-  el(w, `<div id="box1" class="box"><div id="box1t" class="boxtxt"></div><div class="send" style="right:20px;top:20px">${ARROW('#2a140c')}</div></div>`);
-  el(w, `<div id="lonecaret" class="abs" style="font:400 38px Plex;color:#dfe2ea"></div>`);
+  el(w, `<div id="bigclock" class="abs serif" style="font-weight:300;font-size:166px;line-height:1;color:#c3cadc;white-space:nowrap;text-shadow:0 0 30px rgba(150,175,235,.15)">${esc(T.hud.clock_start)}</div>`);
+  el(w, `<div id="box1" class="box"><div id="box1t" class="boxtxt" style="font-size:40px"></div><div id="send1" class="send" style="right:28px;top:30px;width:64px;height:64px">${ARROW('#2a140c')}</div></div>`);
+  const comet = id => el(w, `<div id="${id}" class="abs" style="height:3px;width:96px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 70%);box-shadow:0 0 10px #fff,0 0 26px rgba(200,220,255,.85)"></div>`);
+  comet('comet1'); comet('comet2');
+  el(w, `<div id="lonecaret" class="abs" style="font:400 40px Plex;color:#dfe2ea"></div>`);
   el(w, `<div id="bubble1" class="abs mono" style="font-size:31px;color:#c9ccd8;white-space:nowrap;text-align:right"></div>`);
   el(w, `<div id="dots1" class="abs mono" style="font-size:22px;color:#8a90a6;letter-spacing:.3em"></div>`);
   // the answer
-  el(a, `<div id="yesline" class="abs" style="left:0;top:566px;width:1920px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,190,150,.7) 30%,rgba(255,220,190,.9) 50%,rgba(255,190,150,.7) 70%,transparent)"></div>`);
-  el(a, `<div id="yeslbl" class="abs mono" style="left:792px;top:392px;font-weight:600;font-size:17px;letter-spacing:.32em;color:#e8a07a">${esc(T.turn.claude_label)}</div>`);
-  el(a, `<div id="yesbig" class="abs serif" style="left:770px;top:405px;font-weight:400;font-size:196px;line-height:1;background:linear-gradient(180deg,#ffd9bd,#e9855c);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 0 30px rgba(233,133,92,.35));white-space:nowrap">${esc(T.turn.answer_big)}</div>`);
-  el(a, `<div id="yesline2" class="abs serif" style="left:790px;top:628px;font-weight:300;font-size:62px;color:#efe3d2;white-space:pre"></div>`);
+  el(a, `<div id="yesline" class="abs" style="left:400px;top:548px;width:1520px;height:1.5px;transform-origin:0 50%;background:linear-gradient(90deg,rgba(255,200,165,.95),rgba(255,190,150,.6) 40%,rgba(255,190,150,0))"></div>`);
+  el(a, `<div id="yeslbl" class="abs mono" style="left:413px;top:304px;font-weight:600;font-size:18px;letter-spacing:.3em;color:#de8e6b">${esc(T.turn.claude_label)}</div>`);
+  el(a, `<div id="yesbig" class="abs serif" style="left:398px;top:347px;font-weight:400;font-size:250px;line-height:1;color:#f4b28c;text-shadow:0 0 34px rgba(240,140,90,.5),0 0 90px rgba(230,120,80,.25);white-space:nowrap">${esc(T.turn.answer_big)}</div>`);
+  el(a, `<div id="yesline2" class="abs serif" style="left:410px;top:612px;font-weight:400;font-size:68px;line-height:1;color:#f1e9de;white-space:pre"></div>`);
 }
 
 function buildWindows(wl) {
@@ -193,7 +196,7 @@ const WIN_IN = { w_tl: 6.0, w_err: 6.65, w_lic: 6.95, w_bell: 7.4, w_dead: 7.75,
 
 function updateAct1(t) {
   const a = $('a1');
-  if (!vis(a, t < 18.2)) return;
+  if (!vis(a, t < 18.0)) return;
 
   const hook = T.hook.typed, turn = T.turn.typed;
   // ---- camera ----
@@ -205,45 +208,53 @@ function updateAct1(t) {
   if (t > 9.4 && t < 12.2) shake = (t < 10.5 ? 9 * Math.exp(-(t - 9.4) * 7) : 0) + (t > 10.5 ? 6 * Math.exp(-(t - 10.5) * 3) + 1.5 : 0);
   const r = rng(Math.floor(t * 30));
   const sx = (r() - .5) * 2 * shake, sy = (r() - .5) * 2 * shake;
-  // zoom-through at the end of the turn
-  const z = ei(p(t, 17.3, 18.05));
   const w1 = $('w1');
   st(w1, { transformOrigin: '960px 540px', transform: `translate(${sx}px,${sy}px) scale(${cam})` });
-  st(a, { transformOrigin: '900px 540px', transform: `scale(${1 + z * 1.3})`, filter: blur(z * 14), opacity: 1 - z });
+  // zoom-through into the last word of the answer
+  const z = ei(p(t, 17.25, 17.9));
+  st(a, { transformOrigin: `${ZO.x}px ${ZO.y}px`, transform: `scale(${1 + z * 1.1})`, filter: blur(z * 14), opacity: 1 - z });
 
-  // ---- input box ----
+  // ---- input box: the outline draws itself, then fills ----
   const wHook = boxW(hook), wTurn = boxW(turn);
   const bw = lerp(wHook, wTurn, eio(p(t, 12.3, 12.9)));
   const bx = 960 - bw / 2, by = BOX.y;
-  const boxIn = eo(p(t, 1.75, 2.25));
+  const grow = eo(p(t, 1.45, 2.0));
+  const curW = lerp(150, bw, grow);
   const box = $('box1');
   const dimAns = eo(p(t, 15.95, 16.5));
-  st(box, { left: bx + 'px', top: by + 'px', width: bw + 'px', height: BOX.h + 'px', opacity: boxIn * (1 - dimAns * .8), transform: `scaleX(${lerp(.94, 1, boxIn)})`, filter: blur(dimAns * 5) });
+  const fill = p(t, 1.85, 2.35);
+  st(box, {
+    left: bx + 'px', top: by + 'px', width: curW + 'px', height: BOX.h + 'px', opacity: (t >= 1.45 ? 1 : 0) * (1 - dimAns * .8),
+    background: `rgba(16,22,38,${(.78 * fill).toFixed(3)})`, borderColor: `rgba(220,228,248,${lerp(.9, .3, p(t, 1.95, 2.6)).toFixed(3)})`, filter: blur(dimAns * 5),
+  });
+  const sk = p(t, 1.95, 2.25);
+  st($('send1'), { opacity: clamp(sk * 2), transform: `scale(${back(sk, 2)})` });
+  const cometOn = t >= 1.45 && t < 2.25, cOp = 1 - p(t, 1.95, 2.25);
+  [['comet1', by - 1], ['comet2', by + BOX.h - 2]].forEach(([id, y]) => { const c = $(id); vis(c, cometOn); st(c, { left: (bx + curW - 96) + 'px', top: y + 'px', opacity: cOp }); });
   // big clock
   const ck = $('bigclock');
   const ckIn = eo(p(t, 0.1, 0.9));
-  st(ck, { left: (bx + 26) + 'px', top: (by - 230) + 'px', opacity: ckIn * (1 - p(t, 5.8, 6.4)) * .92, filter: blur((1 - ckIn) * 10 + p(t, 5.8, 6.4) * 8), transform: `translateY(${-p(t, 5.8, 6.4) * 30}px)` });
+  st(ck, { left: (bx + 42) + 'px', top: (by - 220) + 'px', opacity: ckIn * (1 - p(t, 5.8, 6.4)) * .88, filter: blur((1 - ckIn) * 10 + p(t, 5.8, 6.4) * 8), transform: `translateY(${-p(t, 5.8, 6.4) * 30}px)` });
   // lone caret before the box appears
   const lc = $('lonecaret');
-  vis(lc, t < 2.0);
-  st(lc, { left: (bx + 36) + 'px', top: (by + 20) + 'px', opacity: 1 - p(t, 1.75, 2.0) });
+  vis(lc, t < 1.5);
+  st(lc, { left: (bx + 38) + 'px', top: (by + 34) + 'px' });
   lc.innerHTML = caret(blink(t));
 
   // text in box
-  let txt = '', showCaret = true;
+  let txt = '';
   if (t < 12.3) txt = typed(hook, t, 2.0, 5.4);
   else if (t < 12.8) txt = hook.slice(0, Math.round(hook.length * (1 - p(t, 12.3, 12.75))));
   else if (t < 14.55) txt = typed(turn, t, 12.9, 14.2);
-  else txt = '';
   const typingNow = typing(t, 2.0, 5.4) || typing(t, 12.3, 14.2);
-  $('box1t').innerHTML = esc(txt) + (showCaret ? caret(typingNow ? 1 : blink(t)) : '');
+  $('box1t').innerHTML = esc(txt) + caret(typingNow ? 1 : blink(t));
 
   // sent bubble + thinking dots
   const b1 = $('bubble1'), d1 = $('dots1');
   const sendK = eo(p(t, 14.55, 15.0));
   vis(b1, t >= 14.55); vis(d1, t >= 14.8 && t < 16.05);
   if (t >= 14.55) {
-    st(b1, { right: (1920 - (bx + bw - 6)) + 'px', top: lerp(by + 26, by - 82, sendK) + 'px', opacity: sendK * (1 - dimAns * .75), filter: blur(dimAns * 4) });
+    st(b1, { right: (1920 - (bx + bw - 6)) + 'px', top: lerp(by + 40, by - 82, sendK) + 'px', opacity: sendK * (1 - dimAns * .75), filter: blur(dimAns * 4) });
     b1.textContent = turn;
     const ph = (t - 14.8) * 3;
     d1.innerHTML = [0, 1, 2].map(i => `<span style="opacity:${.3 + .7 * Math.max(0, Math.sin(ph * Math.PI - i * .8))}">•</span>`).join('');
@@ -263,18 +274,13 @@ function updateAct1(t) {
     const drift = (t - t0) * 0.018;
     st(e, { opacity: clamp(k * 1.6), filter: blur((1 - k) * 12), transform: `translate(${cx * drift}px,0) scale(${lerp(1.3, 1, bk)})` });
   }
-  // unread counter
-  const bn = Math.round(lerp(T.oldway.unread_from, T.oldway.unread_to, ei(p(t, 7.6, 9.3))));
-  $('bellnum').textContent = bn;
-  // rendering bar stuck at 99% with a nervous pulse
+  $('bellnum').textContent = Math.round(lerp(T.oldway.unread_from, T.oldway.unread_to, ei(p(t, 7.6, 9.3))));
   $('rendfill').style.opacity = .7 + .3 * Math.sin(t * 9);
-  // total stamp
   const tot = $('w_total');
   if (vis(tot, t >= 9.4)) {
     const k = p(t, 9.4, 9.62);
     st(tot, { opacity: clamp(k * 2), filter: blur((1 - k) * 16), transform: `rotate(-4deg) scale(${lerp(2.6, 1, eo(k)) + (k >= 1 ? .03 * Math.exp(-(t - 9.62) * 12) : 0)})` });
   }
-  // render failed
   const f = $('w_fail');
   if (vis(f, t >= 10.5)) {
     const k = p(t, 10.5, 10.8);
@@ -283,13 +289,24 @@ function updateAct1(t) {
   }
 
   // ---- the answer ----
-  const yk = eo(p(t, 16.0, 16.5));
+  const yk = eo(p(t, 16.0, 16.45));
   const yb = $('yesbig'), yl = $('yeslbl'), yln = $('yesline'), y2 = $('yesline2');
-  vis(yb, t >= 15.95); vis(yl, t >= 15.95); vis(yln, t >= 15.95); vis(y2, t >= 16.3);
-  st(yb, { opacity: yk, transform: `translateY(${(1 - yk) * 24}px) scale(${1 + p(t, 16.5, 17.3) * .04})`, filter: `blur(${((1 - yk) * 18).toFixed(1)}px) drop-shadow(0 0 30px rgba(233,133,92,.35))` });
-  st(yl, { opacity: eo(p(t, 15.95, 16.3)) });
-  st(yln, { opacity: yk * .9, transform: `scaleX(${eo(p(t, 16.0, 16.7))})` });
-  y2.innerHTML = esc(typed(T.turn.answer_line, t, 16.35, 17.25)) + (t < 17.3 ? caret(typing(t, 16.35, 17.25) ? 1 : blink(t)) : '');
+  vis(yb, t >= 15.95); vis(yl, t >= 15.95); vis(yln, t >= 15.95 && t < 17.1); vis(y2, t >= 16.25);
+  st(yb, { opacity: yk, transform: `translateY(${(1 - yk) * 24}px)`, filter: blur((1 - yk) * 18) });
+  st(yl, { opacity: eo(p(t, 15.95, 16.3)) * .9 });
+  st(yln, { opacity: yk * (1 - p(t, 16.55, 17.0)), transform: `scaleX(${eo(p(t, 15.95, 16.5))})` });
+  const ans = T.turn.answer_line, cut = ans.lastIndexOf(' ') + 1;
+  const s2 = typed(ans, t, 16.3, 17.15);
+  const head = s2.slice(0, Math.min(s2.length, cut)), tail = s2.length > cut ? s2.slice(cut) : '';
+  y2.innerHTML = esc(head) + (tail ? `<span style="color:#ec9a6f;text-shadow:0 0 20px rgba(236,154,111,.45)">${esc(tail)}</span>` : '') + (t < 17.2 ? caret(typing(t, 16.3, 17.15) ? 1 : blink(t)) : '');
+}
+
+function measureZO() {
+  const y2 = $('yesline2');
+  y2.style.display = '';
+  y2.innerHTML = esc(T.turn.answer_line);
+  ZO = { x: y2.offsetLeft + y2.offsetWidth - 150, y: y2.offsetTop + 40 };
+  y2.innerHTML = '';
 }
 
 // warm/cool glow behind everything (dark acts)
@@ -334,45 +351,55 @@ function roleIO(e, t, a, b, o = {}) {
 }
 
 // ---------- 04 Writer ----------
+const WR_ZOOM = { x: 760, y: 560 };
 function buildWriter() {
-  const s = el(S, `<div id="sW" class="layer persp"></div>`);
-  el(s, `<div class="abs" style="left:1250px;top:250px;width:110px;height:630px;border-radius:14px;border:1px solid rgba(255,181,71,.18);background:rgba(20,22,36,.6);transform:rotateY(16deg) rotateX(6deg) rotateZ(-7deg)"></div>`);
-  const paper = el(s, `<div id="paper"></div>`);
-  st(paper, { transform: 'rotateY(16deg) rotateX(6deg) rotateZ(-7deg)', transformOrigin: '50% 50%' });
-  const w = T.writer;
+  const s = el(S, `<div id="sW" class="layer persp" style="perspective-origin:50% 40%"></div>`);
+  const wrap = el(s, `<div id="pwrap" class="layer p3d"></div>`);
+  el(wrap, `<div class="abs" style="left:330px;top:228px;width:1120px;height:760px;border-radius:16px;border:1px solid rgba(255,181,71,.25);background:rgba(18,20,34,.75)"></div>`);
+  const paper = el(wrap, `<div id="paper"></div>`);
   const lines = [
-    ['fade', 'amber', ''], ['slug', '', ''], ['action', '', ''], ['gap', '', ''],
-    ['char1', '', 'padding-left:290px;font-weight:700'], ['line1', '', 'padding-left:170px'], ['gap2', '', ''],
-    ['char2', '', 'padding-left:290px'], ['line2', '', 'padding-left:170px'], ['cut', 'amber', 'text-align:right;margin-top:20px'],
+    ['fade', 'amber', ''], ['slug', '', ''], ['action', '', ''], ['gap', '', 'min-height:24px'],
+    ['char1', '', 'padding-left:270px;font-weight:700'], ['line1', '', 'padding-left:150px'], ['gap2', '', 'min-height:24px'],
+    ['char2', '', 'padding-left:270px'], ['line2', '', 'padding-left:150px'], ['cut', 'amber', 'text-align:right;margin-top:26px'],
   ];
   lines.forEach(([k, cls, sty]) => el(paper, `<div id="pw_${k}" class="ln ${cls}" style="${sty}"></div>`));
-  titleBlock(s, 'tW', T.roles.writer.index, [T.roles.writer.title], 'right', C.writer, 255);
+  const tb = el(s, `<div id="tWbox" class="layer"></div>`);
+  titleBlock(tb, 'tW', T.roles.writer.index, [T.roles.writer.title], 'right', '#f4c064', 238, 124);
 }
 function updateWriter(t) {
   const s = $('sW');
-  if (!roleIO(s, t, 18, 22, { inFn: t => eo(p(t, 17.65, 18.25)), inScale: .93, scale: t => lerp(1, 1.05, p(t, 18, 22)) })) return;
+  if (!vis(s, t > 17.4 && t < 21.8)) return;
+  const kin = eo(p(t, 17.45, 18.15));
+  st(s, { transformOrigin: `${ZO.x}px ${ZO.y}px`, transform: `scale(${lerp(.55, 1, kin)})`, opacity: kin, filter: blur((1 - kin) * 10) });
+  const out = ei(p(t, 21.15, 21.75));
+  st($('pwrap'), { transformOrigin: `${WR_ZOOM.x}px ${WR_ZOOM.y}px`, transform: `scale(${(1 + .04 * p(t, 18, 21.2)) * lerp(1, 1.9, out)}) rotateX(24deg) rotateZ(-9deg)`, filter: blur(out * 14), opacity: 1 - out });
+  st($('tWbox'), { transform: `translateY(${-eio(p(t, 21.15, 21.65)) * 240}px)`, opacity: 1 - p(t, 21.3, 21.65) });
   const w = T.writer;
-  const seq = [ // key, text, t0, t1
-    ['fade', w.fade_in, 18.1, 18.4], ['slug', w.slug, 18.4, 19.0], ['action', w.action, 19.0, 19.75],
-    ['char1', w.char_1, 19.8, 19.85], ['line1', w.line_1, 19.9, 20.4], ['line2', w.line_2, 20.6, 21.25], ['cut', w.cut_to, 21.3, 21.45],
+  const seq = [
+    ['fade', w.fade_in, 17.75, 18.0], ['slug', w.slug, 18.0, 18.5], ['action', w.action, 18.5, 19.05],
+    ['char1', w.char_1, 19.1, 19.3], ['line1', w.line_1, 19.3, 19.75], ['line2', w.line_2, 20.05, 20.6], ['cut', w.cut_to, 20.75, 20.95],
   ];
   for (const [k, txt, a, b] of seq) {
-    const on = typing(t, a, b) && b - a > .1;
+    const on = typing(t, a, b);
     $('pw_' + k).innerHTML = esc(typed(txt, t, a, b)) + (on ? caret(1) : '');
   }
   const c2 = $('pw_char2');
-  const kc = back(p(t, 20.45, 20.7), 2);
-  c2.innerHTML = t >= 20.45 ? `<span class="pill" style="transform:scale(${kc});display:inline-block">${esc(w.char_2)}</span>` : '';
-  titleUpdate('tW', t, 18.1);
+  const kc = back(p(t, 19.8, 20.0), 2);
+  c2.innerHTML = t >= 19.8 ? `<span class="pill" style="transform:scale(${kc});display:inline-block">${esc(w.char_2)}</span>` : '';
+  titleUpdate('tW', t, 18.0);
 }
 
 // ---------- 05 Art Director ----------
+const SW_HEX = ['#070B16', '#E07A55', '#FFB547', '#FF5C8A', '#3FE0A5', '#9B7BFF', '#C8F05A', '#5CC8FF', '#FFD86B'];
+const ART_WHEEL = { x: 300, y: 300 };          // board coords
+const ART_WHEEL_SCREEN = { x: 1005, y: 468 };  // where that lands on screen
 function buildArt() {
   const s = el(S, `<div id="sA" class="layer persp"></div>`);
   const lines = T.roles.art.title_lines || [T.roles.art.title];
-  titleBlock(s, 'tA', T.roles.art.index, lines, 'left', C.art, 250, 116);
-  const b = el(s, `<div id="board" class="abs p3d" style="left:700px;top:165px;width:1090px;height:730px;border-radius:24px;border:1.5px solid rgba(255,92,138,.45);background:rgba(14,14,28,.55);box-shadow:0 0 50px rgba(255,92,138,.12)"></div>`);
+  titleBlock(s, 'tA', T.roles.art.index, lines, 'left', C.art, 250, 120);
+  const b = el(s, `<div id="board" class="abs p3d" style="left:700px;top:165px;width:1090px;height:730px"></div>`);
   st(b, { transform: 'rotateY(-14deg) rotateX(4deg)' });
+  el(b, `<div id="bframe" class="abs" style="left:0;top:0;width:1090px;height:730px;border-radius:24px;border:1.5px solid rgba(255,92,138,.45);background:rgba(14,14,28,.55);box-shadow:0 0 50px rgba(255,92,138,.12)"></div>`);
   const a = T.art;
   const card = (id, x, y, w, h, inner) => el(b, `<div id="${id}" class="card" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"><div class="pd"></div>${inner}</div>`);
   card('ac0', 40, 45, 300, 440, `<div class="abs" style="left:0;width:100%;top:70px;text-align:center;font:400 190px/1 Fraunces;color:#f4f2f6">${esc(a.font_sample)}</div><div class="abs" style="left:22px;right:22px;bottom:70px;height:2px;background:linear-gradient(90deg,#FF5C8A,transparent)"></div><div class="cl" style="color:#e9e3ea">${esc(a.font_display)}</div>`);
@@ -381,56 +408,94 @@ function buildArt() {
   card('ac3', 610, 85, 235, 400, `<div class="abs" style="left:20px;top:80px;width:195px;height:195px;border-radius:50%;background:radial-gradient(circle,#ffe0c0 0%,#ff8a4c 25%,rgba(224,80,60,.35) 55%,transparent 72%)"></div><div class="cl">${esc(a.moods[2])}</div>`);
   card('ac4', 870, 105, 185, 215, `<div class="abs" style="left:16px;right:16px;top:34px;height:120px;border-radius:6px;background:radial-gradient(ellipse at 45% 45%,#fff3d8 0%,#cfe0f0 55%,#9cc3e6 100%)"></div><div class="cl" style="font-size:16px">${esc(a.moods[3])}</div>`);
   card('ac5', 860, 345, 200, 140, `<div class="abs" style="left:18px;top:52px;font:500 22px Plex;color:#e9e3ea;white-space:nowrap">${esc(a.font_mono)}</div><div class="abs" style="left:18px;top:92px;width:20px;height:3px;background:#FF5C8A"></div>`);
-  const hex = ['#070B16', '#E07A55', '#FFB547', '#FF5C8A', '#3FE0A5', '#9B7BFF', '#C8F05A', '#5CC8FF', '#FFD86B'];
-  hex.forEach((h, i) => {
+  el(b, `<div id="birth" class="abs" style="width:100px;height:100px;border-radius:50%;border:2px solid #ffb547;box-shadow:0 0 30px rgba(255,181,71,.6),inset 0 0 20px rgba(255,181,71,.4)"></div>`);
+  SW_HEX.forEach((h, i) => {
     el(b, `<div id="sw${i}" class="sw" style="background:radial-gradient(circle at 35% 30%,#ffffff55,transparent 45%),${h};box-shadow:0 0 22px ${h}88${i === 0 ? ',inset 0 0 0 2px #2a2f44' : ''}"></div>`);
-    el(b, `<div id="swl${i}" class="swl">${h}</div>`);
+    el(b, `<div id="swl${i}" class="swl" style="color:#e6dde3">${h}</div>`);
   });
+  el(b, `<div id="selector" class="abs" style="width:120px;height:120px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 20px rgba(255,255,255,.6)"></div>`);
   el(b, `<div id="wheel" class="abs" style="width:240px;height:240px;border-radius:50%;background:conic-gradient(#ff5c8a,#ffb547,#c8f05a,#3fe0a5,#5cc8ff,#9b7bff,#ff5c8a);-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);box-shadow:0 0 40px rgba(255,255,255,.2)"></div>`);
-  el(b, `<div id="wheeldot" class="abs" style="width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#ffe2d0,#e07a55);box-shadow:0 0 0 4px rgba(255,255,255,.6),0 0 24px #e07a55"></div>`);
+  el(b, `<div id="pick" class="abs" style="border-radius:50%"></div>`);
+  el(S, `<div id="handoff" class="abs" style="width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#c9ffe9,#3FE0A5 60%);box-shadow:0 0 18px #3FE0A5,0 0 44px #3FE0A5"></div>`);
 }
+function swRow(i) { return { x: 52 + i * 112 + 46, y: 550 + 46 }; }
 function updateArt(t) {
   const s = $('sA');
-  if (!roleIO(s, t, 22, 26, { scale: t => lerp(1, 1.06, p(t, 22, 26)) })) return;
-  titleUpdate('tA', t, 22.05, (T.roles.art.title_lines || [1]).length);
-  for (let i = 0; i < 6; i++) {
-    const k = p(t, 22.1 + i * .12, 22.5 + i * .12);
-    st($('ac' + i), { opacity: clamp(k * 1.5), transform: `scale(${lerp(.82, 1, back(k, 1.6))})` });
+  const on = vis(s, t > 21.4 && t < 26.0);
+  const ho = $('handoff');
+  vis(ho, t > 25.4 && t < 26.02);
+  if (t > 25.4 && t < 26.02) {
+    const k = eio(p(t, 25.55, 25.95));
+    st(ho, { left: (lerp(ART_WHEEL_SCREEN.x, AN_BALL_SCREEN.x, k) - 25) + 'px', top: (lerp(ART_WHEEL_SCREEN.y, AN_BALL_SCREEN.y, k) - 25) + 'px', opacity: 1 });
   }
-  const cx = 190, cy = 265;
+  if (!on) return;
+  const out = ei(p(t, 25.45, 25.95));
+  st(s, { opacity: 1 - out, filter: blur(out * 16), transform: `scale(${(1 + .05 * p(t, 22, 25.4)) * (1 + out * .06)})`, transformOrigin: '960px 540px' });
+  titleUpdate('tA', t, 21.95, (T.roles.art.title_lines || [1]).length);
+  // board frame flies in from the right
+  const bf = eo(p(t, 22.25, 22.75));
+  st($('bframe'), { opacity: bf, transform: `translateX(${(1 - bf) * 340}px)` });
+  [22.35, 22.55, 22.7, 22.85, 23.0, 23.65].forEach((t0, i) => {
+    const k = p(t, t0, t0 + .35);
+    st($('ac' + i), { opacity: clamp(k * 1.5), transform: `translateX(${(1 - eo(k)) * 120}px) scale(${lerp(.85, 1, back(k, 1.5))})` });
+  });
+  // birth ring
+  const bk = p(t, 21.45, 21.9);
+  const brt = $('birth');
+  vis(brt, t > 21.45 && t < 21.95);
+  st(brt, { left: (256 - 50) + 'px', top: (382 - 50) + 'px', transform: `scale(${lerp(.2, 1.6, eo(bk))})`, opacity: Math.sin(bk * Math.PI) });
+  // ring centre/radius/size: screen-centred ring, then wraps around the Aa card
+  const mv = eio(p(t, 22.2, 22.8));
+  const cx = lerp(256, 215, mv), cy = lerp(382, 345, mv), R = lerp(270, 235, mv), sz = lerp(1.4, 1.08, mv);
   for (let i = 0; i < 9; i++) {
-    const ang = i / 9 * Math.PI * 2 + (t - 22) * 1.3;
-    const ox = cx + Math.cos(ang) * 235 - 46, oy = cy + Math.sin(ang) * 210 - 46;
-    const rx = 52 + i * 112, ry = 550;
-    const k = back(p(t, 23.25 + i * .07, 23.85 + i * .07), 1.3);
-    const x = lerp(ox, rx, k), y = lerp(oy, ry, k);
-    const sc = lerp(.72, 1, clamp(k));
-    const ink = eo(p(t, 22.0 + i * .05, 22.4 + i * .05));
-    st($('sw' + i), { left: x + 'px', top: y + 'px', transform: `scale(${sc * ink})`, opacity: ink });
-    const lk = p(t, 23.9 + i * .07, 24.2 + i * .07);
-    st($('swl' + i), { left: (rx + 46) + 'px', top: (ry + 108) + 'px', transform: 'translateX(-50%)', opacity: lk });
+    const born = eo(p(t, 21.55 + i * .03, 22.0 + i * .03));
+    const ang = -Math.PI / 2 + i * (Math.PI * 2 / 9) + Math.max(0, t - 21.9) * .25;
+    const rx = cx + Math.cos(ang) * R * born, ry = cy + Math.sin(ang) * R * born;
+    const row = swRow(i);
+    const k = back(p(t, 23.2 + i * .045, 23.62 + i * .045), 1.2), kk = clamp(k);
+    let x = lerp(rx, row.x, k), y = lerp(ry, row.y, k), sc = lerp(sz, 1, kk) * born;
+    if (i === 3) sc *= 1 + .25 * Math.sin(p(t, 24.85, 25.25) * Math.PI);
+    st($('sw' + i), { left: (x - 46) + 'px', top: (y - 46) + 'px', transform: `scale(${sc})`, opacity: born });
+    st($('swl' + i), { left: x + 'px', top: (y + 46 * sc + 12) + 'px', transform: 'translateX(-50%)', opacity: eo(p(t, 21.85 + i * .02, 22.15 + i * .02)), fontSize: lerp(19, 15, kk) + 'px' });
   }
-  const wk = p(t, 24.75, 25.15), wo = p(t, 25.45, 25.7);
-  const wh = $('wheel'), wd = $('wheeldot');
-  vis(wh, t > 24.75 && t < 25.7); vis(wd, t > 24.75 && t < 25.7);
-  st(wh, { left: (300 - 120) + 'px', top: (300 - 120) + 'px', transform: `scale(${back(wk, 1.8) * (1 - wo)}) rotate(${(t - 24.75) * 160}deg)`, opacity: 1 - wo });
-  st(wd, { left: (300 - 35) + 'px', top: (300 - 35) + 'px', transform: `scale(${back(p(t, 24.9, 25.2), 2) * (1 - wo)})`, opacity: 1 - wo });
+  // colour wheel, selector and the picked colour
+  const wk = p(t, 24.45, 24.8), wo = p(t, 25.55, 25.85);
+  const wh = $('wheel');
+  vis(wh, t > 24.45 && t < 25.9);
+  st(wh, { left: (ART_WHEEL.x - 120) + 'px', top: (ART_WHEEL.y - 120) + 'px', transform: `scale(${back(wk, 1.8) * (1 - wo * .3)}) rotate(${(t - 24.45) * 120}deg)`, opacity: 1 - wo });
+  const sel = $('selector');
+  vis(sel, t > 24.55 && t < 25.05);
+  const a2 = swRow(2), a3 = swRow(3), sk = eio(p(t, 24.7, 24.88));
+  st(sel, { left: (lerp(a2.x, a3.x, sk) - 60) + 'px', top: (a2.y - 60) + 'px', opacity: p(t, 24.55, 24.65) * (1 - p(t, 24.95, 25.05)), transform: `scale(${lerp(.9, 1, p(t, 24.55, 24.7))})` });
+  const pk = $('pick');
+  vis(pk, t > 25.0 && t < 25.45);
+  const fk = eio(p(t, 25.0, 25.25)), ck = p(t, 25.25, 25.45);
+  const d = lerp(92, 50, fk);
+  const col = mixHex('#FF5C8A', '#3FE0A5', ck);
+  st(pk, { left: (lerp(a3.x, ART_WHEEL.x, fk) - d / 2) + 'px', top: (lerp(a3.y, ART_WHEEL.y, fk) - d / 2) + 'px', width: d + 'px', height: d + 'px', background: col, boxShadow: `0 0 20px ${col},0 0 44px ${col}` });
+}
+function mixHex(a, b, k) {
+  const pa = [1, 3, 5].map(i => parseInt(a.slice(i, i + 2), 16)), pb = [1, 3, 5].map(i => parseInt(b.slice(i, i + 2), 16));
+  return `rgb(${pa.map((v, i) => Math.round(lerp(v, pb[i], k))).join(',')})`;
 }
 
 // ---------- 06 Animator ----------
 const AN = { x0: 90, x1: 1380, yb: 470, yt: 120 };
+const AN_BALL_SCREEN = { x: 845, y: 628 };
+const expoIO = u => (u <= 0 ? 0 : u >= 1 ? 1 : u < .5 ? Math.pow(2, 20 * u - 10) / 2 : (2 - Math.pow(2, -20 * u + 10)) / 2);
 function buildAnimator() {
   const s = el(S, `<div id="sN" class="layer persp"></div>`);
-  titleBlock(s, 'tN', T.roles.animator.index, [T.roles.animator.title], 'right', C.anim, 230);
-  el(s, `<div class="abs" style="left:150px;top:282px;width:300px;height:5px;border-radius:3px;background:#e9a24c;opacity:.7"></div><div class="abs" style="left:190px;top:300px;width:200px;height:5px;border-radius:3px;background:#e2557a;opacity:.6"></div>`);
-  const pnl = el(s, `<div id="anp" class="abs" style="left:110px;top:330px;width:1520px;height:610px;border-radius:20px;border:1.5px solid rgba(63,224,165,.45);background:rgba(8,22,22,.55);box-shadow:0 0 50px rgba(63,224,165,.12)"></div>`);
+  titleBlock(s, 'tN', T.roles.animator.index, [T.roles.animator.title], 'right', C.anim, 230, 116);
+  el(s, `<div id="anTracks"><div class="abs" style="left:150px;top:282px;width:300px;height:5px;border-radius:3px;background:#e9a24c;opacity:.7"></div><div class="abs" style="left:190px;top:300px;width:200px;height:5px;border-radius:3px;background:#e2557a;opacity:.6"></div><div class="abs" style="left:230px;top:318px;width:160px;height:5px;border-radius:3px;background:#3FE0A5;opacity:.5"></div></div>`);
+  const pnl = el(s, `<div id="anp" class="abs" style="left:110px;top:330px;width:1520px;height:610px"></div>`);
   let grid = '';
   for (let i = 0; i <= 12; i++) grid += `<line x1="${AN.x0 + i * (AN.x1 - AN.x0) / 12}" y1="70" x2="${AN.x0 + i * (AN.x1 - AN.x0) / 12}" y2="${AN.yb + 20}" stroke="rgba(63,224,165,.08)"/>`;
   for (let j = 0; j <= 6; j++) grid += `<line x1="${AN.x0}" y1="${70 + j * 70}" x2="${AN.x1}" y2="${70 + j * 70}" stroke="rgba(63,224,165,.08)"/>`;
   let ruler = '';
   for (let i = 0; i <= 40; i++) { const x = AN.x0 + i * (AN.x1 - AN.x0) / 40; ruler += `<line x1="${x}" y1="520" x2="${x}" y2="${i % 10 ? 527 : 536}" stroke="rgba(200,230,220,.45)"/>`; if (i % 10 === 0) ruler += `<text x="${x}" y="510" fill="rgba(200,230,220,.55)" font-family="Plex" font-size="17" text-anchor="middle">${i}</text>`; }
-  pnl.innerHTML = `<svg width="1520" height="610" style="position:absolute;left:0;top:0">${grid}<line x1="${AN.x0}" y1="530" x2="${AN.x1}" y2="530" stroke="rgba(200,230,220,.35)"/>${ruler}
-    <line id="anHandle" stroke="rgba(230,255,245,.7)" stroke-width="1.5" stroke-dasharray="5 5"/><circle id="anHandleDot" r="7" fill="#0b1a18" stroke="#e6fff4" stroke-width="2"/>
+  pnl.innerHTML = `<div id="anFrame" class="abs" style="left:0;top:0;width:1520px;height:610px;border-radius:20px;border:1.5px solid rgba(63,224,165,.45);background:rgba(8,22,22,.55);box-shadow:0 0 50px rgba(63,224,165,.12)"></div>
+    <svg width="1520" height="610" style="position:absolute;left:0;top:0;overflow:visible"><g id="anGrid">${grid}<line x1="${AN.x0}" y1="530" x2="${AN.x1}" y2="530" stroke="rgba(200,230,220,.35)"/>${ruler}</g>
+    <g id="anHandles"></g>
     <path id="anCurve" fill="none" stroke="#3FE0A5" stroke-width="4" style="filter:drop-shadow(0 0 8px #3FE0A5)"/>
     <g id="anMarks"></g><g id="anTrail"></g>
     <line id="anPlay" y1="80" y2="545" stroke="#e6fff4" stroke-width="1.5" opacity=".8"/><path id="anPlayHead" fill="#e6fff4"/>
@@ -438,55 +503,93 @@ function buildAnimator() {
     <g id="anDiam"></g></svg>
     <div id="anLabel" class="abs mono" style="left:${AN.x0}px;top:22px;padding:5px 16px;border-radius:7px;background:rgba(63,224,165,.12);border:1px solid rgba(63,224,165,.35);font-size:19px;color:#b9ffe4;white-space:nowrap"></div>
     <svg id="anCursor" width="34" height="40" viewBox="0 0 17 20" style="position:absolute;left:0;top:0"><path d="M1 1l13 10-6 1 3 6-3 1-3-6-4 4z" fill="#fff" stroke="#111" stroke-width="1"/></svg>`;
-  st(pnl, { transform: 'rotateX(20deg) rotateZ(-1deg)', transformOrigin: '50% 60%' });
+  st(pnl, { transformOrigin: '50% 60%' });
+  el(S, `<div id="anLine" class="abs" style="left:0;width:1920px;height:4px;border-radius:2px"></div>`);
 }
-function anY(u, m) { return lerp(u, back(u, 1.7), m); }
+function anBallU(t) {
+  if (t < 26.05) return .5;
+  if (t < 26.15) return lerp(.5, 0, eio(p(t, 26.05, 26.15)));
+  if (t < 26.45) return p(t, 26.15, 26.45);
+  if (t < 27.62) return 1;
+  if (t < 27.66) return 0;
+  if (t < 28.0) return eio(p(t, 27.66, 28.0));
+  if (t < 28.3) return 1;
+  if (t < 28.75) return p(t, 28.3, 28.75);
+  if (t < 29.0) return 1;
+  return lerp(1, .45, eio(p(t, 29.0, 29.5)));
+}
 function updateAnimator(t) {
-  const s = $('sN');
-  if (!roleIO(s, t, 26, 30, { scale: t => lerp(1, 1.05, p(t, 26, 30)) })) return;
-  titleUpdate('tN', t, 26.05);
-  const m = eio(p(t, 27.5, 28.05));
+  const s = $('sN'), line = $('anLine');
+  const on = vis(s, t > 25.5 && t < 30.0);
+  // the flattened curve becomes a full-width line that hands over to the composer
+  const lOn = t > 29.3 && t < 30.25;
+  vis(line, lOn);
+  if (lOn) {
+    const lk = eo(p(t, 29.3, 29.7)), mk = eio(p(t, 29.5, 29.85));
+    const col = mixHex('#3FE0A5', '#9B7BFF', p(t, 29.5, 29.9));
+    st(line, { top: lerp(626, 800, mk) + 'px', transform: `scaleX(${lerp(.62, 1, lk)})`, background: `linear-gradient(90deg,transparent,${col} 15%,${col} 85%,transparent)`, boxShadow: `0 0 14px ${col}`, opacity: p(t, 29.3, 29.4) * (1 - p(t, 29.9, 30.25)) });
+  }
+  if (!on) return;
+  const kin = eo(p(t, 25.55, 26.0));
+  const out = p(t, 29.45, 29.95);
+  st(s, { opacity: kin * (1 - out), filter: blur((1 - kin) * 10 + out * 8) });
+  titleUpdate('tN', t, 26.1);
+  const m1 = eio(p(t, 27.3, 27.6)), m2 = eio(p(t, 28.05, 28.3)), m3 = eio(p(t, 29.0, 29.4));
+  const V = u => lerp(lerp(lerp(u, expoIO(u), m1), back(u, 1.7), m2), .5, m3);
   const X = u => AN.x0 + u * (AN.x1 - AN.x0), Y = v => AN.yb - v * (AN.yb - AN.yt);
   let d = '';
-  for (let i = 0; i <= 80; i++) { const u = i / 80; d += (i ? 'L' : 'M') + X(u).toFixed(1) + ' ' + Y(anY(u, m)).toFixed(1); }
+  for (let i = 0; i <= 100; i++) { const u = i / 100; d += (i ? 'L' : 'M') + X(u).toFixed(1) + ' ' + Y(V(u)).toFixed(1); }
   $('anCurve').setAttribute('d', d);
-  $('anLabel').innerHTML = `● ${esc(m < .5 ? T.animator.ease_a : T.animator.ease_b)}`;
+  $('anLabel').innerHTML = `● ${esc(m2 > .5 ? T.animator.ease_b : m1 > .5 ? (T.animator.ease_mid || 'expo.inOut') : T.animator.ease_a)}`;
+  // panel flattens at the end
+  const fl = m3;
+  $('anp').style.transform = `rotateX(${lerp(20, 0, fl)}deg) rotateZ(${lerp(-1, 0, fl)}deg)`;
+  const fade = 1 - p(t, 29.15, 29.5);
+  ['anFrame', 'anGrid', 'anLabel', 'anDiam', 'anTracks'].forEach(id => { $(id).style.opacity = fade; });
   // keyframes
-  let mk = `<rect x="${X(0) - 9}" y="${Y(0) - 9}" width="18" height="18" fill="#3FE0A5"/><rect x="${X(1) - 9}" y="${Y(anY(1, m)) - 9}" width="18" height="18" fill="#3FE0A5"/>`;
-  [.33, .66].forEach(u => { mk += `<circle cx="${X(u)}" cy="${Y(anY(u, m))}" r="7" fill="#0b1a18" stroke="#c8ffe9" stroke-width="2" opacity="${1 - m}"/>`; });
+  let mk = `<rect x="${X(0) - 9}" y="${Y(V(0)) - 9}" width="18" height="18" fill="#3FE0A5"/><rect x="${X(1) - 9}" y="${Y(V(1)) - 9}" width="18" height="18" fill="#3FE0A5"/>`;
+  [.35, .7].forEach(u => { mk += `<circle cx="${X(u)}" cy="${Y(V(u))}" r="7" fill="#0b1a18" stroke="#c8ffe9" stroke-width="2" opacity="${(1 - m1 * (1 - m2)) * fade}"/>`; });
   $('anMarks').innerHTML = mk;
-  // ball motion
-  let u;
-  if (t < 27.45) u = p(t, 26.25, 27.35);
-  else if (t < 28.05) u = 1;
-  else u = p(t, 28.1, 29.15);
-  if (t >= 28.05 && t < 28.1) u = 0;
-  const bx = X(u), by = Y(anY(u, m));
-  st($('anBall'), {}); $('anBall').setAttribute('cx', bx); $('anBall').setAttribute('cy', by);
-  $('anPlay').setAttribute('x1', bx); $('anPlay').setAttribute('x2', bx);
+  // bezier handles (expo, then dragged into back.out)
+  const hOp = Math.min(m1 > 0 ? 1 : 0, 1 - p(t, 28.45, 28.7));
+  let hd = '';
+  if (hOp > 0) {
+    const h1x = lerp(X(.75), X(.3), m2), h1y = lerp(Y(0), Y(1.35), m2);
+    const h2x = lerp(X(.15), X(1), m2), h2y = Y(V(1));
+    const g1x = lerp(X(0), h1x, m1), g1y = lerp(Y(0), h1y, m1), g2x = lerp(X(1), h2x, m1);
+    hd = `<line x1="${X(0)}" y1="${Y(V(0))}" x2="${g1x}" y2="${g1y}" stroke="rgba(230,255,245,.75)" stroke-width="1.6"/><circle cx="${g1x}" cy="${g1y}" r="7" fill="#0b1a18" stroke="#e6fff4" stroke-width="2"/>`;
+    if (m2 < .98) hd += `<line x1="${X(1)}" y1="${h2y}" x2="${g2x}" y2="${h2y}" stroke="rgba(230,255,245,.75)" stroke-width="1.6"/><circle cx="${g2x}" cy="${h2y}" r="7" fill="#0b1a18" stroke="#e6fff4" stroke-width="2"/>`;
+  }
+  $('anHandles').innerHTML = hd;
+  $('anHandles').setAttribute('opacity', hOp);
+  // ball + trail
+  const u = anBallU(t);
+  const bx = X(u), by = Y(V(u));
+  const ball = $('anBall');
+  ball.setAttribute('cx', bx); ball.setAttribute('cy', by); ball.setAttribute('opacity', t >= 25.98 ? 1 : 0);
+  $('anPlay').setAttribute('x1', bx); $('anPlay').setAttribute('x2', bx); $('anPlay').setAttribute('opacity', .8 * fade);
   $('anPlayHead').setAttribute('d', `M${bx - 8} 530 L${bx + 8} 530 L${bx} 542 Z`);
   let tr = '';
-  if (t > 28.1 && t < 29.4) for (let k = 1; k <= 7; k++) { const uu = clamp(u - k * .045); tr += `<circle cx="${X(uu)}" cy="${Y(anY(uu, m))}" r="${20 - k * 1.6}" fill="#3FE0A5" opacity="${.32 - k * .04}"/>`; }
+  for (let k = 1; k <= 7; k++) {
+    const uu = anBallU(t - k * .028);
+    if (Math.abs(uu - u) < .004) continue;
+    tr += `<circle cx="${X(uu)}" cy="${Y(V(uu))}" r="${21 - k * 1.8}" fill="#3FE0A5" opacity="${.34 - k * .04}"/>`;
+  }
   $('anTrail').innerHTML = tr;
   let dm = '';
-  [0, .33, .66, 1].forEach((uu, i) => { const lit = u >= uu - .001 && t > 26.2; dm += `<rect x="${X(uu) - 9}" y="561" width="18" height="18" transform="rotate(45 ${X(uu)} 570)" fill="${lit ? '#3FE0A5' : 'none'}" stroke="#3FE0A5" stroke-width="2" opacity="${lit ? 1 : .5}"/>`; });
+  [0, .33, .66, 1].forEach(uu => { const lit = u >= uu - .001 && t > 26.15; dm += `<rect x="${X(uu) - 9}" y="561" width="18" height="18" transform="rotate(45 ${X(uu)} 570)" fill="${lit ? '#3FE0A5' : 'none'}" stroke="#3FE0A5" stroke-width="2" opacity="${lit ? 1 : .5}"/>`; });
   $('anDiam').innerHTML = dm;
-  // cursor drags the tangent handle
-  const cur = $('anCursor'), hl = $('anHandle'), hd = $('anHandleDot');
-  const cOn = t > 27.25 && t < 28.3;
+  // the cursor that edits the curve
+  const cur = $('anCursor');
+  const cOn = t > 27.0 && t < 28.5;
   vis(cur, cOn);
-  const hx0 = X(.3), hy0 = Y(.3), hx1 = X(.34), hy1 = Y(1.18);
-  const dk = eio(p(t, 27.5, 28.05));
-  const hx = lerp(hx0, hx1, dk), hy = lerp(hy0, hy1, dk);
-  const hOn = t > 27.4 && t < 28.6;
-  hl.setAttribute('x1', X(0)); hl.setAttribute('y1', Y(0)); hl.setAttribute('x2', hx); hl.setAttribute('y2', hy);
-  hl.setAttribute('opacity', hOn ? .8 * (1 - p(t, 28.3, 28.6)) : 0);
-  hd.setAttribute('cx', hx); hd.setAttribute('cy', hy); hd.setAttribute('opacity', hOn ? 1 - p(t, 28.3, 28.6) : 0);
-  const ca = eo(p(t, 27.25, 27.5));
-  st(cur, { left: (lerp(hx0 + 160, hx, ca) - 4) + 'px', top: (lerp(hy0 + 120, hy, ca) - 2) + 'px', opacity: ca * (1 - p(t, 28.1, 28.3)) });
-  // panel flattens at the end
-  const fl = eio(p(t, 29.1, 29.8));
-  $('anp').style.transform = `rotateX(${lerp(20, 4, fl)}deg) rotateZ(${lerp(-1, 0, fl)}deg)`;
+  if (cOn) {
+    let cx, cy;
+    if (t < 27.3) { const k = eo(p(t, 27.0, 27.3)); cx = lerp(X(.45), X(.3), k); cy = lerp(Y(-.05) + 60, Y(0), k); }
+    else if (t < 28.05) { const k = m1; cx = lerp(X(.3), X(.75), k); cy = Y(0); }
+    else { cx = lerp(X(.75), X(.3), m2); cy = lerp(Y(0), Y(1.35), m2); }
+    st(cur, { left: (cx - 3) + 'px', top: (cy - 2) + 'px', opacity: p(t, 27.0, 27.1) * (1 - p(t, 28.35, 28.5)) });
+  }
 }
 
 // ---------- 07 Composer ----------
@@ -498,45 +601,71 @@ const NOTES = (() => {
   for (let i = 0; i < 8; i++) n.push({ s: i * 4 + 1, l: 1, row: 10 + Math.floor(r() * 2) });
   return n;
 })();
+const WAVE_N = 700;
 function buildComposer() {
   const s = el(S, `<div id="sC" class="layer persp"></div>`);
-  titleBlock(s, 'tC', T.roles.composer.index, [T.roles.composer.title], 'left', C.comp, 230);
+  titleBlock(s, 'tC', T.roles.composer.index, [T.roles.composer.title], 'left', C.comp, 230, 116);
   const pnl = el(s, `<div id="cpp" class="abs" style="left:140px;top:340px;width:1530px;height:330px;border-radius:16px;border:1.5px solid rgba(155,123,255,.45);background:rgba(16,12,32,.6);overflow:hidden;box-shadow:0 0 50px rgba(155,123,255,.15)"></div>`);
+  const black = i => [1, 3, 6, 8, 10].includes(i % 12);
   let keys = '';
-  for (let i = 0; i < 16; i++) keys += `<div class="abs" style="left:0;top:${40 + i * 18}px;width:${[1, 3, 6, 8, 10].includes(i % 12) ? 70 : 110}px;height:16px;background:${[1, 3, 6, 8, 10].includes(i % 12) ? '#3a3352' : '#cfc8e6'};opacity:.75"></div>`;
+  for (let i = 0; i < 16; i++) keys += `<div class="abs" style="left:0;top:${40 + i * 18}px;width:${black(i) ? 70 : 110}px;height:16px;background:${black(i) ? '#3a3352' : '#cfc8e6'};opacity:.75"></div><div id="kh${i}" class="abs" style="left:0;top:${40 + i * 18}px;width:118px;height:16px;background:#fff;box-shadow:0 0 14px #c9b6ff;opacity:0"></div>`;
   let grid = '';
   for (let i = 0; i <= 32; i++) grid += `<div class="abs" style="left:${130 + i * 43}px;top:30px;width:1px;height:300px;background:rgba(155,123,255,${i % 8 ? .08 : .3})"></div>`;
   pnl.innerHTML = `${keys}${grid}<div class="abs mono" style="right:24px;top:8px;font-size:16px;color:#cfc3ff;letter-spacing:.06em">● ${esc(T.composer.meta)}</div><div id="cpNotes"></div><div id="cpPlay" class="abs" style="top:28px;width:2px;height:300px;background:#efe9ff;box-shadow:0 0 10px #fff"></div>`;
   const notes = pnl.querySelector('#cpNotes');
-  NOTES.forEach((n, i) => el(notes, `<div id="cn${i}" class="abs" style="left:${130 + n.s * 43}px;top:${40 + n.row * 18}px;width:${n.l * 43 - 4}px;height:14px;border-radius:3px;background:#9B7BFF;box-shadow:0 0 10px #9B7BFF;transform-origin:left center"></div>`));
-  pnl.style.transform = 'rotateX(24deg) rotateY(-7deg)';
+  NOTES.forEach((n, i) => el(notes, `<div id="cn${i}" class="abs" style="left:${130 + n.s * 43}px;top:${40 + n.row * 18}px;width:${n.l * 43 - 4}px;height:14px;border-radius:3px;background:#9B7BFF;transform-origin:left center"></div>`));
+  pnl.style.transform = 'rotateX(30deg) rotateY(-9deg)';
   const r = rng(5);
   let bars = '';
-  for (let i = 0; i < 280; i++) {
-    const beat = Math.exp(-((i % 35) / 35) * 3), cres = .35 + .65 * (i / 280);
-    const a = (.15 + .85 * beat * cres) * (.5 + r() * .5);
-    bars += `<rect x="${i * 5}" y="${110 - a * 100}" width="3" height="${a * 200}" rx="1.5" fill="#a98cff"/>`;
+  for (let i = 0; i < WAVE_N; i++) {
+    const ph = i / WAVE_N, beat = Math.exp(-((i % 44) / 44) * 3), cres = .3 + .7 * ph;
+    const a = (.12 + .88 * beat * cres) * (.45 + r() * .55);
+    bars += `<rect x="${i * 2}" y="${110 - a * 100}" width="1.3" height="${a * 200}" fill="#b49bff"/>`;
   }
-  el(s, `<div id="cpWave" class="abs" style="left:270px;top:690px;width:1400px;height:220px;overflow:hidden"><svg width="1400" height="220" style="filter:drop-shadow(0 0 10px #9B7BFF)">${bars}</svg></div>`);
+  el(s, `<div class="abs" style="left:270px;top:799px;width:1400px;height:1.5px;background:rgba(170,150,255,.45)"></div>`);
+  el(s, `<div id="cpWave" class="abs" style="left:270px;top:690px;width:1400px;height:220px;overflow:hidden"><svg width="1400" height="220" style="filter:drop-shadow(0 0 8px #9B7BFF)">${bars}</svg></div>`);
   el(s, `<div id="cpWaveLine" class="abs" style="top:690px;width:2px;height:220px;background:#f2edff;box-shadow:0 0 12px #fff"></div>`);
+  el(s, `<div id="cpDot" class="abs" style="top:795px;width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff"></div>`);
+  // lime glyph that hands over to the sound designer
+  let g = '';
+  [26, 44, 34, 52, 30, 40, 22].forEach((h, i) => g += `<div class="abs" style="left:${i * 12}px;top:${(60 - h) / 2}px;width:5px;height:${h}px;border-radius:2px;background:#C8F05A;box-shadow:0 0 10px #C8F05A"></div>`);
+  el(S, `<div id="snapGlyph" class="abs" style="left:918px;top:640px;width:84px;height:60px">${g}<div class="abs" style="left:38px;top:-260px;width:4px;height:580px;background:linear-gradient(180deg,transparent,rgba(200,240,90,.0) 20%,rgba(230,220,255,.85) 50%,rgba(200,240,90,0) 80%,transparent)"></div></div>`);
 }
 function updateComposer(t) {
-  const s = $('sC');
-  if (!roleIO(s, t, 30, 34, { scale: t => lerp(1, 1.04, p(t, 30, 33)) * lerp(1, 2.1, ei(p(t, 33.1, 34.0))), origin: '960px 800px', noOut: false })) return;
-  titleUpdate('tC', t, 30.05);
-  const ph = p(t, 30.2, 33.4); // playhead 0..1 over 32 steps
-  const px = 130 + ph * 32 * 43;
-  $('cpPlay').style.left = px + 'px';
-  NOTES.forEach((n, i) => { const k = eo(clamp((ph * 32 - n.s) / 1.2)); st($('cn' + i), { opacity: k > 0 ? 1 : 0, transform: `scaleX(${k})` }); });
+  const s = $('sC'), gl = $('snapGlyph');
+  const gOn = t > 33.25 && t < 34.05;
+  vis(gl, gOn);
+  if (gOn) st(gl, { opacity: eo(p(t, 33.25, 33.45)) * (1 - p(t, 33.8, 34.05)), transform: `scale(${lerp(.6, 1.15, eo(p(t, 33.25, 33.7)))}) scaleY(${lerp(.3, 1, eo(p(t, 33.25, 33.45)))})` });
+  if (!vis(s, t > 29.55 && t < 33.85)) return;
+  const kin = eo(p(t, 29.6, 30.05));
+  const zk = ei(p(t, 33.15, 33.8));
+  st(s, { opacity: kin * (1 - p(t, 33.5, 33.8)), filter: blur((1 - kin) * 8 + p(t, 33.4, 33.8) * 12), transformOrigin: '1560px 800px', transform: `scale(${lerp(1, 3.2, zk)})` });
+  const pk = eo(p(t, 29.75, 30.15));
+  st($('cpp'), { opacity: pk, transform: `translateY(${(1 - pk) * 40}px) rotateX(30deg) rotateY(-9deg)` });
+  titleUpdate('tC', t, 30.1);
+  const ph = p(t, 29.95, 33.2);
+  const step = ph * 32;
+  $('cpPlay').style.left = (130 + step * 43) + 'px';
+  const rowHit = new Array(16).fill(0);
+  NOTES.forEach((n, i) => {
+    const age = step - n.s;
+    const k = eo(clamp(age / 1.0));
+    const flash = age >= 0 ? Math.exp(-age * 1.6) : 0;
+    if (age >= 0 && age < n.l) rowHit[n.row] = Math.max(rowHit[n.row], 1 - age / n.l);
+    st($('cn' + i), { opacity: age > 0 ? 1 : 0, transform: `scaleX(${k})`, background: mixHex('#9B7BFF', '#f1ebff', flash * .8), boxShadow: `0 0 ${8 + flash * 22}px rgba(190,170,255,${.5 + flash * .5})` });
+  });
+  rowHit.forEach((h, i) => { $('kh' + i).style.opacity = h * .85; });
   const ww = ph * 1400;
   $('cpWave').style.width = Math.max(0, ww) + 'px';
   st($('cpWaveLine'), { left: (270 + ww) + 'px', opacity: ph > 0 && ph < 1 ? 1 : 0 });
+  st($('cpDot'), { left: (265 + ww) + 'px', opacity: ph > 0 ? 1 : 0 });
 }
 
 // ---------- 08 Sound designer ----------
 const PADS = [ // label index, x, y, w, h, wave kind, trigger
-  [0, 180, 285, 390, 230, 'impact', 34.25], [1, 595, 285, 330, 105, 'swell', 34.55], [2, 595, 410, 330, 105, 'clicks', 34.85],
-  [3, 950, 410, 240, 105, 'pop', 35.15], [4, 180, 540, 540, 235, 'glitch', 35.5], [5, 745, 540, 250, 235, 'snap', 35.95], [6, 1020, 540, 250, 235, 'chime', 36.4],
+  [0, 180, 285, 390, 230, 'impact', 33.65], [1, 595, 285, 330, 105, 'swell', 33.85], [2, 595, 410, 330, 105, 'clicks', 34.25],
+  [3, 950, 410, 240, 105, 'pop', 34.6], [4, 180, 540, 540, 235, 'glitch', 35.45], [5, 745, 540, 250, 235, 'snap', 35.9],
+  [6, 1020, 540, 250, 235, 'chime', 36.45], [7, 1295, 540, 340, 235, 'sub', 36.85],
 ];
 function wavePath(kind, w, h, r) {
   const mid = h / 2 + 12; let d = '';
@@ -547,6 +676,11 @@ function wavePath(kind, w, h, r) {
   if (kind === 'glitch') { for (let i = 0; i < 24; i++) { const x = 20 + i * (w - 60) / 24, a = (i > 8 && i < 13 ? .1 : .3 + r() * .7) * h * .38; d += `M${x} ${mid - a}h${(w - 60) / 24 - 3}v${a * 2}h${-((w - 60) / 24 - 3)}z`; } }
   if (kind === 'snap') { d += `M30 ${mid}L${w - 30} ${mid}M${w / 2} ${mid - h * .38}L${w / 2} ${mid + h * .38}M${w / 2 - 14} ${mid - 30}L${w / 2 + 14} ${mid - 30}`; }
   if (kind === 'chime') { for (let i = 0; i <= 120; i++) { const x = 20 + i * (w - 50) / 120, a = Math.exp(-i / 40) * h * .36 * Math.sin(i * .9); d += (i ? 'L' : 'M') + x + ' ' + (mid + a); } }
+  if (kind === 'sub') {
+    const N = 80, top = [], bot = [];
+    for (let i = 0; i <= N; i++) { const x = 24 + i * (w - 60) / N, a = (.55 + .45 * Math.sin(i * .32)) * h * .3 * Math.sin(Math.PI * i / N) ** .4; top.push(`${x} ${mid - a}`); bot.unshift(`${x} ${mid + a}`); }
+    d = `M${top.join('L')}L${bot.join('L')}Z`;
+  }
   return d;
 }
 function buildSound() {
@@ -554,30 +688,43 @@ function buildSound() {
   const pn = el(s, `<div id="sdp" class="layer p3d"></div>`);
   pn.style.transform = 'rotateY(-9deg) rotateX(5deg)';
   const r = rng(9);
-  [[950, 285, 240, 105], [1215, 285, 420, 230], [1295, 540, 340, 235]].forEach(([x, y, w, h]) => el(pn, `<div class="pad" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;opacity:.5"></div>`));
+  [[950, 285, 240, 105], [1215, 285, 420, 230]].forEach(([x, y, w, h], i) => el(pn, `<div id="emp${i}" class="pad" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"></div>`));
   PADS.forEach(([li, x, y, w, h, kind], i) => {
-    const filled = kind === 'glitch' || kind === 'impact';
-    el(pn, `<div id="pad${i}" class="pad" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"><div class="pl">${esc(T.sound.sfx_names[li])}</div>
-      <svg width="${w}" height="${h}"><g id="pw${i}"><path d="${wavePath(kind, w, h, r)}" fill="${filled && kind === 'glitch' ? '#C8F05A' : 'none'}" stroke="#C8F05A" stroke-width="${kind === 'impact' ? 2 : 2.4}" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #C8F05A)"/></g></svg>
+    el(pn, `<div id="slot${i}" class="pad" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;background:rgba(14,18,16,.5)"></div>`);
+    const filled = kind === 'glitch' || kind === 'sub';
+    el(pn, `<div id="pad${i}" class="pad" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"><div class="pl">${esc(T.sound.sfx_names[li] || '')}</div>
+      <svg width="${w}" height="${h}"><g id="pw${i}"><path d="${wavePath(kind, w, h, r)}" fill="${filled ? '#C8F05A' : 'none'}" fill-opacity="${kind === 'sub' ? .85 : 1}" stroke="#C8F05A" stroke-width="${kind === 'impact' ? 2 : 2.4}" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #C8F05A)"/></g></svg>
       <div id="pm${i}" class="meter"></div></div>`);
+    let parts = '';
+    for (let k = 0; k < 9; k++) parts += `<div id="pp${i}_${k}" class="abs" style="width:5px;height:5px;border-radius:50%;background:#e4ff9c;box-shadow:0 0 8px #C8F05A"></div>`;
+    el(pn, `<div id="ppw${i}" class="abs" style="left:${x + w / 2}px;top:${y + h / 2}px">${parts}</div>`);
   });
   let strip = `<div class="abs" style="left:0;top:0;width:100%;height:100%;border-radius:10px;border:1.3px solid rgba(200,240,90,.3);background:rgba(14,18,16,.8)"></div>`;
-  PADS.forEach((pd, i) => strip += `<div id="ss${i}" class="abs" style="left:${40 + i * 200}px;top:10px;width:${120 + r() * 60}px;height:44px;border-radius:8px;background:radial-gradient(ellipse,rgba(200,240,90,.85),rgba(200,240,90,.15) 60%,transparent 75%)"></div>`);
+  PADS.forEach((pd, i) => strip += `<div id="ss${i}" class="abs" style="left:${30 + i * 178}px;top:10px;width:${110 + r() * 60}px;height:44px;border-radius:8px;background:radial-gradient(ellipse,rgba(200,240,90,.85),rgba(200,240,90,.15) 60%,transparent 75%)"></div>`);
   for (let i = 0; i < 10; i++) strip += `<div class="abs" style="left:${980 + i * 12}px;top:12px;width:3px;height:40px;background:#e8ffc0"></div>`;
   el(pn, `<div id="sstrip" class="abs" style="left:180px;top:800px;width:1460px;height:64px">${strip}</div>`);
-  titleBlock(s, 'tS', T.roles.sound.index, [T.roles.sound.title], 'right', C.sound, 230, 100);
+  titleBlock(s, 'tS', T.roles.sound.index, [T.roles.sound.title], 'right', C.sound, 230, 104);
 }
+const PART = (() => { const r = rng(21), a = []; for (let i = 0; i < 9; i++) a.push([(r() - .5) * 2, (r() - .5) * 2, .6 + r() * .6]); return a; })();
 function updateSound(t) {
   const s = $('sS');
-  if (!roleIO(s, t, 34, 38, { inFn: t => eo(p(t, 33.75, 34.3)), inScale: 1.25, scale: t => lerp(1, 1.05, p(t, 34, 38)) })) return;
-  titleUpdate('tS', t, 34.1);
+  if (!vis(s, t > 33.5 && t < 37.75)) return;
+  const kin = eo(p(t, 33.55, 33.9)), out = ei(p(t, 37.25, 37.7));
+  st(s, { opacity: kin * (1 - out), filter: blur((1 - kin) * 8 + out * 12), transformOrigin: '960px 560px', transform: `scale(${lerp(1.15, 1, kin) * (1 + .04 * p(t, 34, 37.2)) * lerp(1, .42, out)})` });
+  titleUpdate('tS', t, 34.3);
+  [0, 1].forEach(i => { $('emp' + i).style.opacity = .45 * eo(p(t, 33.7, 34.1)); });
   PADS.forEach((pd, i) => {
-    const t0 = pd[6], k = p(t, t0, t0 + .3), hit = Math.exp(-Math.max(0, t - t0) * 3.2) * (t >= t0 ? 1 : 0);
+    const t0 = pd[6], [, x, y, w, h] = pd;
+    const k = p(t, t0, t0 + .3), age = t - t0, hit = age >= 0 ? Math.exp(-age * 3) : 0;
+    $('slot' + i).style.opacity = .5 * eo(p(t, 33.7, 34.1)) * (age >= 0 ? 0 : 1);
     const e = $('pad' + i);
-    st(e, { borderColor: t >= t0 ? `rgba(200,240,90,${.45 + hit * .55})` : 'rgba(200,240,90,.2)', boxShadow: t >= t0 ? `0 0 ${10 + hit * 40}px rgba(200,240,90,${.15 + hit * .5})` : 'none', background: `rgba(${Math.round(14 + hit * 30)},${Math.round(18 + hit * 40)},16,.85)`, transform: `scale(${1 + hit * .04})` });
-    $('pw' + i).style.clipPath = `inset(0 ${100 - k * 100}% 0 0)`;
-    st($('pm' + i), { height: (8 + hit * 70 + (t >= t0 ? 10 : 0)) + 'px', opacity: t >= t0 ? 1 : .2 });
+    st(e, { opacity: age >= 0 ? clamp(k * 2.5) : 0, borderColor: `rgba(200,240,90,${.45 + hit * .55})`, boxShadow: `0 0 ${10 + hit * 46}px rgba(200,240,90,${.15 + hit * .55})`, background: `rgba(${Math.round(14 + hit * 34)},${Math.round(18 + hit * 46)},16,.86)`, transform: `scale(${lerp(1.12, 1, back(k, 1.6))})` });
+    $('pw' + i).style.clipPath = `inset(0 ${100 - eo(p(t, t0 + .05, t0 + .4)) * 100}% 0 0)`;
+    st($('pm' + i), { height: (8 + hit * 70 + (age >= 0 ? 10 : 0)) + 'px' });
     st($('ss' + i), { opacity: eo(p(t, t0, t0 + .25)) });
+    const pOn = age >= 0 && age < .9;
+    vis($('ppw' + i), pOn);
+    if (pOn) PART.forEach(([dx, dy, sp], j) => st($(`pp${i}_${j}`), { left: (dx * w * (.35 + age * .5 * sp)) + 'px', top: (dy * h * .4 - age * 70 * sp) + 'px', opacity: 1 - age / .9 }));
   });
 }
 
@@ -624,15 +771,21 @@ function buildEditor() {
 const tcFmt = f => { f = Math.round(f); const fr = f % 30, sec = Math.floor(f / 30) % 60, mn = Math.floor(f / 1800); return `00:${String(mn).padStart(2, '0')}:${String(sec).padStart(2, '0')}:${String(fr).padStart(2, '0')}`; };
 function updateEditor(t) {
   const s = $('sE');
-  if (!roleIO(s, t, 38, 44)) return;
-  titleUpdate('tE', t, 38.05);
+  if (!vis(s, t > 37.4 && t < 43.8)) return;
+  const kin = eo(p(t, 37.45, 37.8)), ez = ei(p(t, 43.3, 43.75));
+  st(s, { opacity: kin * (1 - ez), filter: blur((1 - kin) * 6 + ez * 10), transformOrigin: '960px 600px', transform: `scale(${1 + ez * .6})` });
+  titleUpdate('tE', t, 38.15);
   const pn = $('edp');
-  const pull = eio(p(t, 38.0, 39.6));
-  const col = eio(p(t, 42.0, 42.7));
-  st(pn, { transformOrigin: '30% 40%', transform: `rotateX(${lerp(26, 18, pull)}deg) scale(${lerp(1.22, 1, pull) * lerp(1, 0.9, col)}) scaleY(${lerp(1, .03, col)})`, opacity: 1 - col });
-  SHOTS.forEach((d, i) => { const k = p(t, 38.05 + i * .085, 38.4 + i * .085); st($('clip' + i), { opacity: clamp(k * 1.6), transform: `translateY(${(1 - back(k, 1.5)) * -70}px)` }); });
-  for (let i = 3; i < 10; i++) $('v2_' + i).style.opacity = .75 * p(t, 38.8 + i * .05, 39.1 + i * .05);
-  $('aTracks').style.opacity = eo(p(t, 38.3, 39.0));
+  // starts zoomed into the "sound" clip and pulls back to the whole timeline
+  let acc = 0; for (let i = 0; i < 7; i++) acc += SHOTS[i];
+  const ox = ED.x0 + (acc + SHOTS[7] / 2) * ED.pps, oy = 181;
+  const z = eio(p(t, 37.5, 39.1));
+  const col = eio(p(t, 41.9, 42.35));
+  st(pn, { transformOrigin: `${ox}px ${oy}px`, transform: `rotateX(${lerp(8, 22, z)}deg) scale(${lerp(3.4, 1, z) * lerp(1, 0.9, col)}) scaleY(${lerp(1, .03, col)})`, opacity: 1 - col });
+  SHOTS.forEach((d, i) => { st($('clip' + i), { opacity: 1, transform: 'none' }); });
+  $('clip7').style.boxShadow = `0 0 ${36 * (1 - p(t, 37.6, 38.8))}px rgba(200,240,90,${.9 * (1 - p(t, 37.6, 38.8))})`;
+  for (let i = 3; i < 10; i++) $('v2_' + i).style.opacity = .75 * p(t, 38.0 + i * .04, 38.3 + i * .04);
+  $('aTracks').style.opacity = eo(p(t, 38.0, 38.7));
   // playhead + timecode
   let f;
   if (t < 38.6) f = 0; else if (t < 39.4) f = eio(p(t, 38.6, 39.4)) * 1552; else f = lerp(1552, 2055, p(t, 39.4, 42.0));
@@ -642,11 +795,11 @@ function updateEditor(t) {
   const tk = eo(p(t, 38.55, 38.9));
   st($('tc'), { opacity: tk, filter: blur((1 - tk) * 8) });
   const fc = $('fcut');
-  vis(fc, t > 42.2);
-  const fk = eo(p(t, 42.3, 42.75));
+  vis(fc, t > 42.0);
+  const fk = eo(p(t, 42.05, 42.45));
   st(fc, { opacity: fk, transform: `scaleX(${lerp(1.6, 1, fk)})` });
-  $('fcutFill').style.width = (eio(p(t, 42.8, 43.45)) * 100) + '%';
-  st($('fcutLbl'), { opacity: eo(p(t, 42.5, 42.9)), transform: `translateY(${(1 - eo(p(t, 42.5, 42.9))) * 12}px)` });
+  $('fcutFill').style.width = (eio(p(t, 42.45, 43.0)) * 100) + '%';
+  st($('fcutLbl'), { opacity: eo(p(t, 42.25, 42.6)), transform: `translateY(${(1 - eo(p(t, 42.25, 42.6))) * 12}px)` });
 }
 
 // ---------- 10 Render ----------
@@ -665,20 +818,23 @@ function buildRender() {
   el(s, `<div class="abs" style="left:${RG.left + 10}px;top:832px;width:1240px;height:5px;border-radius:3px;background:rgba(255,255,255,.08)"><div id="rbar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,#e8a33c,#FFD86B);box-shadow:0 0 14px #FFD86B"></div></div>`);
   el(s, `<div class="abs mono" style="left:${RG.left + 10}px;top:856px;font-size:17px;color:#6f7484;letter-spacing:.06em">${esc(T.render.specs)}</div>`);
 }
-function renderFrames(t) { return Math.round(lerp(59, T.render.frames_total, sio(p(t, 44.0, 48.0)))); }
+const RF = { t0: 43.6, t1: 47.6, pw: 2.2 };
+function renderFrames(t) { return Math.round(1 + (T.render.frames_total - 1) * Math.pow(p(t, RF.t0, RF.t1), RF.pw)); }
 function updateRender(t) {
   const s = $('sR');
-  if (!roleIO(s, t, 44, 49.5, { noOut: true, scale: t => lerp(1, 1.04, p(t, 44, 49)) })) return;
+  if (!vis(s, t > 43.4 && t < 49.5)) return;
+  const kin = eo(p(t, 43.45, 43.85));
+  st(s, { opacity: kin, filter: blur((1 - kin) * 8), transformOrigin: '960px 540px', transform: `scale(${lerp(1.25, 1, kin) * lerp(1, 1.04, p(t, 44, 49))})` });
+  const gk = eo(p(t, 43.65, 44.05));
+  st($('rgrid'), { opacity: gk, transform: `rotateX(30deg) scale(${lerp(.92, 1, gk)})` });
   titleUpdate('tR', t, 44.05);
   const fr = renderFrames(t), tot = T.render.frames_total;
   $('rfn').textContent = String(fr).padStart(4, '0');
-  $('rpct').textContent = Math.round(fr / tot * 100) + '%';
+  $('rpct').textContent = Math.floor(fr / tot * 100) + '%';
   $('rbar').style.width = (fr / tot * 100) + '%';
   for (let i = 0; i < 18; i++) {
-    const tf = 44.0 + (i + 1) / 18 * 3.85; // when cell i finishes
-    const done = fr >= (i + 1) / 18 * tot - 1;
-    const tDone = (() => { // invert the frame curve for flash timing
-      let lo = 44, hi = 48; for (let k = 0; k < 18; k++) { const mid = (lo + hi) / 2; if (renderFrames(mid) >= (i + 1) / 18 * tot - 1) hi = mid; else lo = mid; } return hi; })();
+    const tDone = RF.t0 + (RF.t1 - RF.t0) * Math.pow((i + 1) / 18, 1 / RF.pw);
+    const done = t >= tDone;
     $('rci' + i).style.opacity = done ? 1 : 0;
     $('rcf' + i).style.opacity = done ? Math.max(0, 1 - (t - tDone) / .55) : 0;
     $('rc' + i).style.boxShadow = done && t - tDone < .5 ? '0 0 24px rgba(255,236,190,.8)' : 'none';
@@ -773,28 +929,30 @@ function buildResolve() {
     <div class="bub" style="top:92px">${esc(R.bubble_1)}</div><div class="bub" style="top:166px">${esc(R.bubble_2)}</div>
     <div class="abs serif" style="left:52px;top:244px;font-weight:300;font-size:38px;color:#2b2925;white-space:nowrap"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#E07A55;vertical-align:8px;margin-right:18px"></span>${esc(R.reply)}</div>
     <div id="chips" class="abs" style="left:52px;top:322px;width:900px"></div>`;
-  const chipCol = ROLE_COLORS;
-  R.files.forEach((f, i) => el(chat.querySelector('#chips'), `<span id="chip${i}" class="chip"><i style="background:${chipCol[i]}"></i>${esc(f)}</span>`));
-  chat.style.transform = 'rotateX(7deg) rotateY(-4deg) rotateZ(1deg)';
+  R.files.forEach((f, i) => el(chat.querySelector('#chips'), `<span id="chip${i}" class="chip"><i style="background:${ROLE_COLORS[i]}"></i>${esc(f)}</span>`));
   el(s, `<div id="box2" class="abs" style="left:375px;top:800px;width:1170px;height:112px;border-radius:22px;background:#f8f2e6;box-shadow:0 12px 34px rgba(80,60,30,.12);border:1px solid rgba(0,0,0,.04)"><div id="box2c" class="abs" style="left:40px;top:30px;font:400 40px Plex;color:#2b2925"></div><div class="send" style="right:24px;top:22px;width:68px;height:68px">${ARROW('#2a140c')}</div></div>`);
-  el(s, `<div id="tag1" class="abs serif" style="left:165px;top:330px;font-weight:300;font-size:80px;color:#17161c;white-space:nowrap;transform-origin:0 0">${esc(R.tagline[0])}</div>`);
-  el(s, `<div id="tag2" class="abs serif" style="left:165px;top:435px;font-weight:300;font-size:80px;color:#17161c;white-space:nowrap;transform-origin:0 0">${esc(R.tagline[1])}</div>`);
+  const words = (line, id, top) => `<div id="${id}" class="abs serif" style="left:164px;top:${top}px;font-weight:400;font-size:118px;line-height:1;color:#141319;white-space:nowrap;transform-origin:0 0">${line.split(' ').map((w, j) => `<span id="${id}w${j}" style="display:inline-block">${esc(w)}</span>`).join(' ')}</div>`;
+  el(s, words(R.tagline[0], 'tag1', 330));
+  el(s, words(R.tagline[1], 'tag2', 453));
   el(s, `<div id="ztitle" class="abs" style="left:158px;top:438px;font:300 128px/1 Fraunces,serif;color:#15151c;white-space:nowrap;letter-spacing:-.012em">${esc(R.title)}</div>`);
   el(s, `<div id="zsig" class="abs mono" style="left:166px;top:604px;font-size:18px;letter-spacing:.2em;color:#3a3833;white-space:nowrap">${esc(R.signature)}</div>`);
 }
 function updateResolve(t) {
   const s = $('sZ');
   if (!vis(s, t > 59.4)) return;
-  const ci = eo(p(t, 59.5, 60.35));
-  const cb = eio(p(t, 61.6, 62.2));
-  st($('chat'), { opacity: ci * (1 - cb * .55), filter: blur((1 - ci) * 12 + cb * 7), transform: `translateY(${(1 - ci) * 30}px) rotateX(7deg) rotateY(-4deg) rotateZ(1deg)` });
-  T.resolve.files.forEach((f, i) => { const k = p(t, 60.2 + i * .09, 60.5 + i * .09); st($('chip' + i), { opacity: k, transform: `scale(${lerp(.8, 1, back(k, 2))})`, display: 'inline-block' }); });
-  st($('box2'), { opacity: eo(p(t, 59.6, 60.3)), transform: `translateY(${(1 - eo(p(t, 59.6, 60.3))) * 20}px)` });
+  const ci = eo(p(t, 59.45, 59.95)), rise = eo(p(t, 59.55, 60.9));
+  const cb = eio(p(t, 61.45, 62.0));
+  st($('chat'), { opacity: ci * (1 - cb * .55), filter: blur((1 - ci) * 10 + cb * 7), transform: `translateY(${lerp(270, 0, rise)}px) rotateX(7deg) rotateY(-4deg) rotateZ(1deg)` });
+  T.resolve.files.forEach((f, i) => { const k = p(t, 60.15 + i * .1, 60.45 + i * .1); st($('chip' + i), { opacity: k, transform: `scale(${lerp(.8, 1, back(k, 2))})`, display: 'inline-block' }); });
+  st($('box2'), { opacity: eo(p(t, 59.5, 60.2)), transform: `translateY(${(1 - eo(p(t, 59.5, 60.2))) * 20}px)` });
   $('box2c').innerHTML = caret(blink(t));
   const sh = eio(p(t, 64.6, 65.4));
-  [['tag1', 62.0, 330, 215], ['tag2', 62.45, 435, 276]].forEach(([id, a, y0, y1]) => {
-    const k = eo(p(t, a, a + .55));
-    st($(id), { opacity: k, filter: blur((1 - k) * 12), top: lerp(y0, y1, sh) + 'px', transform: `translateY(${(1 - k) * 18}px) scale(${lerp(1, .58, sh)})` });
+  [['tag1', 61.55, 330, 215, 0], ['tag2', 62.35, 453, 263, 1]].forEach(([id, a, y0, y1, li]) => {
+    st($(id), { top: lerp(y0, y1, sh) + 'px', transform: `scale(${lerp(1, .39, sh)})` });
+    T.resolve.tagline[li].split(' ').forEach((w, j) => {
+      const k = eo(p(t, a + j * .1, a + j * .1 + .32));
+      st($(`${id}w${j}`), { opacity: k, filter: blur((1 - k) * 10), transform: `translateY(${(1 - k) * 14}px)` });
+    });
   });
   const tk = eo(p(t, 65.4, 66.1));
   st($('ztitle'), { opacity: tk, filter: blur((1 - tk) * 12), transform: `translateY(${(1 - tk) * 20}px)` });
@@ -843,8 +1001,10 @@ window.FILM = { render, DURATION, FPS, THUMB_TIMES };
 build();
 window.FILM.ready = (async () => {
   await document.fonts.ready;
-  await Promise.all(['300 40px Fraunces', 'italic 300 40px Fraunces', 'italic 400 40px Fraunces', '400 40px Plex', '500 40px Plex', '600 40px Plex', '400 40px Courier', '700 40px Courier'].map(f => document.fonts.load(f)));
+  await Promise.all(['300 40px Fraunces', '400 40px Fraunces', 'italic 300 40px Fraunces', 'italic 400 40px Fraunces', '400 40px Plex', '500 40px Plex', '600 40px Plex', '400 40px Courier', '700 40px Courier'].map(f => document.fonts.load(f)));
   await Promise.all([...document.images].map(im => im.complete ? 0 : new Promise(r => { im.onload = im.onerror = r; })));
+  document.querySelectorAll('#stage *').forEach(e => { if (getComputedStyle(e).fontFamily.includes('Fraunces')) e.style.fontVariationSettings = '"opsz" 144, "SOFT" 0, "WONK" 0'; });
+  measureZO();
   render(0);
   return true;
 })();

@@ -66,7 +66,7 @@ HUD = interfaz fija: reloj arriba a la izquierda, `ROLES n / 7` arriba a la dere
 | 38 | 18,0 s | HUD, estado | `› writing the script` | `› escribiendo el guion` |
 | 39 | 18,0 s | Índice sobre el título | `01 / 07` | `01 / 07` |
 | 40 | 18,0 s | Título del rol | `the Writer` | `el Guionista` |
-| 41 | 18,0 s | Guion, encabezado | `FADE IN:` | `FUNDIDO DE ENTRADA:` |
+| 41 | 18,0 s | Guion, encabezado | `FADE IN:` | `FADE IN:` |
 | 42 | 18,0 s | Guion, escena | `INT. STUDIO APARTMENT — 2:07 AM` | `INT. DEPARTAMENTO STUDIO — 2:07 AM` |
 | 43 | 18,3 s | Guion, acción | `A cursor blinks. One creator. No team.` | `Un cursor parpadea. Un creador. Sin equipo.` |
 | 44 | 19,0 s | Guion, personaje 1 | `CREATOR` | `CREADOR` |
@@ -103,7 +103,8 @@ HUD = interfaz fija: reloj arriba a la izquierda, `ROLES n / 7` arriba a la dere
 | 65 | 26,0 s | Índice | `03 / 07` | `03 / 07` |
 | 66 | 26,0 s | Título del rol | `the Animator` | `el Animador` |
 | 67 | 26,0 s | Etiqueta de la curva (antes) | `linear` | `lineal` |
-| 68 | 28,0 s | Etiqueta de la curva (después) | `back.out(1.7)` | `back.out(1.7)` |
+| 68a | 27,6 s | Etiqueta de la curva (intermedia) | `expo.inOut` | `expo.inOut` |
+| 68 | 28,1 s | Etiqueta de la curva (final) | `back.out(1.7)` | `back.out(1.7)` |
 | 69 | 26,0 s | Regla bajo la curva | `0` · `10` · `20` · `30` · `40` | `0` · `10` · `20` · `30` · `40` |
 
 ## Escena 07 · THE COMPOSER (0:30 – 0:34)
@@ -132,7 +133,8 @@ HUD = interfaz fija: reloj arriba a la izquierda, `ROLES n / 7` arriba a la dere
 | 84 | 35,0 s | Pad de efecto 4 | `ui_pop` | `pop_interfaz` |
 | 85 | 35,0 s | Pad de efecto 5 | `glitch_crunch` | `glitch_crujido` |
 | 86 | 36,0 s | Pad de efecto 6 | `snap` | `chasquido` |
-| 87 | 36,0 s | Pad de efecto 7 | `chime` | `campanita` |
+| 87 | 36,5 s | Pad de efecto 7 | `chime` | `campanita` |
+| 87a | 36,9 s | Pad de efecto 8 | `sub_drop` | `caída_sub` |
 
 ## Escena 09 · THE EDITOR (0:38 – 0:44)
 
