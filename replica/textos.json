@@ -54,7 +54,7 @@
   },
 
   "turn": {
-    "typed": "¿Me puedes ayudar?",
+    "typed": "¿Me puedes ayudar Pablo?",
     "claude_label": "CLAUDE",
     "answer_big": "Sí.",
     "answer_line": "Comencemos con la historia"
@@ -129,6 +129,6 @@
     "files": ["guion.fdx", "paleta.json", "curvas.motion", "musica.wav", "efectos.wav", "edicion.timeline", "render.mp4"],
     "tagline": ["Cada fotograma que acabas de ver", "se hizo en una sola conversación."],
     "title": "Una Conversación",
-    "signature": "Hecho con Claude Opus 5.5 · Parte 3 de 3"
+    "signature": "Hecho por Pablo Leal en Claude Opus 5.5"
   }
 }

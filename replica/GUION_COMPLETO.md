@@ -49,8 +49,8 @@ HUD = interfaz fija: reloj arriba a la izquierda, `ROLES n / 7` arriba a la dere
 
 | N° | Tiempo | Dónde aparece | Texto original | Texto nuevo |
 |---|---|---|---|---|
-| 29 | 12,8–14,3 s | Caja de chat (se tipea) | `Can you help me make it?` | `¿Me puedes ayudar?` |
-| 30 | 15,0 s | Burbuja enviada (con `• • •` debajo) | `Can you help me make it?` | `¿Me puedes ayudar?` |
+| 29 | 12,8–14,3 s | Caja de chat (se tipea) | `Can you help me make it?` | `¿Me puedes ayudar Pablo?` |
+| 30 | 15,0 s | Burbuja enviada (con `• • •` debajo) | `Can you help me make it?` | `¿Me puedes ayudar Pablo?` |
 | 31 | 15,0 s | HUD, estado | `› claude is thinking…` | `› claude está pensando…` |
 | 32 | 16,0 s | Etiqueta pequeña sobre la respuesta | `CLAUDE` | `CLAUDE` |
 | 33 | 16,0 s | Respuesta gigante | `Yes.` | `Sí.` |
@@ -214,4 +214,4 @@ HUD = interfaz fija: reloj arriba a la izquierda, `ROLES n / 7` arriba a la dere
 | 146 | 62,0 s | Frase final, línea 1 | `Every frame you just watched` | `Cada fotograma que acabas de ver` |
 | 147 | 62,5 s | Frase final, línea 2 | `was made in one conversation.` | `se hizo en una sola conversación.` |
 | 148 | 65,8 s | Título de cierre | `One Conversation` | `Una Conversación` |
-| 149 | 65,8 s | Firma | `Made with Claude Opus 5.5 · Part 3 of 3` | `Hecho con Claude Opus 5.5 · Parte 3 de 3` |
+| 149 | 65,8 s | Firma | `Made with Claude Opus 5.5 · Part 3 of 3` | `Hecho por Pablo Leal en Claude Opus 5.5` |
