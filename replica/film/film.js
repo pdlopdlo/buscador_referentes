@@ -1008,3 +1008,18 @@ window.FILM.ready = (async () => {
   render(0);
   return true;
 })();
+
+// Browser preview: index.html?t=12.5 shows one frame, index.html?play plays it in real time (?play=40 starts at 40 s).
+const QS = new URLSearchParams(location.search);
+if (QS.has('t') || QS.has('play')) {
+  const fit = () => { const k = Math.min(innerWidth / W, innerHeight / H); st(document.body, { transformOrigin: '0 0', transform: `scale(${k})` }); };
+  fit(); addEventListener('resize', fit);
+}
+window.FILM.ready.then(() => {
+  if (QS.has('t')) render(+QS.get('t'));
+  if (QS.has('play')) {
+    const start = performance.now() - (+QS.get('play') || 0) * 1000;
+    const loop = () => { render(((performance.now() - start) / 1000) % DURATION); requestAnimationFrame(loop); };
+    loop();
+  }
+});
